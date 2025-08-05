@@ -15,7 +15,8 @@ aprsis_filter = ""
 aprsis_server_name = "euro.aprs2.net"
 aprsis_server_port = 14580
 
-APRS_MESSAGE_LEN = 67
+# Default value: 67. May change in case of activated pagination
+APRS_MSG_LEN = 67
 
 def get_command_line_params():
     """
@@ -30,6 +31,9 @@ def get_command_line_params():
         name of the configuration file
     """
 
+    # Yes, quick and dirty this time - and I don't care
+    global APRS_MSG_LEN
+    
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -54,11 +58,11 @@ def get_command_line_params():
     )
 
     parser.add_argument(
-        "--message-pagination",
+        "--numeric-message-pagination",
         dest="aprs_message_pagination",
         action="store_true",
         default=False,
-        help="APRS message",
+        help="Add message number to outgoing APRS message(s)",
     )
 
     parser.add_argument(
@@ -75,6 +79,9 @@ def get_command_line_params():
     aprs_passcode = args.aprs_passcode
     aprs_message = args.aprs_message
     aprs_message_pagination = args.aprs_message_pagination
+
+    # change our global variable in case of active numeric pagination
+    APRS_MSG_LEN = 59 if aprs_message_pagination else 67
 
     if len(aprs_from_callsign) > 0:
         # Check whether we have a call sign with or without SSID
@@ -110,7 +117,7 @@ def get_command_line_params():
 def make_pretty_aprs_messages(
     message_to_add: str,
     destination_list: list = None,
-    max_len: int = APRS_MESSAGE_LEN,
+    max_len: int = APRS_MSG_LEN,
     separator_char: str = " ",
     add_sep: bool = True,
     force_outgoing_unicode_messages: bool = False,
@@ -165,7 +172,6 @@ def make_pretty_aprs_messages(
         The length is dependent on whether the user has activated trailing
         message number information in the outgoing message or not.
         When activated, the message length is 59 - otherwise, it is 67.
-        _get_aprs_msg_len() auto-determines the appropriate value.
     separator_char: 'str'
         Separator that is going to be used for dividing the single
         elements that the user is going to add
@@ -248,7 +254,7 @@ def make_pretty_aprs_messages(
 
 
 def split_string_to_string_list(
-    message_string: str, max_len: int = APRS_MESSAGE_LEN
+    message_string: str, max_len: int = APRS_MSG_LEN
 ):
     """
     Force-split the string into chunks of max_len size and return a list of
@@ -263,7 +269,7 @@ def split_string_to_string_list(
         message string that is to be divided into 1..n strings of 'max_len"
         text length
     max_len: 'int':
-        Max length of the list's string len (67).
+        Default: 67; set to 59 in case of pagination
 
     Returns
     =======
