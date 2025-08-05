@@ -1,4 +1,22 @@
 #!/opt/local/bin/python
+#
+# send-aprs-message.py
+# Author: Joerg Schultze-Lutter, 2025
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
 import logging
 import aprslib
 import argparse
@@ -11,12 +29,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-aprsis_filter = ""
+# change these settings if necessary
 aprsis_server_name = "euro.aprs2.net"
 aprsis_server_port = 14580
 
-# Default value: 67. May change in case of activated pagination
-APRS_MSG_LEN = 67
+# Default APRS message lengths
+# 67 = standard APRS message
+# 59 = APRS message with numeric message ID
+APRS_MSG_LEN_NOTRAILING = 67
+APRS_MSG_LEN_TRAILING = 59
+
+# Our APRS message length
+APRS_MSG_LEN = APRS_MSG_LEN_NOTRAILING
+
 
 def get_command_line_params():
     """
@@ -33,7 +58,7 @@ def get_command_line_params():
 
     # Yes, quick and dirty this time - and I couldn't care less
     global APRS_MSG_LEN
-    
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -74,19 +99,21 @@ def get_command_line_params():
 
     args = parser.parse_args()
 
-    aprs_from_callsign = args.aprs_from_callsign.upper()
-    aprs_to_callsign = args.aprs_to_callsign.upper()
-    aprs_passcode = args.aprs_passcode
-    aprs_message = args.aprs_message
-    aprs_message_pagination = args.aprs_message_pagination
+    aprsis_from_callsign = args.aprs_from_callsign.upper()
+    aprsis_to_callsign = args.aprs_to_callsign.upper()
+    aprsis_passcode = args.aprs_passcode
+    aprsis_message = args.aprs_message
+    aprsis_message_pagination = args.aprs_message_pagination
 
     # change our global variable in case of active numeric pagination
-    APRS_MSG_LEN = 59 if aprs_message_pagination else 67
+    APRS_MSG_LEN = (
+        APRS_MSG_LEN_TRAILING if aprsis_message_pagination else APRS_MSG_LEN_NOTRAILING
+    )
 
     if len(aprs_from_callsign) > 0:
         # Check whether we have a call sign with or without SSID
         regex_string = r"\b^([A-Z0-9]{1,3}[0-9][A-Z0-9]{0,3})(-[A-Z0-9]{1,2})?$\b"
-        matches = re.search(pattern=regex_string, string=aprs_from_callsign)
+        matches = re.search(pattern=regex_string, string=aprsis_from_callsign)
         if not matches:
             raise argparse.ArgumentTypeError(
                 "Call sign must match a valid call sign format"
@@ -97,7 +124,7 @@ def get_command_line_params():
     if len(aprs_to_callsign) > 0:
         # Check whether we have a call sign with or without SSID
         regex_string = r"\b^([A-Z0-9]{1,3}[0-9][A-Z0-9]{0,3})(-[A-Z0-9]{1,2})?$\b"
-        matches = re.search(pattern=regex_string, string=aprs_to_callsign)
+        matches = re.search(pattern=regex_string, string=aprsis_to_callsign)
         if not matches:
             raise argparse.ArgumentTypeError(
                 "Call sign must match a valid call sign format"
@@ -105,13 +132,13 @@ def get_command_line_params():
     else:
         raise argparse.ArgumentTypeError("No FROM call sign provided")
 
-    if len(aprs_passcode) != 5:
+    if len(aprsis_passcode) != 5:
         raise argparse.ArgumentTypeError("APRS passcode must be 5 characters long")
     else:
-        if not aprs_passcode.isdigit():
+        if not aprsis_passcode.isdigit():
             raise argparse.ArgumentTypeError("APRS passcode must be a 5 digit string")
 
-    return aprs_from_callsign, aprs_passcode, aprs_message, aprs_message_pagination, aprs_to_callsign
+    return aprsis_from_callsign, aprsis_passcode, aprsis_message, aprsis_to_callsign
 
 
 def make_pretty_aprs_messages(
@@ -253,9 +280,7 @@ def make_pretty_aprs_messages(
     return destination_list
 
 
-def split_string_to_string_list(
-    message_string: str, max_len: int = APRS_MSG_LEN
-):
+def split_string_to_string_list(message_string: str, max_len: int = APRS_MSG_LEN):
     """
     Force-split the string into chunks of max_len size and return a list of
     strings. This function is going to be called if the string that the user
@@ -311,10 +336,10 @@ def send_aprs_message_list(
     myaprsis: aprslib.inet.IS,
     message_text_array: list,
     destination_call_sign: str,
+    source_call_sign: str,
     simulate_send: bool = True,
-    alias: str = "COAC",
     packet_delay: float = 10.0,
-    tocall: str = "APRS",
+    tocall: str = "APMPAD",
 ):
     """
     Send a pre-prepared message list to to APRS_IS
@@ -331,18 +356,20 @@ def send_aprs_message_list(
         is the user's call sign who has sent us the initial message)
     simulate_send: 'bool'
         If True: Prepare string but only send it to logger
-    alias: 'str'
-        Our APRS alias (COAC)
+    source_call_sign: 'str'
+        Our very own call sign
     packet_delay: 'float'
         Delay after sending out our APRS acknowledgment request
     tocall: 'str'
-        This bot uses the default TOCALL ("APRS")
+        This bot uses the default TOCALL ("APMPAD")
 
     Returns
     =======
     """
     for single_message in message_text_array:
-        stringtosend = f"{alias}>{tocall}::{destination_call_sign:9}:{single_message}"
+        stringtosend = (
+            f"{source_call_sign}>{tocall}::{destination_call_sign:9}:{single_message}"
+        )
         if not simulate_send:
             logger.debug(msg=f"Sending response message '{stringtosend}'")
             myaprsis.sendall(stringtosend)
@@ -351,28 +378,111 @@ def send_aprs_message_list(
         time.sleep(packet_delay)
 
 
+def finalize_pretty_aprs_messages(mylistarray: list) -> list:
+    """
+    Helper method which finalizes the prettified APRS messages
+    and triggers the addition of the trailing message numbers (if
+    activated by the user).
+
+    Parameters
+    ==========
+    mylistarray: 'list'
+        List of APRS messages
+
+    Returns
+    =======
+    listitem: 'list'
+        Either formatted list (if more than one list entry was present) or
+        the original list item
+    """
+    if APRS_MSG_LEN == APRS_MSG_LEN_TRAILING:
+        return format_list_with_enumeration(mylistarray=mylistarray)
+    else:
+        return mylistarray
 
 
+def format_list_with_enumeration(mylistarray: list) -> list:
+    """
+    Adds a trailing enumeration to the list if the user has activated this configuration in
+    the client's config file
 
+    Parameters
+    ==========
 
+    Returns
+    =======
+    listitem: 'list'
+        Either formatted list (if more than one list entry was present) or
+        the original list item
+    """
+
+    max_total_length = APRS_MSG_LEN_NOTRAILING
+    annotation_length = APRS_MSG_LEN_NOTRAILING - APRS_MSG_LEN_TRAILING
+    max_content_length = max_total_length - annotation_length
+
+    # check if we have more than 99 entries. We always truncate the list (just to be
+    # on the safe side) but whenever more than 99 entries were detected, we also supply
+    # the user with a warning message and notify him about the truncation
+    if len(mylistarray) > 99:
+        logger.warning(
+            msg="User has supplied list with more than 99 elements; truncating"
+        )
+        trimmed_listarray = mylistarray[:98]
+        trimmed_listarray.append("[message truncated]")
+    else:
+        trimmed_listarray = mylistarray
+    total = len(trimmed_listarray)
+
+    # now let's add the enumeration to the list - but only if we have
+    # more than one list item in our outgoing list
+    if len(trimmed_listarray) > 1:
+        formatted_list = []
+        for i, s in enumerate(trimmed_listarray, start=1):
+            annotation = f" ({i:02d}/{total:02d})"
+            truncated = s[:max_content_length]
+            padded = truncated.ljust(max_content_length)
+            final = padded + annotation
+            formatted_list.append(final)
+
+        return formatted_list
+    else:
+        # return the original list to the user
+        return trimmed_listarray
 
 
 if __name__ == "__main__":
+    (
+        aprs_from_callsign,
+        aprs_passcode,
+        aprs_message,
+        aprs_to_callsign,
+    ) = get_command_line_params()
 
-    aprsis_callsign, aprsis_passcode, aprsis_message = get_command_line_params()
-
-    AIS = aprslib.IS(aprsis_callsign, aprsis_passcode)
+    AIS = aprslib.IS(aprs_from_callsign, aprs_passcode)
     AIS.set_server(aprsis_server_name, aprsis_server_port)
-    #AIS.set_filter(aprsis_filter)
 
     AIS.connect(blocking=True)
     if AIS._connected == True:
         logger.info(
             msg=f"Established connection to APRS_IS: server={aprsis_server_name},"
-            f"port={aprsis_server_port},filter={aprsis_filter}"
-            f"APRS-IS User: {aprsis_callsign}, APRS-IS passcode: {aprsis_passcode}"
+            f"port={aprsis_server_port}, APRS-IS User: {aprs_from_callsign}, APRS-IS passcode: {aprs_passcode}"
         )
-        AIS.sendall(aprsis_message)
+
+        # prepare the outgoing APRS message list
+        output_message = make_pretty_aprs_messages(message_to_add=aprs_message)
+
+        # finalize the list whereas needed (e.g. in case the user has
+        # requested numeric pagination)
+        output_message = finalize_pretty_aprs_messages(mylistarray=output_message)
+
+        send_aprs_message_list(
+            myaprsis=AIS,
+            message_text_array=output_message,
+            destination_call_sign=aprs_to_callsign,
+            simulate_send=True,
+            source_call_sign=aprs_from_callsign,
+        )
+
         AIS.close()
     else:
         print("An error has occurred")
