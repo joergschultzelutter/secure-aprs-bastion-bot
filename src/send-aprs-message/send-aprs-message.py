@@ -31,7 +31,7 @@ def get_command_line_params():
         name of the configuration file
     """
 
-    # Yes, quick and dirty this time - and I don't care
+    # Yes, quick and dirty this time - and I couldn't care less
     global APRS_MSG_LEN
     
     parser = argparse.ArgumentParser()
@@ -51,6 +51,13 @@ def get_command_line_params():
     )
 
     parser.add_argument(
+        "--to-callsign",
+        dest="aprs_to_callsign",
+        type=str,
+        help="APRS TO callsign (receipient)",
+    )
+
+    parser.add_argument(
         "--message",
         dest="aprs_message",
         type=str,
@@ -63,13 +70,6 @@ def get_command_line_params():
         action="store_true",
         default=False,
         help="Add message number to outgoing APRS message(s)",
-    )
-
-    parser.add_argument(
-        "--to-callsign",
-        dest="aprs_to_callsign",
-        type=str,
-        help="APRS TO callsign (receipient)",
     )
 
     args = parser.parse_args()
