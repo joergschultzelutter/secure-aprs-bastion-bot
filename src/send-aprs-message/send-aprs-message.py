@@ -94,7 +94,7 @@ def get_command_line_params():
         dest="aprs_message_pagination",
         action="store_true",
         default=False,
-        help="Add message number to outgoing APRS message(s)",
+        help="Add message enumeration to each outgoing APRS message",
     )
 
     args = parser.parse_args()
