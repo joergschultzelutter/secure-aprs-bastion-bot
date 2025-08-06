@@ -468,31 +468,44 @@ if __name__ == "__main__":
         aprs_simulate_send
     ) = get_command_line_params()
 
-    AIS = aprslib.IS(aprs_from_callsign, aprs_passcode)
-    AIS.set_server(aprsis_server_name, aprsis_server_port)
+    # prepare the outgoing APRS message list
+    output_message = make_pretty_aprs_messages(message_to_add=aprs_message)
 
-    AIS.connect(blocking=True)
-    if AIS._connected == True:
-        logger.info(
-            msg=f"Established connection to APRS_IS: server={aprsis_server_name},"
-            f"port={aprsis_server_port}, APRS-IS User: {aprs_from_callsign}, APRS-IS passcode: {aprs_passcode}"
-        )
+    # finalize the list whereas needed (e.g. in case the user has
+    # requested numeric pagination)
+    output_message = finalize_pretty_aprs_messages(mylistarray=output_message)
 
-        # prepare the outgoing APRS message list
-        output_message = make_pretty_aprs_messages(message_to_add=aprs_message)
-
-        # finalize the list whereas needed (e.g. in case the user has
-        # requested numeric pagination)
-        output_message = finalize_pretty_aprs_messages(mylistarray=output_message)
-
+    # simulate server connection; dump our messages to stdout
+    # and exit afterwards
+    if aprs_simulate_send:
         send_aprs_message_list(
-            myaprsis=AIS,
+            myaprsis=None,
             message_text_array=output_message,
             destination_call_sign=aprs_to_callsign,
             simulate_send=aprs_aimulate_send,
             source_call_sign=aprs_from_callsign,
         )
-
-        AIS.close()
     else:
-        print("An error has occurred")
+        # Establish the connection to APRS-IS
+        AIS = aprslib.IS(aprs_from_callsign, aprs_passcode)
+        AIS.set_server(aprsis_server_name, aprsis_server_port)
+        AIS.connect(blocking=True)
+
+        # are we connected?
+        if AIS._connected == True:
+            logger.info(
+                msg=f"Established connection to APRS_IS: server={aprsis_server_name},"
+                f"port={aprsis_server_port}, APRS-IS User: {aprs_from_callsign}, APRS-IS passcode: {aprs_passcode}"
+            )
+    
+            send_aprs_message_list(
+                myaprsis=AIS,
+                message_text_array=output_message,
+                destination_call_sign=aprs_to_callsign,
+                simulate_send=aprs_aimulate_send,
+                source_call_sign=aprs_from_callsign,
+            )
+    
+            AIS.close()
+        else:
+            print("An error has occurred")
