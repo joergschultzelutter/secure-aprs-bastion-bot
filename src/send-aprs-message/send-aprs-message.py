@@ -23,9 +23,10 @@ import argparse
 from unidecode import unidecode
 import re
 import time
+import sys
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(module)s -%(levelname)s - %(message)s"
+    level=logging.DEBUG, format="%(asctime)s - %(module)s -%(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -65,6 +66,7 @@ def get_command_line_params():
         "--from-callsign",
         dest="aprs_from_callsign",
         type=str,
+        default="",
         help="APRS FROM callsign (sender)",
     )
 
@@ -72,20 +74,23 @@ def get_command_line_params():
         "--passcode",
         dest="aprs_passcode",
         type=str,
-        help="APRS passcode",
+        default="",
+        help="APRS passcode for the FROM callsign (sender)",
     )
 
     parser.add_argument(
         "--to-callsign",
         dest="aprs_to_callsign",
         type=str,
+        default="",
         help="APRS TO callsign (receipient)",
     )
 
     parser.add_argument(
-        "--message",
+        "--aprs-message",
         dest="aprs_message",
         type=str,
+        default="",
         help="APRS message",
     )
 
@@ -102,7 +107,7 @@ def get_command_line_params():
         dest="aprs_simulate_send",
         action="store_true",
         default=False,
-        help="Simulate sending of data to APRS-IS",
+        help="Simulate sending of data to APRS-IS (output will be made to the console)",
     )
 
     args = parser.parse_args()
@@ -119,41 +124,62 @@ def get_command_line_params():
         APRS_MSG_LEN_TRAILING if aprsis_message_pagination else APRS_MSG_LEN_NOTRAILING
     )
 
-    if len(aprs_from_callsign) > 0:
+    if len(aprsis_from_callsign) > 0:
         # Check whether we have a call sign with or without SSID
         regex_string = r"\b^([A-Z0-9]{1,3}[0-9][A-Z0-9]{0,3})(-[A-Z0-9]{1,2})?$\b"
         matches = re.search(pattern=regex_string, string=aprsis_from_callsign)
         if not matches:
-            raise argparse.ArgumentTypeError(
-                "Call sign must match a valid call sign format"
-            )
+            logger.error(msg="Call sign must match a valid call sign format")
+            sys.exit(0)
     else:
-        raise argparse.ArgumentTypeError("No FROM call sign provided")
+        logger.error(msg="No FROM call sign provided")
+        sys.exit(0)
 
-    if len(aprs_to_callsign) > 0:
+    if len(aprsis_to_callsign) > 0:
         # Check whether we have a call sign with or without SSID
         regex_string = r"\b^([A-Z0-9]{1,3}[0-9][A-Z0-9]{0,3})(-[A-Z0-9]{1,2})?$\b"
         matches = re.search(pattern=regex_string, string=aprsis_to_callsign)
         if not matches:
-            raise argparse.ArgumentTypeError(
-                "Call sign must match a valid call sign format"
-            )
+            logger.error(msg="Call sign must match a valid call sign format")
+            sys.exit(0)
     else:
-        raise argparse.ArgumentTypeError("No FROM call sign provided")
+        logger.error(msg="No FROM call sign provided")
+        sys.exit(0)
 
     if len(aprsis_passcode) != 5:
-        raise argparse.ArgumentTypeError("APRS passcode must be 5 characters long")
+        logger.error(msg="APRS passcode must be 5 characters long")
+        sys.exit(0)
     else:
         if not aprsis_passcode.isdigit():
-            raise argparse.ArgumentTypeError("APRS passcode must be a 5 digit string")
+            logger.error("APRS passcode must be a 5 digit string")
+            sys.exit(0)
+        else:
+            try:
+                aprsis_passcode_int = int(aprsis_passcode)
+            except ValueError:
+                logger.error(msg="APRS passcode must be a 5 digit string")
+                sys.exit(0)
+            if aprslib.passcode(aprsis_from_callsign) != aprsis_passcode_int:
+                logger.error(msg="APRS passcode is incorrect")
+                sys.exit(0)
 
-    return aprsis_from_callsign, aprsis_passcode, aprsis_message, aprsis_to_callsign, aprsis_simulate_send
+    if len(aprsis_message) < 1:
+        logger.error(msg="APRS message is empty")
+        sys.exit(0)
+
+    return (
+        aprsis_from_callsign,
+        aprsis_passcode,
+        aprsis_message,
+        aprsis_to_callsign,
+        aprsis_simulate_send,
+    )
 
 
 def make_pretty_aprs_messages(
     message_to_add: str,
+    max_len: int,
     destination_list: list = None,
-    max_len: int = APRS_MSG_LEN,
     separator_char: str = " ",
     add_sep: bool = True,
     force_outgoing_unicode_messages: bool = False,
@@ -289,7 +315,7 @@ def make_pretty_aprs_messages(
     return destination_list
 
 
-def split_string_to_string_list(message_string: str, max_len: int = APRS_MSG_LEN):
+def split_string_to_string_list(message_string: str, max_len: int):
     """
     Force-split the string into chunks of max_len size and return a list of
     strings. This function is going to be called if the string that the user
@@ -375,19 +401,20 @@ def send_aprs_message_list(
     Returns
     =======
     """
-    for single_message in message_text_array:
+    for index, single_message in enumerate(message_text_array, start=1):
         stringtosend = (
             f"{source_call_sign}>{tocall}::{destination_call_sign:9}:{single_message}"
         )
         if not simulate_send:
-            logger.debug(msg=f"Sending response message '{stringtosend}'")
+            logger.debug(msg=f"Sending APRS message '{stringtosend}'")
             myaprsis.sendall(stringtosend)
         else:
-            logger.debug(msg=f"Simulating response message '{stringtosend}'")
-        time.sleep(packet_delay)
+            logger.debug(msg=f"Simulating APRS message '{stringtosend}'")
+        if index < len(message_text_array):
+            time.sleep(packet_delay)
 
 
-def finalize_pretty_aprs_messages(mylistarray: list) -> list:
+def finalize_pretty_aprs_messages(mylistarray: list, max_len: int) -> list:
     """
     Helper method which finalizes the prettified APRS messages
     and triggers the addition of the trailing message numbers (if
@@ -404,7 +431,7 @@ def finalize_pretty_aprs_messages(mylistarray: list) -> list:
         Either formatted list (if more than one list entry was present) or
         the original list item
     """
-    if APRS_MSG_LEN == APRS_MSG_LEN_TRAILING:
+    if max_len == APRS_MSG_LEN_TRAILING:
         return format_list_with_enumeration(mylistarray=mylistarray)
     else:
         return mylistarray
@@ -465,15 +492,19 @@ if __name__ == "__main__":
         aprs_passcode,
         aprs_message,
         aprs_to_callsign,
-        aprs_simulate_send
+        aprs_simulate_send,
     ) = get_command_line_params()
 
     # prepare the outgoing APRS message list
-    output_message = make_pretty_aprs_messages(message_to_add=aprs_message)
+    output_message = make_pretty_aprs_messages(
+        message_to_add=aprs_message, max_len=APRS_MSG_LEN
+    )
 
     # finalize the list whereas needed (e.g. in case the user has
     # requested numeric pagination)
-    output_message = finalize_pretty_aprs_messages(mylistarray=output_message)
+    output_message = finalize_pretty_aprs_messages(
+        mylistarray=output_message, max_len=APRS_MSG_LEN
+    )
 
     # simulate server connection; dump our messages to stdout
     # and exit afterwards
@@ -482,7 +513,7 @@ if __name__ == "__main__":
             myaprsis=None,
             message_text_array=output_message,
             destination_call_sign=aprs_to_callsign,
-            simulate_send=aprs_aimulate_send,
+            simulate_send=aprs_simulate_send,
             source_call_sign=aprs_from_callsign,
         )
     else:
@@ -497,15 +528,15 @@ if __name__ == "__main__":
                 msg=f"Established connection to APRS_IS: server={aprsis_server_name},"
                 f"port={aprsis_server_port}, APRS-IS User: {aprs_from_callsign}, APRS-IS passcode: {aprs_passcode}"
             )
-    
+
             send_aprs_message_list(
                 myaprsis=AIS,
                 message_text_array=output_message,
                 destination_call_sign=aprs_to_callsign,
-                simulate_send=aprs_aimulate_send,
+                simulate_send=aprs_simulate_send,
                 source_call_sign=aprs_from_callsign,
             )
-    
+
             AIS.close()
         else:
             print("An error has occurred")
