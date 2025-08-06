@@ -97,6 +97,14 @@ def get_command_line_params():
         help="Add message enumeration to each outgoing APRS message",
     )
 
+    parser.add_argument(
+        "--simulate-send",
+        dest="aprs_simulate_send",
+        action="store_true",
+        default=False,
+        help="Simulate sending of data to APRS-IS",
+    )
+
     args = parser.parse_args()
 
     aprsis_from_callsign = args.aprs_from_callsign.upper()
@@ -104,6 +112,7 @@ def get_command_line_params():
     aprsis_passcode = args.aprs_passcode
     aprsis_message = args.aprs_message
     aprsis_message_pagination = args.aprs_message_pagination
+    aprsis_simulate_send = args.aprs_simulate_send
 
     # change our global variable in case of active numeric pagination
     APRS_MSG_LEN = (
@@ -138,7 +147,7 @@ def get_command_line_params():
         if not aprsis_passcode.isdigit():
             raise argparse.ArgumentTypeError("APRS passcode must be a 5 digit string")
 
-    return aprsis_from_callsign, aprsis_passcode, aprsis_message, aprsis_to_callsign
+    return aprsis_from_callsign, aprsis_passcode, aprsis_message, aprsis_to_callsign, aprsis_simulate_send
 
 
 def make_pretty_aprs_messages(
@@ -456,6 +465,7 @@ if __name__ == "__main__":
         aprs_passcode,
         aprs_message,
         aprs_to_callsign,
+        aprs_simulate_send
     ) = get_command_line_params()
 
     AIS = aprslib.IS(aprs_from_callsign, aprs_passcode)
@@ -479,7 +489,7 @@ if __name__ == "__main__":
             myaprsis=AIS,
             message_text_array=output_message,
             destination_call_sign=aprs_to_callsign,
-            simulate_send=True,
+            simulate_send=aprs_aimulate_send,
             source_call_sign=aprs_from_callsign,
         )
 
