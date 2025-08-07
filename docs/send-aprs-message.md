@@ -43,3 +43,30 @@ options:
 | `--aprs-message`               | Die eigentliche APRS-Nachricht.                                                                                                                                                      | `str`     | empty string  |
 | `--numeric-message-pagination` | __Optional__. When selected, the usable length of an APRS message is reduced to from 67 to 59 characters and message is assigned its own counter in return.                          | `bool`    | `False`       |
 | `--simulate-send`              | __Optional__ test option. When activated, outgoing messages are not sent to APRS-IS, but only displayed on the console.                                                              | `bool`    | `False`       |
+
+
+### Regular APRS messaging (67 usable characters)
+```
+python send-aprs-message.py --from-callsign=DF1JSL-1 --to-callsign=DF1JSL-2 --passcode=21922 --simulate-send --aprs-message=Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum 
+2025-08-07 12:07:02,733 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do'
+2025-08-07 12:07:12,738 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim'
+2025-08-07 12:07:22,741 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut'
+2025-08-07 12:07:32,745 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :aliquip ex ea commodo consequat. Duis aute irure dolor in'
+2025-08-07 12:07:42,748 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla'
+2025-08-07 12:07:52,749 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :pariatur. Excepteur sint occaecat cupidatat non proident, sunt in'
+2025-08-07 12:08:02,749 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :culpa qui officia deserunt mollit anim id est laborum'
+```
+
+### APRS messaging with active `--numeric-message-pagination` (59 usable characters per message)
+
+```
+python send-aprs-message.py --from-callsign=DF1JSL-1 --to-callsign=DF1JSL-2 --passcode=xxxxx --simulate-send --aprs-message=Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum --numeric-message-pagination 
+2025-08-07 12:02:49,689 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :Lorem ipsum dolor sit amet, consectetur adipiscing elit,    (01/08)'
+2025-08-07 12:02:59,694 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :sed do eiusmod tempor incididunt ut labore et dolore magna  (02/08)'
+2025-08-07 12:03:09,695 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :aliqua. Ut enim ad minim veniam, quis nostrud exercitation  (03/08)'
+2025-08-07 12:03:19,696 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :ullamco laboris nisi ut aliquip ex ea commodo consequat.    (04/08)'
+2025-08-07 12:03:29,699 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :Duis aute irure dolor in reprehenderit in voluptate velit   (05/08)'
+2025-08-07 12:03:39,702 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :esse cillum dolore eu fugiat nulla pariatur. Excepteur sint (06/08)'
+2025-08-07 12:03:49,706 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :occaecat cupidatat non proident, sunt in culpa qui officia  (07/08)'
+2025-08-07 12:03:59,711 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :deserunt mollit anim id est laborum                         (08/08)'
+```
