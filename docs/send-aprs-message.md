@@ -1,6 +1,9 @@
 # `send-aprs-message.py`
 
-This program is a Frankenstein version of multiple APRS “send message” routines from the [core-aprs-client](https://github.com/joergschultzelutter/core-aprs-client). Its sole purpose is to provide the user with a simple way to send multi-line APRS messages (read: content longer tan 67 characters) — which may be necessary after restarting your server, for example. For notification targets other than APRS multi-messages _or_ APRS messages not longer than 67 characters, I recommend using the message library [apprise](https://github.com/caronc/apprise) by Chris Caron.
+This program is a Frankenstein'ed version of multiple APRS “send message” routines from the [core-aprs-client](https://github.com/joergschultzelutter/core-aprs-client). Its sole purpose is to provide the user with a simple way to send _multi_-line APRS messages (read: content longer tan 67 characters) — which may be necessary after restarting your server, for example. For notification targets other than APRS multi-messages _or_ APRS messages not longer than 67 characters, I recommend using the message library [apprise](https://github.com/caronc/apprise) by Chris Caron.
+
+>[!NOTE]
+>The format of the message must be limited to content in ASCII 7-bit encoding.
 
 ## Usage
 
@@ -29,3 +32,14 @@ options:
                         made to the console)
 
 ```
+
+## Description
+
+| Parameter                      | Description                                                                                                                                                                          | Data Type | Default       |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ------------- |
+| `--from-callsign`              | Our call sign from which we send the message                                                                                                                                         | `str`     | empty string  |
+| `--passcode`                   | 5-digit numeric APRS-IS passcode                                                                                                                                                     | `str`     | empty string  |
+| `--to-callsign`                | The destination call sign to which we send the message                                                                                                                               | `str`     | empty string  |
+| `--aprs-message`               | Die eigentliche APRS-Nachricht.                                                                                                                                                      | `str`     | empty string  |
+| `--numeric-message-pagination` | __Optional__. When selected, the usable length of an APRS message is reduced to 59 characters. Each message is assigned its own counter in return.                                   | `bool`    | `False`       |
+| `--simulate-send`              | __Optional__ test option. When activated, outgoing messages are not sent to APRS-IS, but only displayed on the console.                                                              | `bool`    | `False`       |
