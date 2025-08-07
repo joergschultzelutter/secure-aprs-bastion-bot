@@ -2,7 +2,11 @@
 
 Manage your IT infrastructure via APRS messaging (to a certain extent).
 
-I recently went on a multi-day hiking trip and discovered that a program on one of my home servers had crashed due to an error. I had my cell phone with me and was able to access the computer via ssh and restart the program, but there are still areas in my country where there is _zero_ cell phone reception (kudos to the German government). So what to do in such a case? In most of these cases where I am stuck in the wilderness without no cell phone reception, there would still be an APRS-enabled repeater nearby, and so the idea was born to create an APRS-enabled bastion host that would give me access to my internal IT infrastructure in case of an emergency. `secure-aprs-bastion-bot` tries to fill this gap.
+## Introduction
+
+I recently went on a multi-day hiking trip and discovered that a program on one of my home servers had crashed due to an error. I had my cell phone with me and was able to access the computer via ssh and restart the program, but there are still areas in my country where there is _zero_ cell phone reception (kudos to the German government). 
+
+So what to do in such a case? In most of these cases where I am stuck in the wilderness without no cell phone reception, there would still be an APRS-enabled repeater nearby, and so the idea was born to create an APRS-enabled bastion host that would give me access to my internal IT infrastructure in the event of cell phone network unavailability. `secure-aprs-bastion-bot` aims to support this use case.
 
 ## Features
 
@@ -16,9 +20,15 @@ I recently went on a multi-day hiking trip and discovered that a program on one 
   - The configuration can be done at the call sign plus SSID level or exclusively at the call sign level without SSID. In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit their TOTP token for authorization and authentication.
 - Program execution:
   - The programs to be executed can be started either synchronously or asynchronously.
-    - Synchronous execution first starts the desired script and then sends an APRS confirmation to the user. This is the default behavior of `secure-aprs-bastion-bot`
-    - Asynchronous processing first sends the APRS confirmation to the user and then starts the desired program as a separate process. It does not wait for the program to finish executing. Such processing may be necessary, for example, when restarting a server.
-  - After completion of such a program sequence, regardless of its execution type (synchronous or asynchronous), an APRS message can be sent back to the caller as part of the user script.
+    - Synchronous execution first executes the desired script. After script termination,  `secure-aprs-bastion-bot` sends an APRS confirmation to the user. This is the default behavior.
+    - Asynchronous processing first sends the APRS confirmation to the user and _then_ starts the desired program as a separate process.  `secure-aprs-bastion-bot` will _not_ wait for the program to finish executing. Such processing may be necessary, for example, when restarting a server.
+  - After completion of such a program sequence, regardless of its execution type (synchronous or asynchronous), an APRS message can be sent back to the caller as part of the user script (`send-aprs-message.py`). Alternatively, other tools such as [Apprise](https://github.com/caronc/apprise) can be used.
+
+# Program-specific documentation
+
+- secure-aprs-bastion-bot
+- configure.py
+- send-aprs-message.py
 
 ## First steps
 
@@ -55,7 +65,7 @@ Example 1 - `command-code` with optional parameters
 | `123456reboot debmu41 5` | `123456`    | `reboot`         | `DF1JSL-1`  | `debmu41`  | `5`  |      | n/a  |
 
 > [!TIP]
-> tl;dr: A user always sends the `--command-code` as an APRS message to the `secure-aprs-bastion-bot`. This determines the `--command-code` and any optional parameters from the message, identifies the corresponding `--command-string`, replaces the placeholders for the optional parameters, and then executes the `--command-string`.
+> tl;dr: A user always sends the `--command-code` as an APRS message to the `secure-aprs-bastion-bot`. The bot determines the `--command-code` and any optional parameters from the message, identifies the corresponding `--command-string`, replaces the placeholders for the optional parameters, and then executes the modified `--command-string`.
 
 To define placeholders for the optional parameters in the `--command-string`, the following conventions apply:
 - `$0` ALWAYS corresponds to the call sign that sent the initial message to `secure-aprs-bastion-bot`.
@@ -73,9 +83,9 @@ These parameters can be stored in the corresponding `command-string` when settin
 
 The setup for `--command-code`and `--command-string` in the program`s configuration file could then look as follows:
 
-| `--command-code` | `--command-string`                           |
-|------------------|----------------------------------------------|
-| `reboot`         | `source ./scripts/server-reboot.sh $2 $1 $0` |
+| `--command-code` | `--command-string` (as stored in the config file) |
+|------------------|---------------------------------------------------|
+| `reboot`         | `source ./scripts/server-reboot.sh $2 $1 $0`      |
 
 First, `secure-aprs-bastion-bot` replaces the placeholders in the string with their actual values:
 
@@ -86,15 +96,15 @@ First, `secure-aprs-bastion-bot` replaces the placeholders in the string with th
 The command of the edited `--command-string` is then executed by `secure-aprs-bastion-bot`.
 
 > [!CAUTION]
-> You should always create a dedicated script for each keyword, which serves a single predefined purpose. Creating a free text keyword, in which the _entire_ code sequence to be executed is transmitted via APRS message, is technically possible, but is not recommended.
+> You should always create a dedicated script for each keyword, which serves a _single predefined purpose_. Creating a free text keyword, in which the _entire_ command line sequence to be executed is transmitted via APRS message, is technically possible, but is not recommended.
 
 ## FAQ
 
 - Q: _Why didn't you include this functionality in your other APRS bots, such as [mpad](https://www.github.com/joergschultzelutter/mpad)?_
 - A: `secure-aprs-bastion-bot` does not have a magic wand to grant itself extended user rights. So if you intend to use the APRS bot to implement a `restart` command for your server, `secure-aprs-bastion-bot` must also run with the appropriate user rights (i.e., as a privileged user). Additionally, you also might want to refrain from broadcasting APRS bulletins and/or your bot's location data. These are the main reasons why I created a new APRS bot (rather than adding these functions to one of my existing APRS bots).
 
-- Q: _Why is it recommended to create dedicated scripts and only use these? Wouldn't it be easier to transfer the whole command line as free text?_
-- A: Sure you can. Create a corresponding `--command-code` and fill its associated `--command-string` _exclusively_ with free text parameters (`$1` .. `$9`). You can also drive your car at 200 km/h towards a rock face without wearing a seat belt, swim in shark-infested waters, or jump out of an airplane without a parachute. All of these options carry a very real risk of ending very badly.
-
 - Q: _Tell me more about the TOTP codes and their validity._
-- A: All TOTP codes can only be used *once*, regardless of their validity period (30 seconds to 5 minutes). This is to prevent TOTP codes with a long validity period from being misused by another party. A TOTP code can therefore only be used to execute a *single* `--command-code`. If several `--command-code`s are to be executed, a separate TOTP code must be provided for each one.
+- A: All TOTP codes can only be used *once*, regardless of their validity period (30 seconds to 5 minutes). This is to prevent TOTP codes with a long validity period from being misused by another party. A TOTP code can therefore only be used to execute a *single* `--command-code`. If several `--command-code`s are to be executed, a separate TOTP code must be provided for each one. The validity period of TOTP codes can be defined between 30 seconds and 5 minutes; this setting is made once when the user account is created (`--add-user`) and can be different for each user. Depending on the transmission time of an APRS message from the radio device via APRS-IS to the `secure-aprs-bastion-bot`, it is recommended to adjust the default setting of 30 seconds individually for each user.
+
+- Q: _Why is it recommended to create dedicated scripts and only use these? Wouldn't it be easier to transfer the whole command line sequence as free text?_
+- A: Sure you can. Create a corresponding `--command-code` and fill its associated `--command-string` _exclusively_ with free text parameters (`$1` .. `$9`). You can also drive your car at 200 km/h towards a rock face without wearing a seat belt, swim in shark-infested waters, or jump out of an airplane without a parachute. All of these options carry a very real risk of ending very badly. Keep in mind that you would be transmitting sensitive data such as user credentials via an unsecured clear-text transmission media (APRS).
