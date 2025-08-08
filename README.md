@@ -18,7 +18,7 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 - User account and command setup:
   - The configuration data is set up and tested using a configuration program provided (`configure.py`).
   - The configuration can be done at the call sign plus SSID level _or_ exclusively at the call sign level without SSID (base call sign). In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit the base call sign's TOTP token for authorization and authentication.
-  - When configuring the base call sign, it is also not necessary to configure all other call signs with SSID individually. The prerequisite for using this configuration is, of course, the use of the TOTP token of the base call sign. Further details can be found in the [configure.py](docs/configure.py) program documentation.
+  - When configuring the base call sign, it is also not necessary to configure all other call signs with SSID individually. The prerequisite for using this configuration is, of course, the use of the TOTP token of the base call sign. Further details can be found in the [configure.py](docs/configure.md) program documentation.
 - Program execution:
   - The programs to be executed can be started either synchronously or asynchronously.
     - Synchronous execution first executes the desired script. After script termination,  `secure-aprs-bastion-bot` sends an APRS confirmation to the user. This is the default behavior.
@@ -28,8 +28,8 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 # Program-specific documentation
 
 - [secure-aprs-bastion-bot](docs/secure-aprs-bastion-bot.md)
-- [configure.py](docs/configure.py)
-- [send-aprs-message.py](docs/send-aprs-message.py)
+- [configure.py](docs/configure.md)
+- [send-aprs-message.py](docs/send-aprs-message.md)
 
 ## First steps
 
