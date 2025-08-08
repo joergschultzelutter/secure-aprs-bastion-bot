@@ -10,11 +10,11 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 
 ## Features
 
-- Control of programs using predefined keywords (`--command-code`) and scripts (`--command-script`). The user is responsible for creating these individual scripts.
+- Control of programs using predefined keywords (`--command-code`) and scripts (`--command-script`). **The user is responsible for creating these individual scripts.**
 - In addition to transferring the call sign of the incoming message, optional parameters such as the name of a server can be transferred as part of the APRS message. Up to 9 optional parameters are supported.
-- Authorization and authentication:
+- Authorization, authentication, and security:
   - Executable programs are assigned locally per call sign; i.e., programs assigned to the call sign `DF1ABC` cannot be used by `DF1XYZ` (and vice versa).
-  - `secure-aprs-bastion-bot` supports one-time passwords (TOTP). These are defined when setting up the user configuration and can be defined with a validity of 30 seconds to 5 minutes. In addition to the duplicate check of the actual APRS message, an additional TOTP duplicate check is performed. This check prevents one-time passwords from being used multiple times during their validity period.
+  - `secure-aprs-bastion-bot` requires one-time passwords (TOTP) which are individual to each authenticated / configured user. The secrets for these tokens are defined when setting up the user configuration and can be configured with a validity of 30 seconds to 5 minutes. In addition to the duplicate check of the actual APRS message, an additional TOTP/callsign duplicate check is performed. This check prevents one-time passwords from being used multiple times during their validity period, effectively preventing hi-jacking and misuse of the token in question as best as possible over an unsecured plain-text APRS connection.
 - Setup:
   - The configuration data is set up and tested using a configuration program provided (`configure.py`).
   - The configuration can be done at the call sign plus SSID level or exclusively at the call sign level without SSID. In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit the SSID-less TOTP token for authorization and authentication.
