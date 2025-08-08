@@ -17,23 +17,23 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
   - `secure-aprs-bastion-bot` supports one-time passwords (TOTP). These are defined when setting up the user configuration and can be defined with a validity of 30 seconds to 5 minutes. In addition to the duplicate check of the actual APRS message, an additional TOTP duplicate check is performed. This check prevents one-time passwords from being used multiple times during their validity period.
 - Setup:
   - The configuration data is set up and tested using a configuration program provided (`configure.py`).
-  - The configuration can be done at the call sign plus SSID level or exclusively at the call sign level without SSID. In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit their TOTP token for authorization and authentication.
+  - The configuration can be done at the call sign plus SSID level or exclusively at the call sign level without SSID. In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit the SSID-less TOTP token for authorization and authentication.
 - Program execution:
   - The programs to be executed can be started either synchronously or asynchronously.
     - Synchronous execution first executes the desired script. After script termination,  `secure-aprs-bastion-bot` sends an APRS confirmation to the user. This is the default behavior.
     - Asynchronous processing first sends the APRS confirmation to the user and _then_ starts the desired program as a separate process.  `secure-aprs-bastion-bot` will _not_ wait for the program to finish executing. Such processing may be necessary, for example, when restarting a server.
-  - After completion of such a program sequence, regardless of its execution type (synchronous or asynchronous), an APRS message can be sent back to the caller as part of the user script (`send-aprs-message.py`). Alternatively, other tools such as [Apprise](https://github.com/caronc/apprise) can be used.
+  - After completion of such a program sequence, regardless of its execution type (synchronous or asynchronous), an APRS message can be sent back to the caller as part of the user script and a supporting Python script (`send-aprs-message.py`). Alternatively, other recommended tools such as [Apprise](https://github.com/caronc/apprise) can be used.
 
 # Program-specific documentation
 
-- secure-aprs-bastion-bot
-- configure.py
-- send-aprs-message.py
+- [secure-aprs-bastion-bot](docs/secure-aprs-bastion-bot.md)
+- [configure.py](docs/configure.py)
+- [send-aprs-message.py](docs/send-aprs-message.py)
 
 ## First steps
 
 - Clone this repository
-- `pip install -r requirements.txt`
+- `pip install -r requirements.txt` (or use the `requirements.txt` file from the respective project's sub directory in case you just want to install a single program)
 - Configure the bot`s configuration file:
   - run [configure.py](docs/configure.md) and create at least one user account (`--add-user`)
   - run [configure.py](docs/configure.md) again and create at least one `--command-code` / `--command-string` relationship entry (`--add-command`)
