@@ -24,6 +24,9 @@ from unidecode import unidecode
 import re
 import time
 import sys
+import subprocess
+import platform
+
 
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s - %(module)s -%(levelname)s - %(message)s"
@@ -420,7 +423,7 @@ def send_aprs_message_list(
         else:
             logger.debug(msg=f"Simulating APRS message '{stringtosend}'")
         # In case of remaining messages, apply the user sleep period
-        # otherwise, let's wait
+        # otherwise, let's wait just one sec
         if index < len(message_text_array):
             time.sleep(packet_delay)
         else:
@@ -497,6 +500,50 @@ def format_list_with_enumeration(mylistarray: list) -> list:
     else:
         # return the original list to the user
         return trimmed_listarray
+
+
+def execute_program(command: str | list, wait_for_completion: bool = True):
+    """
+    Executes an external program
+
+    Parameters
+    ==========
+    command: str or list
+        single command or a command with the list of arguments
+    wait_for_completion: 'bool'
+        True = wait until external program completes its execution (default)
+        False = Do not wait but start external program as background job
+
+    Returns
+    =======
+        subprocess.Popen or int:   if wait_for_completion==False: return POpen object
+                                   if wait_for_completion==True: return program's return code
+                                   Returns None in case of error
+    """
+    try:
+        if platform.system() == "Windows":
+            process = subprocess.Popen(command, shell=True)
+        else:
+            if isinstance(command, str):
+                command_list = command.split()
+                process = subprocess.Popen(command_list)
+            elif isinstance(command, list):
+                process = subprocess.Popen(command)
+            else:
+                raise ValueError("Command must either be of type 'str' or 'list'")
+
+        if wait_for_completion:
+            return_code = process.wait()
+            return return_code
+        else:
+            return process
+
+    except FileNotFoundError:
+        logger.debug(f"Error: Command '{command}' not found")
+        return None
+    except Exception as e:
+        logger.debug(f"General error has occurred: {e}")
+        return None
 
 
 if __name__ == "__main__":
