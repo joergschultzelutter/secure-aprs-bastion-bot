@@ -374,6 +374,7 @@ def send_aprs_message_list(
     source_call_sign: str,
     simulate_send: bool = True,
     packet_delay: float = 10.0,
+    packet_delay_last_message: float = 1.0,
     tocall: str = "APMPAD",
 ):
     """
@@ -395,23 +396,35 @@ def send_aprs_message_list(
         Our very own call sign
     packet_delay: 'float'
         Delay after sending out our APRS acknowledgment request
+        Used when there are still remaining messages
+    packet_delay_last_message: 'float'
+        Delay after sending out our APRS acknowledgment request
+        Used when there are no remaining messages
     tocall: 'str'
         This bot uses the default TOCALL ("APMPAD")
 
     Returns
     =======
     """
+
+    # Send the message list
     for index, single_message in enumerate(message_text_array, start=1):
+        # Build our output string
         stringtosend = (
             f"{source_call_sign}>{tocall}::{destination_call_sign:9}:{single_message}"
         )
+        # Check if we want to send the data for real or just perform an output to console
         if not simulate_send:
             logger.debug(msg=f"Sending APRS message '{stringtosend}'")
             myaprsis.sendall(stringtosend)
         else:
             logger.debug(msg=f"Simulating APRS message '{stringtosend}'")
+        # In case of remaining messages, apply the user sleep period
+        # otherwise, let's wait
         if index < len(message_text_array):
             time.sleep(packet_delay)
+        else:
+            time.sleep(packet_delay_last_message)
 
 
 def finalize_pretty_aprs_messages(mylistarray: list, max_len: int) -> list:
