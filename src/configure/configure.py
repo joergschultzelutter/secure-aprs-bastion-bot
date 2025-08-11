@@ -34,11 +34,15 @@ import logging
 import yaml
 import re
 import time
+import platform
+import subprocess
 
-if sys.platform.startswith("win"):
+if platform.system() == "Windows":
     import msvcrt
 else:
     import select
+    import termios
+    import tty
 
 # Set up the global logger variable
 logging.basicConfig(
