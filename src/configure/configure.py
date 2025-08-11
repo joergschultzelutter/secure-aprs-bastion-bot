@@ -49,7 +49,7 @@ logger = logging.getLogger(__name__)
 
 def aprs_parameter_check(aprs_parameter):
     if " " in aprs_parameter:
-        aprs_parameter = f('"{aprs_parameter}"')
+        aprs_parameter = 'f"{aprs_parameter}"'
     return aprs_parameter
 
 
@@ -1168,6 +1168,120 @@ def del_cmd(configfile: str, callsign: str, command_code: str):
     return success
 
 
+def execute_program(command: str | list, wait_for_completion: bool = True):
+    """
+    Executes an external program
+
+    Parameters
+    ==========
+    command: str or list
+        single command or a command with the list of arguments
+    wait_for_completion: 'bool'
+        True = wait until external program completes its execution (default)
+        False = Do not wait but start external program as background job
+
+    Returns
+    =======
+        subprocess.Popen or int:   if wait_for_completion==False: return POpen object
+                                   if wait_for_completion==True: return program's return code
+                                   Returns None in case of error
+    """
+    try:
+        if platform.system() == "Windows":
+            process = subprocess.Popen(command, shell=True)
+        else:
+            if isinstance(command, str):
+                command_list = command.split()
+                process = subprocess.Popen(command_list)
+            elif isinstance(command, list):
+                process = subprocess.Popen(command)
+            else:
+                raise ValueError("Command must either be of type 'str' or 'list'")
+
+        if wait_for_completion:
+            return_code = process.wait()
+            return return_code
+        else:
+            return process
+
+    except FileNotFoundError:
+        logger.debug(f"Error: Command '{command}' not found")
+        return None
+    except Exception as e:
+        logger.debug(f"General error has occurred: {e}")
+        return None
+
+
+def wait_or_keypress(timeout_seconds: float) -> bool:
+    """
+    Waits a defined number of seconds until key press is pressed or until timeout is reached.
+
+    Parameters
+    ==========
+    timeout_seconds: float
+        our timeout in seconds
+
+    Returns
+    =======
+    key_pressed: bool
+        True if the keypress was pressed, False otherwise
+    """
+    key_pressed = threading.Event()
+
+    # Detect our environment
+    system = platform.system()
+    has_tty = sys.stdin.isatty()
+    if not has_tty:
+        logger.warning(
+            msg="IDE/Piped-mode detected; you need to press any key and confirm this setting with Enter"
+        )
+
+    def key_listener():
+        if not has_tty:
+            try:
+                _ = input()  # Enter required for IDE/Piped-mode input
+                key_pressed.set()
+            except:
+                pass
+            return
+
+        if system == "Windows":
+            import msvcrt
+
+            while not key_pressed.is_set():
+                if msvcrt.kbhit():
+                    msvcrt.getch()  # buffer read
+                    key_pressed.set()
+                time.sleep(0.01)
+        else:
+            import select
+            import termios
+            import tty
+
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            try:
+                tty.setcbreak(fd)  # unfilterd entry
+                while not key_pressed.is_set():
+                    dr, _, _ = select.select([sys.stdin], [], [], 0.01)
+                    if dr:
+                        sys.stdin.read(1)  # buffer read
+                        key_pressed.set()
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+    listener_thread = threading.Thread(target=key_listener, daemon=True)
+    listener_thread.start()
+
+    start_time = time.time()
+    while time.time() - start_time < timeout_seconds:
+        if key_pressed.is_set():
+            return True
+        time.sleep(0.01)
+
+    return key_pressed.is_set()
+
+
 if __name__ == "__main__":
     (
         sac_configfile,
@@ -1273,10 +1387,12 @@ if __name__ == "__main__":
                 logger.info(
                     msg=f"Command '{sac_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}'"
                 )
-                logger.info(msg="Replacing potential APRS parameters in the command string.")
+                logger.info(
+                    msg="Replacing potential APRS parameters in the command string."
+                )
 
                 # Replace the callsign
-                command_string = command_string.replace("$0",sac_callsign)
+                command_string = command_string.replace("$0", sac_callsign)
                 for count, item in enumerate(sac_aprs_test_arguments, start=1):
                     command_string = command_string.replace(f"${count}", item)
                 logger.info(f"final command_string: '{command_string}'")
