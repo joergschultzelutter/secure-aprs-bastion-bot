@@ -51,12 +51,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def aprs_parameter_check(aprs_parameter):
-    if " " in aprs_parameter:
-        aprs_parameter = 'f"{aprs_parameter}"'
-    return aprs_parameter
-
-
 def ttl_check(ttl_value):
     """
     Helper function for checking TTL
@@ -243,7 +237,7 @@ def get_command_line_params_config():
         "--aprs-test-arguments",
         nargs="*",
         dest="sac_aprs_test_arguments",
-        type=aprs_parameter_check,
+        type=str,
         help="For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --test-command-code/--execute-command-code",
     )
 
