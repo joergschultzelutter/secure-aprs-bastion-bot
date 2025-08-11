@@ -65,7 +65,7 @@ options:
 | `--command-string`       | Associated with `--command-code`. This is a representation of the actual command that is going to get executed.                                                                       | `str`  | `<none>`          |
 | `--launch-as-subprocess` | When specified, the bot will NOT wait for the `--command-string`'s program execution. In addition, the APRS confirmation will be sent to the user _prior_ to the program's execution. | `bool` | `False`           |
 | `--ttl`                  | TOTP TTL value in seconds (30..300)                                                                                                                                                   | `int`  | `30`              |
-| `--aprs-test-arguments`  | Used in combination with either `--test-totp-code` or `--execute-totp-code`. Simulates parameter input from an incoming APRS message. 0..9 parameters are supported                   | `str`  | `[]` (empty list) |
+| `--aprs-test-arguments`  | Used in combination with either `--test-totp-code` or `--execute-totp-code`. Simulates parameter input `$1`..`$9` from an incoming APRS message. 0..9 parameters are supported        | `str`  | `[]` (empty list) |
 
 ## Commands
 
