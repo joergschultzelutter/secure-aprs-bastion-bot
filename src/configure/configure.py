@@ -36,6 +36,7 @@ import re
 import time
 import platform
 import subprocess
+import threading
 
 if platform.system() == "Windows":
     import msvcrt
