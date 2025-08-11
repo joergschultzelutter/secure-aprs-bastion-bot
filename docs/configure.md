@@ -5,7 +5,7 @@ This program is used for the creation of the bot's user/command YAML configurati
 - Create / Update (`--add-user`) / Delete (`--delete-user`) a user entry along with its associated TOTP token
 - Create / Update (`--add-command`) / Delete (`--delete-command`) a user's command code / command line entries
 - Test the TOTP token against the user's TOTP secret (`--test-totp-code`)
-- Retrieve and/or execute a user / command code combination (`--test-command-code`, `--execute-command-code`))
+- Retrieve and/or execute a user / command code combination (`--test-command-code`, `--execute-command-code`)
 
 The APRS bot will use the resulting configuration file. Note that `configure.py` acts as both configuration tool and gatekeeper / validator; `secure-aprs-bastion-bot` itself assumed that the configuration file structure is valid and hardly performs any validation checks. You can apply manual changes to the configuration file - but if it breaks, you get to keep both pieces.  
 
