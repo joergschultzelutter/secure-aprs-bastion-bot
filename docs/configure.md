@@ -26,7 +26,8 @@ usage: configure.py     [-h]
                         [--command-code SAC_COMMAND_CODE]
                         [--command-string SAC_COMMAND_STRING] 
                         [--launch-as-subprocess] 
-                        [--ttl SAC_TTL]
+                        [--ttl SAC_TTL] 
+                        [--aprs-test-arguments [SAC_APRS_TEST_ARGUMENTS ...]]
 
 options:
   -h, --help            show this help message and exit
@@ -52,20 +53,22 @@ options:
   --launch-as-subprocess
                         If specified: launch the command as a subprocess and do not wait for its completion
   --ttl SAC_TTL         TTL value in seconds (default: 30; range: 30-300)
+  --aprs-test-arguments [SAC_APRS_TEST_ARGUMENTS ...]
+                        For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --test-command-code/--execute-command-code
 ```
 
 ## Parameters
 
-| Parameter                | Description                                                                                                                                                                                                                                   | Type   | Default            |
-|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|--------------------|
-| `--configfile`           | External config file. `configure.py` will create this file if it does not exist.                                                                                                                                                              | `str`  | `sabb_config.yml`  |
-| `--callsign`             | User's call sign, with or without SSID                                                                                                                                                                                                        | `str`  | `<none>`           |
-| `--totp-code`            | Six-digit TOTP code                                                                                                                                                                                                                           | `str`  | `<none>`           |
-| `--command-code`         | Command code alias. This is the code that the user will send in his APRS message. Associated with `--command-string`                                                                                                                          | `str`  | `<none>`           |
-| `--command-string`       | Associated with `--command-code`. This is a representation of the actual command that is going to get executed.                                                                                                                               | `str`  | `<none>`           |
-| `--launch-as-subprocess` | When specified, the bot will NOT wait for the `--command-string`'s program execution. In addition, the APRS confirmation will be sent to the user _prior_ to the program's execution.                                                         | `bool` | `False`            |
-| `--ttl`                  | TOTP TTL value in seconds (30..300)                                                                                                                                                                                                           | `int`  | `30`               |
-| `--aprs-test-arguments`  | Used in combination with either `--test-totp-code` or `--execute-totp-code`. Simulates the parameter input `$1`..`$9` from an incoming APRS message. 0..9 parameters are supported. Input Parameter `$0` always contains the user's callsign. | `str`  | `[]` (empty list)  |
+| Parameter                | Description                                                                                                                                                                                                                                                                  | Type   | Default            |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|--------------------|
+| `--configfile`           | External config file. `configure.py` will create this file if it does not exist.                                                                                                                                                                                             | `str`  | `sabb_config.yml`  |
+| `--callsign`             | User's call sign, with or without SSID                                                                                                                                                                                                                                       | `str`  | `<none>`           |
+| `--totp-code`            | Six-digit TOTP code                                                                                                                                                                                                                                                          | `str`  | `<none>`           |
+| `--command-code`         | Command code alias. This is the code that the user will send in his APRS message. Associated with `--command-string`                                                                                                                                                         | `str`  | `<none>`           |
+| `--command-string`       | Associated with `--command-code`. This is a representation of the actual command that is going to get executed.                                                                                                                                                              | `str`  | `<none>`           |
+| `--launch-as-subprocess` | When specified, the bot will NOT wait for the `--command-string`'s program execution. In addition, the APRS confirmation will be sent to the user _prior_ to the program's execution.                                                                                        | `bool` | `False`            |
+| `--ttl`                  | TOTP TTL value in seconds (`30`..`300`). Default: 30 (seconds)                                                                                                                                                                                                               | `int`  | `30`               |
+| `--aprs-test-arguments`  | Used in combination with either `--test-totp-code` or `--execute-totp-code`. Simulates the parameter input `$1`..`$9` from an incoming APRS message. 0..9 parameters are supported. Parameter separator = space. Input Parameter `$0` _always_ contains the user's callsign. | `str`  | `[]` (empty list)  |
 
 ## Commands
 
@@ -76,8 +79,8 @@ options:
 | `--add-command`          | Adds (or updates) a command code/command string for a user to the configuration file                             | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
 | `--delete-command`       | Deletes a command code for a user from the configuration file                                                    | `--callsign`,`--command-code`                                             |
 | `--test-totp-code`       | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
-| `--test-command-code`    | Uses a `--callsign`/`--command-code` combination and returns the associated `--command-string` (whereas present) | `--callsign`,`--totp-code`, `--command-code`                              |
-| `--execute-command-code` | Same as `--test-command-code`, but actually executes the associated `--command-string` setting                   | `--callsign`,`--totp-code`, `--command-code`                              |
+| `--test-command-code`    | Uses a `--callsign`/`--command-code` combination and returns the associated `--command-string` (whereas present) | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| `--execute-command-code` | Same as `--test-command-code`, but actually executes the associated `--command-string` setting                   | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
 
 ## Usage
 

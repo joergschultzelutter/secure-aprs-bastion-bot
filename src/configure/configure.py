@@ -266,18 +266,16 @@ def get_command_line_params_config():
     # Run some basic plausibility checks
 
     if len(sac_aprs_test_arguments) > 9:
-        raise argparse.ArgumentTypeError(
-            "Too many APRS arguments for testing purposes (0..9)"
-        )
+        logger.error(msg="Too many APRS arguments for testing purposes (0..9)")
+        sys.exit(0)
 
     if len(sac_callsign) > 0:
         # Check whether we have a call sign with or without SSID
         regex_string = r"\b^([A-Z0-9]{1,3}[0-9][A-Z0-9]{0,3})(-[A-Z0-9]{1,2})?$\b"
         matches = re.search(pattern=regex_string, string=sac_callsign)
         if not matches:
-            raise argparse.ArgumentTypeError(
-                "Call sign must match a valid call sign format"
-            )
+            logger.error(msg="Call sign must match a valid call sign format")
+            sys.exit(0)
 
     if (
         sac_add_user
@@ -289,7 +287,7 @@ def get_command_line_params_config():
         or sac_execute_command_code
     ):
         if len(sac_callsign) < 1:
-            logger.error("Call sign is required")
+            logger.error(msg="Call sign is required")
             sys.exit(0)
 
     if sac_test_command_code or sac_execute_command_code:
@@ -300,39 +298,39 @@ def get_command_line_params_config():
             or sac_del_user
             or sac_test_totp_code
         ):
-            logger.error("Testing not possible with this combination")
+            logger.error(msg="Testing not possible with this combination")
             sys.exit(0)
         if len(sac_callsign) < 1:
-            logger.error("Command code is required")
+            logger.error(msg="Command code is required")
             sys.exit(0)
         if len(sac_totp_code) < 1:
-            logger.error("TOTP code is required")
+            logger.error(msg="TOTP code is required")
             sys.exit(0)
 
     if sac_add_command or sac_del_command:
         if len(sac_command_code) < 1:
-            logger.error("Command code is required")
+            logger.error(msg="Command code is required")
             sys.exit(0)
 
     if sac_test_totp_code:
         if sac_add_user or sac_del_user or sac_add_command or sac_del_command:
             logger.error(
-                "--test-config and add/del commands cannot be run at the same time"
+                msg="--test-config and add/del commands cannot be run at the same time"
             )
             sys.exit(0)
         if len(sac_totp_code) < 1:
-            logger.error("TOTP code is required")
+            logger.error(msg="TOTP code is required")
             sys.exit(0)
         if sac_execute_command_code:
             logger.error(
-                "--test-command-code and --execute-command-code cannot be run at the same time"
+                msg="--test-command-code and --execute-command-code cannot be run at the same time"
             )
             sys.exit(0)
 
     if sac_execute_command_code:
         if sac_add_user or sac_del_user or sac_add_command or sac_del_command:
             logger.error(
-                "--execute-config and add/del commands cannot be run at the same time"
+                msg="--execute-config and add/del commands cannot be run at the same time"
             )
             sys.exit(0)
         if len(sac_totp_code) < 1:
@@ -340,7 +338,7 @@ def get_command_line_params_config():
             sys.exit(0)
         if sac_test_command_code:
             logger.error(
-                "--test-command-code and --execute-command-code cannot be run at the same time"
+                msg="--test-command-code and --execute-command-code cannot be run at the same time"
             )
             sys.exit(0)
 
@@ -353,7 +351,7 @@ def get_command_line_params_config():
         and not sac_add_user
         and not sac_del_user
     ):
-        logger.error("No command parameters specified; nothing to do")
+        logger.error(msg="No command parameters specified; nothing to do")
         sys.exit(0)
 
     if len(sac_command_code) > 1:
