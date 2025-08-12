@@ -21,19 +21,19 @@ sage: send-aprs-message.py  [-h]
                             [--simulate-send]
 
 options:
-  -h, --help            show this help message and exit
+  -h, --help                            show this help message and exit
   --from-callsign APRS_FROM_CALLSIGN
-                        APRS FROM callsign (sender)
+                                        APRS FROM callsign (sender)
   --passcode APRS_PASSCODE
-                        APRS passcode for the FROM callsign (sender)
+                                        APRS passcode for the FROM callsign (sender)
   --to-callsign APRS_TO_CALLSIGN
-                        APRS TO callsign (receipient)
+                                        APRS TO callsign (receipient)
   --aprs-message APRS_MESSAGE
-                        APRS message
+                                        APRS message
   --numeric-message-pagination
-                        Add message enumeration to each outgoing APRS message
-  --simulate-send       Simulate sending of data to APRS-IS (output will be
-                        made to the console)
+                                        Add message enumeration to each outgoing APRS message
+  --simulate-send                       Simulate sending of data to APRS-IS (output will be
+                                        made to the console)
 
 ```
 
