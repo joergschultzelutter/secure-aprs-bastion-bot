@@ -27,7 +27,7 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 
 # Program-specific documentation
 
-- [secure-aprs-bastion-bot](docs/secure-aprs-bastion-bot.md)
+- [secure-aprs-bastion-bot.py](docs/secure-aprs-bastion-bot.md)
 - [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md)
 - [send-aprs-message.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/send-aprs-message.md)
 
