@@ -1,6 +1,8 @@
 # `send-aprs-message.py`
 
-This program is a Frankenstein'ed version of multiple APRS “send message” routines from the [core-aprs-client](https://github.com/joergschultzelutter/core-aprs-client). Its sole purpose is to provide the user with a simple way to send _multi_-line APRS messages (read: content longer than 67 characters which is to be split up into multiple APRS messsages) — which may be necessary after restarting your server, for example. For notification targets other than APRS (e.g. Telegram messenger), I recommend using the message library [apprise](https://github.com/caronc/apprise) by Chris Caron which also supports regular APRS messages up to 67 bytes in length.
+This program is a Frankenstein'ed version of multiple APRS “send message” routines from the [core-aprs-client](https://github.com/joergschultzelutter/core-aprs-client). Its sole purpose is to provide the user with a simple way to send _multi_-line APRS messages (read: content longer than 67 characters which is to be split up into multiple APRS messsages). You cann add `send-aprs-message.py` to your custom `--command-code` user scripts and send responses to the user from whose callsign the initial request has originated. 
+
+For notification targets other than APRS (e.g. Telegram messenger), I recommend using the message library [apprise](https://github.com/caronc/apprise) by Chris Caron which also supports regular APRS messages up to 67 bytes in length.
 
 >[!NOTE]
 >The format of the message must be limited to content in ASCII 7-bit encoding.
