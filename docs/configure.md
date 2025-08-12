@@ -2,7 +2,7 @@
 
 This program is used for the creation of the bot's user/command YAML configuration file. It supports a couple of actions such as:
 
-- Create / Update (`--add-user`) / Delete (`--delete-user`) a user entry along with its associated TOTP token
+- Create / Update (`--add-user`) / Delete (`--delete-user`) a user entry along with its associated TOTP secret
 - Create / Update (`--add-command`) / Delete (`--delete-command`) a user's command code / command line entries
 - Test the TOTP token against the user's TOTP secret (`--test-totp-code`)
 - Retrieve and/or execute a user / command code combination (`--test-command-code`, `--execute-command-code`)
