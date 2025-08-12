@@ -12,11 +12,13 @@ For notification targets other than APRS (e.g. Telegram messenger), I recommend 
 ```
 python send-aprs-message.py --help
 
-sage: send-aprs-message.py [-h] [--from-callsign APRS_FROM_CALLSIGN]
+sage: send-aprs-message.py  [-h]
+                            [--from-callsign APRS_FROM_CALLSIGN]
                             [--passcode APRS_PASSCODE]
                             [--to-callsign APRS_TO_CALLSIGN]
                             [--aprs-message APRS_MESSAGE]
-                            [--numeric-message-pagination] [--simulate-send]
+                            [--numeric-message-pagination]
+                            [--simulate-send]
 
 options:
   -h, --help            show this help message and exit
