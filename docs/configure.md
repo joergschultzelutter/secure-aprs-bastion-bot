@@ -121,12 +121,12 @@ because the user knows `DF1JSL`'s secret and was able to generate a valid token 
 
 ## Manual edits to the YAML configuration file
 
-Except for the `--add-user` functionality, you are free to apply manual changes to the external YAML configuration file. The following constraints apply:
+Except for the `--add-user` functionality which generates the user's TOTP secret, you are free to apply manual changes to the external YAML configuration file. The following constraints apply:
 
 - `--callsign` information is always stored uppercase in the configuration file (e.g. `DF1JSL-1` and not `df1jsl-1`)
 - `--command-code` information is always stored lowercase in the configuration file (e.g. `sayhello` and not `SayHello`, `SAYHELLO` etc).
 
-When in doubt, use `configure.py` for abiding to these constraints.
+When in doubt, always use `configure.py` for abiding to these constraints.
 
 ## `--add-user` - add a user to the config file
 
