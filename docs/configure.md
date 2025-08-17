@@ -1,13 +1,13 @@
 # `configure.py`
 
-This program is used for the creation of the bot's user/command YAML configuration file. It supports a couple of actions such as:
+This program is used for the creation of [secure-aprs-bastion-bot](secure-aprs-bastion-bot.md)'s YAML configuration file. It supports a couple of actions such as:
 
 - Create / Update (`--add-user`) / Delete (`--delete-user`) a user entry along with its associated TOTP secret
 - Create / Update (`--add-command`) / Delete (`--delete-command`) a user's command code / command line entries
 - Test the TOTP token against the user's TOTP secret (`--test-totp-code`)
 - Retrieve and/or execute a user / command code combination (`--test-command-code`, `--execute-command-code`)
 
-The APRS bot will use the resulting configuration file. Note that `configure.py` acts as both configuration tool and gatekeeper / validator; `secure-aprs-bastion-bot` itself assumed that the configuration file structure is valid and hardly performs any validation checks. You can apply manual changes to the configuration file - but if it breaks, you get to keep both pieces.  
+[secure-aprs-bastion-bot](secure-aprs-bastion-bot.md) will use the resulting configuration file. Note that `configure.py` acts as both configuration tool and gatekeeper / validator; `secure-aprs-bastion-bot` itself assumed that the configuration file structure is valid and hardly performs any validation checks. You can apply manual changes to most sections of the configuration file - but if it breaks, you get to keep both pieces.
 
 ## Overview
 
@@ -370,7 +370,7 @@ python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814
 ### Description
 
 ### Example
-`--execute-totp-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506`  
+`--execute-totp-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
 
 ## `--execute-command-code` - executes a `--callsign`/`--commannd-code` combination
 

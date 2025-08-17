@@ -1,3 +1,5 @@
 # `secure-aprs-bastion-bot.py`
 
 `secure-aprs-bastion-bot.py` is based on [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client). All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md). Only the parameters specific to this program (custom configuration) are described here.
+
+The configuration file created by [`configure.py`](configure.md) is the basis for the programs to be executed by `secure-aprs-bastion-bot.py`. The name of this configuration file is defined and stored in the `custom` section of `secure-aprs-bastion-bot.py`. Details can be found at [this link](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration_subsections/config_custom.md). Changes to this external configuration file are detected by `secure-aprs-bastion-bot.py` and result in the configuration parameters being re-read; it is therefore not necessary to restart `secure-aprs-bastion-bot.py` when the configuration file is changed.
