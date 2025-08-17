@@ -459,11 +459,9 @@ def add_user_to_yaml_config(configfile: str, callsign: str, secret: str):
     success, data = read_config_file_from_disk(filename=configfile)
 
     if not success:
-        logger.debug(msg="Failed to read config file; will create a new one")
-
-    # create the basic file structure, if necessary
-    if "users" not in data:
-        logger.warning(f"Invalid data structure in '{configfile}'")
+        logger.debug(
+            msg=f"Invalid file structure encountered in '{configfile}'; aborting"
+        )
         return False
 
     data_updated = False
@@ -514,11 +512,6 @@ def get_user_secret(configfile: str, callsign: str):
     if not success:
         return success
 
-    # create the basic file structure, if necessary
-    if "users" not in data:
-        logger.warning(f"Invalid data structure in '{configfile}'")
-        return False
-
     # Get the secret for the user (if present)
     # Our search can only result in a single match; the secret can
     # only be associated with a SSID-less callsign _or_ a callsign with SSID
@@ -563,11 +556,6 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
         return success
 
     success = False
-
-    # create the basic file structure, if necessary
-    if "users" not in data:
-        logger.warning(f"Invalid data structure in '{configfile}'")
-        return False
 
     # Get the secret for the user (if present)
     for item in data["users"]:
@@ -615,11 +603,6 @@ def del_user_from_yaml_config(configfile: str, callsign: str):
     if not success:
         return success
 
-    # create the basic file structure, if necessary
-    if "users" not in data:
-        logger.warning(f"Invalid data structure in '{configfile}'")
-        return False
-
     data["users"] = [user for user in data["users"] if user["callsign"] != callsign]
 
     # Write the config file back to disk
@@ -650,12 +633,22 @@ def read_config_file_from_disk(filename: str):
         logger.warning(
             f"Configuration file '{filename}' does not exist, will create a new one"
         )
+        # We simply return the pre-defined dictionary
+        # so let's consider this a success
+        success = True
     else:
         try:
             with open(file=filename, mode="r") as yaml_file:
                 data = yaml.safe_load(yaml_file)
-                success = True
                 logger.info(f"Configuration file '{filename}' was successfully read")
+
+                # perform a very basic check of the file structure
+                # as the file exists, it has to have a valid data structure
+                # otherwise, we will trigger an error
+                if "users" not in data:
+                    logger.warning(f"Invalid data structure in '{configfile}'")
+                else:
+                    success = True
         except:
             logger.warning(f"Cannot read config file '{filename}'")
     return success, data
@@ -728,11 +721,6 @@ def add_cmd_to_yaml_config(
     if not success:
         return success
 
-    # create the basic file structure, if necessary
-    if "users" not in data:
-        logger.warning(f"Invalid data structure in '{configfile}'")
-        return False
-
     success = False
     found_data = False
 
@@ -784,10 +772,6 @@ def del_cmd_from_yaml_config(configfile: str, callsign: str, command_code: str):
 
     if not success:
         return success
-
-    if "users" not in data:
-        logger.warning(f"Invalid data structure in '{configfile}'")
-        return False
 
     found_data = False
     success = False
@@ -878,11 +862,6 @@ def identify_target_callsign_and_command_string(
     success, data = read_config_file_from_disk(filename=configfile)
 
     if not success:
-        return False, None, None
-
-    # data structure fail safe
-    if "users" not in data:
-        logger.warning(f"Invalid data structure in '{configfile}'")
         return False, None, None
 
     success = False
