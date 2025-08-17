@@ -136,9 +136,6 @@ Adds or updates a user (`--callsign`) to the external YAML `--configfile`. Unlik
 
 Except for `--add-user`, all other modifications to the configuration file can be done manually (e.g. by editing the configuration file directly).
 
-> [!NOTE]
-> This command will not fail if the config file does not exist. All other commands expect that the program configuration file is present.
-
 ### Description
 
 `python configure.py --add-user --callsign=DF1JSL-1`
