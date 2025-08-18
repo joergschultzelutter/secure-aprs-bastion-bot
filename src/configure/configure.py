@@ -122,7 +122,7 @@ def get_command_line_params_config():
         default=CONFIG_FILE_NAME,
         dest="sabb_config_file",
         type=str,
-        help="Program config file name",
+        help="Program config file name (default: sabb_command_config.yaml) ",
     )
 
     parser.add_argument(
