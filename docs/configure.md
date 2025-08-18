@@ -13,7 +13,7 @@ This program is used for the creation of [secure-aprs-bastion-bot](secure-aprs-b
 
 ```
 usage: configure.py     [-h] 
-                        [--configfile SAC_CONFIG_FILE] 
+                        [--configfile SABB_CONFIG_FILE] 
                         [--add-user] [--delete-user] 
                         [--add-command] 
                         [--delete-command] 
@@ -21,18 +21,18 @@ usage: configure.py     [-h]
                         [--test-command-code] 
                         [--execute-command-code] 
                         [--show-secret] 
-                        [--callsign SAC_CALLSIGN] 
-                        [--totp-code SAC_TOTP_CODE] 
-                        [--command-code SAC_COMMAND_CODE]
-                        [--command-string SAC_COMMAND_STRING] 
+                        [--callsign SABB_CALLSIGN] 
+                        [--totp-code SABB_TOTP_CODE] 
+                        [--command-code SABB_COMMAND_CODE]
+                        [--command-string SABB_COMMAND_STRING] 
                         [--launch-as-subprocess] 
-                        [--ttl SAC_TTL] 
-                        [--aprs-test-arguments [SAC_APRS_TEST_ARGUMENTS ...]]
+                        [--ttl SABB_TTL] 
+                        [--aprs-test-arguments [SABB_APRS_TEST_ARGUMENTS ...]]
 
 options:
   -h, --help            show this help message and exit
-  --configfile          SAC_CONFIG_FILE
-                        Program config file name
+  --configfile          SABB_CONFIG_FILE
+                        Program config file name (default: sabb_command_config.yaml)
   --add-user            Add a new call sign plus secret to the configuration file
   --delete-user         Remove a user with all data from the configuration file
   --add-command         Add a new command for an existing user to the configuration file
@@ -42,18 +42,18 @@ options:
   --execute-command-code
                         Looks up the call sign / command code combination in the YAML file and executes it
   --show-secret         Shows the user's secret during the -add-user configuration process (default: disabled)
-  --callsign            SAC_CALLSIGN
+  --callsign            SABB_CALLSIGN
                         Callsign (must follow call sign format standards)
-  --totp-code           SAC_TOTP_CODE
+  --totp-code           SABB_TOTP_CODE
                         6 digit TOTP code - submitted for configuration testing only
-  --command-code        SAC_COMMAND_CODE
+  --command-code        SABB_COMMAND_CODE
                         Command code which will be sent to the APRS bot for future execution
-  --command-string      SAC_COMMAND_STRING
+  --command-string      SABB_COMMAND_STRING
                         Command string that is associated with the user's command code
   --launch-as-subprocess
                         If specified: launch the command as a subprocess and do not wait for its completion
-  --ttl SAC_TTL         TTL value in seconds (default: 30; range: 30-300)
-  --aprs-test-arguments [SAC_APRS_TEST_ARGUMENTS ...]
+  --ttl SABB_TTL         TTL value in seconds (default: 30; range: 30-300)
+  --aprs-test-arguments [SABB_APRS_TEST_ARGUMENTS ...]
                         For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --test-command-code/--execute-command-code
 ```
 
@@ -154,7 +154,7 @@ Creates _or updates_ a configuration for a callsign with a TOTP TTL of 30 second
 ### Example
 ```
 python configure.py --add-user --callsign=DF1JSL-1 
-2025-07-27 18:52:43,446 configure -INFO- Creating new configuration file sac_config.yml
+2025-07-27 18:52:43,446 configure -INFO- Creating new configuration file sabb_command_config.yaml
 2025-07-27 18:52:43,446 configure -INFO- Adding new user account
 2025-07-27 18:52:43,446 configure -INFO- Generating TOTP credentials for user 'DF1JSL-1' with TTL '30'
                                                      
@@ -191,8 +191,8 @@ or enter QUIT for exiting the program.
 Enter CONTINUE or QUIT: CONTINUE
 Enter the 6-digit TOTP code or enter QUIT to exit:494186
 
-2025-07-27 18:53:46,982 configure -WARNING- Configuration file 'sac_config.yml' does not exist, will create a new one
-2025-07-27 18:53:46,984 configure -INFO- Configuration file 'sac_config.yml' was successfully written
+2025-07-27 18:53:46,982 configure -WARNING- Configuration file 'sabb_command_config.yaml' does not exist, will create a new one
+2025-07-27 18:53:46,984 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully written
 User 'DF1JSL-1' was successfully added to config YAML file
 Amend config file as per program documentation, then use the --test-totp-token option for a config test
 
@@ -335,28 +335,28 @@ Tests a user's TOTP code against the user's secret and returns a simple "valid" 
 Failed attempt
 ```
 python configure.py --test-command-code --callsign=df1jsl-1 --totp=502506 
-2025-08-03 16:56:05,828 configure -INFO- Configuration file 'sac_config.yml' was successfully read
-2025-08-03 16:56:05,828 configure -INFO- Unable to identify matching call sign and/or command_code in configuration file 'sac_config.yml'; exiting
+2025-08-03 16:56:05,828 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
+2025-08-03 16:56:05,828 configure -INFO- Unable to identify matching call sign and/or command_code in configuration file 'sabb_command_config.yaml'; exiting
 ```  
 
 Successful attempt, not using the wildcard callsign's TOTP token (read: the TOTP token which belongs to `DF1JSL-1`)
 ```
 python configure.py --test-totp-code --callsign=df1jsl-1 --totp=779856 
-2025-08-03 17:13:45,797 configure -INFO- Configuration file 'sac_config.yml' was successfully read
+2025-08-03 17:13:45,797 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
 2025-08-03 17:13:45,798 configure -INFO- Token '779856' matches with target call sign 'DF1JSL-1'
 ```
 
 Successful attempt, using the wildcard TOTP token (read: the TOTP token which belongs to `DF1JSL`). Note that instead of retrieving the target callsign `DF1JSL-1`, this retrieval attempt did return the SSID-less callsign `DF1JSL`
 ```
 python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814 
-2025-08-03 17:16:39,736 configure -INFO- Configuration file 'sac_config.yml' was successfully read
+2025-08-03 17:16:39,736 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
 2025-08-03 17:16:39,737 configure -INFO- Token '761814' matches with target call sign 'DF1JSL'
 ```
 
 Successful attempt, using the wildcard TOTP token (read: the TOTP token which belongs to `DF1JSL`) for `DF1JSL-15` which has no entry in the configuration file. As we use the SSID-less TOTP token from `DF1JSL`, we are able to retrieve the configuration data.
 ```
 python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814 
-2025-08-03 17:16:39,736 configure -INFO- Configuration file 'sac_config.yml' was successfully read
+2025-08-03 17:16:39,736 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
 2025-08-03 17:16:39,737 configure -INFO- Token '761814' matches with target call sign 'DF1JSL'
 ```
 
