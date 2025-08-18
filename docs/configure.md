@@ -13,7 +13,7 @@ This program is used for the creation of [secure-aprs-bastion-bot](secure-aprs-b
 
 ```
 usage: configure.py     [-h] 
-                        [--configfile SABB_CONFIG_FILE] 
+                        [--configfile CONFIG_FILE] 
                         [--add-user] [--delete-user] 
                         [--add-command] 
                         [--delete-command] 
@@ -21,17 +21,17 @@ usage: configure.py     [-h]
                         [--test-command-code] 
                         [--execute-command-code] 
                         [--show-secret] 
-                        [--callsign SABB_CALLSIGN] 
-                        [--totp-code SABB_TOTP_CODE] 
-                        [--command-code SABB_COMMAND_CODE]
-                        [--command-string SABB_COMMAND_STRING] 
+                        [--callsign CALLSIGN] 
+                        [--totp-code TOTP_CODE] 
+                        [--command-code COMMAND_CODE]
+                        [--command-string COMMAND_STRING] 
                         [--launch-as-subprocess] 
-                        [--ttl SABB_TTL] 
-                        [--aprs-test-arguments [SABB_APRS_TEST_ARGUMENTS ...]]
+                        [--ttl TTL] 
+                        [--aprs-test-arguments [APRS_TEST_ARGUMENTS ...]]
 
 options:
   -h, --help            show this help message and exit
-  --configfile          SABB_CONFIG_FILE
+  --configfile          CONFIG_FILE
                         Program config file name (default: sabb_command_config.yaml)
   --add-user            Add a new call sign plus secret to the configuration file
   --delete-user         Remove a user with all data from the configuration file
@@ -42,18 +42,19 @@ options:
   --execute-command-code
                         Looks up the call sign / command code combination in the YAML file and executes it
   --show-secret         Shows the user's secret during the -add-user configuration process (default: disabled)
-  --callsign            SABB_CALLSIGN
+  --callsign            CALLSIGN
                         Callsign (must follow call sign format standards)
-  --totp-code           SABB_TOTP_CODE
+  --totp-code           TOTP_CODE
                         6 digit TOTP code - submitted for configuration testing only
-  --command-code        SABB_COMMAND_CODE
+  --command-code        COMMAND_CODE
                         Command code which will be sent to the APRS bot for future execution
-  --command-string      SABB_COMMAND_STRING
+  --command-string      COMMAND_STRING
                         Command string that is associated with the user's command code
   --launch-as-subprocess
                         If specified: launch the command as a subprocess and do not wait for its completion
-  --ttl SABB_TTL         TTL value in seconds (default: 30; range: 30-300)
-  --aprs-test-arguments [SABB_APRS_TEST_ARGUMENTS ...]
+  --ttl                 TTL         
+                        TTL value in seconds (default: 30; range: 30-300)
+  --aprs-test-arguments [APRS_TEST_ARGUMENTS ...]
                         For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --test-command-code/--execute-command-code
 ```
 
