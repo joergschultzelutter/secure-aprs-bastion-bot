@@ -120,14 +120,14 @@ def get_command_line_params_config():
     parser.add_argument(
         "--configfile",
         default=CONFIG_FILE_NAME,
-        dest="sabb_config_file",
+        dest="config_file",
         type=str,
         help="Program config file name (default: sabb_command_config.yaml) ",
     )
 
     parser.add_argument(
         "--add-user",
-        dest="sabb_add_user",
+        dest="add_user",
         action="store_true",
         default=False,
         help="Add a new call sign plus secret to the configuration file",
@@ -135,7 +135,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--delete-user",
-        dest="sabb_del_user",
+        dest="del_user",
         action="store_true",
         default=False,
         help="Remove a user with all data from the configuration file",
@@ -143,7 +143,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--add-command",
-        dest="sabb_add_command",
+        dest="add_command",
         action="store_true",
         default=False,
         help="Add a new command for an existing user to the configuration file",
@@ -151,7 +151,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--delete-command",
-        dest="sabb_del_command",
+        dest="del_command",
         action="store_true",
         default=False,
         help="Remove a command from a user's configuration in the configuration file",
@@ -159,7 +159,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--test-totp-code",
-        dest="sabb_test_totp_code",
+        dest="test_totp_code",
         action="store_true",
         default=False,
         help="Validates the provided TOTP code against the user's secret",
@@ -167,7 +167,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--test-command-code",
-        dest="sabb_test_command_code",
+        dest="test_command_code",
         action="store_true",
         default=False,
         help="Looks up the call sign / command code combination in the YAML file and returns the command line",
@@ -175,7 +175,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--execute-command-code",
-        dest="sabb_execute_command_code",
+        dest="execute_command_code",
         action="store_true",
         default=False,
         help="Looks up the call sign / command code combination in the YAML file and executes it",
@@ -183,7 +183,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--show-secret",
-        dest="sabb_show_secret",
+        dest="show_secret",
         action="store_true",
         default=False,
         help="Shows the user's secret during the -add-user configuration process (default: disabled)",
@@ -191,7 +191,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--callsign",
-        dest="sabb_callsign",
+        dest="callsign",
         type=str,
         default="",
         help="Callsign (must follow call sign format standards)",
@@ -199,7 +199,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--totp-code",
-        dest="sabb_totp_code",
+        dest="totp_code",
         type=str,
         default="",
         help="6 digit TOTP code - submitted for configuration testing only",
@@ -207,7 +207,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--command-code",
-        dest="sabb_command_code",
+        dest="command_code",
         type=str,
         default="",
         help="Command code which will be sent to the APRS bot for future execution",
@@ -215,7 +215,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--command-string",
-        dest="sabb_command_string",
+        dest="command_string",
         type=str,
         default="",
         help="Command string that is associated with the user's command code",
@@ -223,7 +223,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--launch-as-subprocess",
-        dest="sabb_launch_as_subprocess",
+        dest="launch_as_subprocess",
         action="store_true",
         default=False,
         help="If specified: launch the command as a subprocess and do not wait for its completion",
@@ -231,7 +231,7 @@ def get_command_line_params_config():
 
     parser.add_argument(
         "--ttl",
-        dest="sabb_ttl",
+        dest="ttl",
         type=ttl_check,
         default=30,
         help="TTL value in seconds (default: 30; range: 30-300)",
@@ -240,35 +240,35 @@ def get_command_line_params_config():
     parser.add_argument(
         "--aprs-test-arguments",
         nargs="*",
-        dest="sabb_aprs_test_arguments",
+        dest="aprs_test_arguments",
         type=str,
         help="For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --test-command-code/--execute-command-code",
     )
 
     args = parser.parse_args()
 
-    sabb_configfile = args.sabb_config_file
-    sabb_add_user = args.sabb_add_user
-    sabb_add_command = args.sabb_add_command
-    sabb_del_user = args.sabb_del_user
-    sabb_del_command = args.sabb_del_command
+    configfile = args.config_file
+    add_user = args.add_user
+    add_command = args.add_command
+    del_user = args.del_user
+    del_command = args.del_command
     # Call sign is always in upper case characters
-    sabb_callsign = args.sabb_callsign.upper()
-    sabb_ttl = args.sabb_ttl
-    sabb_totp_code = args.sabb_totp_code
+    callsign = args.callsign.upper()
+    ttl = args.ttl
+    totp_code = args.totp_code
     # command_code is always in lower case characters
-    sabb_command_code = args.sabb_command_code.lower()
-    sabb_command_string = args.sabb_command_string
-    sabb_launch_as_subprocess = args.sabb_launch_as_subprocess
-    sabb_test_totp_code = args.sabb_test_totp_code
-    sabb_test_command_code = args.sabb_test_command_code
-    sabb_execute_command_code = args.sabb_execute_command_code
-    sabb_show_secret = args.sabb_show_secret if sabb_add_user else False
-    sabb_aprs_test_arguments = args.sabb_aprs_test_arguments or []
+    command_code = args.command_code.lower()
+    command_string = args.command_string
+    launch_as_subprocess = args.launch_as_subprocess
+    test_totp_code = args.test_totp_code
+    test_command_code = args.test_command_code
+    execute_command_code = args.execute_command_code
+    show_secret = args.show_secret if add_user else False
+    aprs_test_arguments = args.aprs_test_arguments or []
 
     # Run some basic plausibility checks
 
-    if len(sabb_aprs_test_arguments) > 9:
+    if len(aprs_test_arguments) > 9:
         logger.error(msg="Too many APRS arguments for testing purposes (0..9)")
         sys.exit(0)
 
@@ -281,104 +281,98 @@ def get_command_line_params_config():
             sys.exit(0)
 
     if (
-        sabb_add_user
-        or sabb_del_user
-        or sabb_add_command
-        or sabb_del_command
-        or sabb_test_totp_code
-        or sabb_test_command_code
-        or sabb_execute_command_code
+        add_user
+        or del_user
+        or add_command
+        or del_command
+        or test_totp_code
+        or test_command_code
+        or execute_command_code
     ):
-        if len(sabb_callsign) < 1:
+        if len(callsign) < 1:
             logger.error(msg="Call sign is required")
             sys.exit(0)
 
-    if sabb_test_command_code or sabb_execute_command_code:
-        if (
-            sabb_add_command
-            or sabb_del_command
-            or sabb_add_user
-            or sabb_del_user
-            or sabb_test_totp_code
-        ):
+    if test_command_code or execute_command_code:
+        if add_command or del_command or add_user or del_user or test_totp_code:
             logger.error(msg="Testing not possible with this combination")
             sys.exit(0)
-        if len(sabb_callsign) < 1:
+        if len(callsign) < 1:
             logger.error(msg="Command code is required")
             sys.exit(0)
-        if len(sabb_totp_code) < 1:
+        if len(totp_code) < 1:
             logger.error(msg="TOTP code is required")
             sys.exit(0)
 
-    if sabb_add_command or sabb_del_command:
-        if len(sabb_command_code) < 1:
+    if add_command or del_command:
+        if len(command_code) < 1:
             logger.error(msg="Command code is required")
             sys.exit(0)
 
-    if sabb_test_totp_code:
-        if sabb_add_user or sabb_del_user or sabb_add_command or sabb_del_command:
+    if test_totp_code:
+        if add_user or del_user or add_command or del_command:
             logger.error(
                 msg="--test-config and add/del commands cannot be run at the same time"
             )
             sys.exit(0)
-        if len(sabb_totp_code) < 1:
+        if len(totp_code) < 1:
             logger.error(msg="TOTP code is required")
             sys.exit(0)
-        if sabb_execute_command_code:
+        if execute_command_code:
             logger.error(
                 msg="--test-command-code and --execute-command-code cannot be run at the same time"
             )
             sys.exit(0)
 
-    if sabb_execute_command_code:
-        if sabb_add_user or sabb_del_user or sabb_add_command or sabb_del_command:
+    if execute_command_code:
+        if add_user or del_user or add_command or del_command:
             logger.error(
                 msg="--execute-config and add/del commands cannot be run at the same time"
             )
             sys.exit(0)
-        if len(sabb_totp_code) < 1:
+        if len(totp_code) < 1:
             logger.error("TOTP code is required")
             sys.exit(0)
-        if sabb_test_command_code:
+        if test_command_code:
             logger.error(
                 msg="--test-command-code and --execute-command-code cannot be run at the same time"
             )
             sys.exit(0)
 
     if (
-        not sabb_test_totp_code
-        and not sabb_test_command_code
-        and not sabb_execute_command_code
-        and not sabb_add_command
-        and not sabb_del_command
-        and not sabb_add_user
-        and not sabb_del_user
+        not test_totp_code
+        and not test_command_code
+        and not execute_command_code
+        and not add_command
+        and not del_command
+        and not add_user
+        and not del_user
     ):
         logger.error(msg="No command parameters specified; nothing to do")
         sys.exit(0)
 
-    if len(sabb_command_code) > 1:
-        if " " in sabb_command_code:
+    if len(command_code) > 1:
+        if " " in command_code:
             logger.error(msg="Invalid command code; must not contain spaces")
             sys.exit(0)
 
     return (
-        sabb_configfile,
-        sabb_add_user,
-        sabb_add_command,
-        sabb_del_user,
-        sabb_del_command,
-        sabb_callsign,
-        sabb_ttl,
-        sabb_totp_code,
-        sabb_command_code,
-        sabb_command_string,
-        sabb_test_totp_code,
-        sabb_show_secret,
-        sabb_launch_as_subprocess,
-        sabb_test_command_code,
-        sabb_execute_command_code,
-        sabb_aprs_test_arguments,
+        configfile,
+        add_user,
+        add_command,
+        del_user,
+        del_command,
+        callsign,
+        ttl,
+        totp_code,
+        command_code,
+        command_string,
+        test_totp_code,
+        show_secret,
+        launch_as_subprocess,
+        test_command_code,
+        execute_command_code,
+        aprs_test_arguments,
     )
 
 
@@ -942,8 +936,8 @@ def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
     success = False
 
     # Do not fail if the config file does not exist
-    if not does_file_exist(sac_configfile):
-        logger.info(f"Creating new configuration file {sac_configfile}")
+    if not does_file_exist(configfile):
+        logger.info(f"Creating new configuration file {configfile}")
     logger.info("Adding new user account")
 
     logger.info(f"Generating TOTP credentials for user '{callsign}' with TTL '{ttl}'")
@@ -1035,10 +1029,8 @@ def del_user(configfile: str, callsign: str):
         True / False, depending on whether or not the entry was created/updated
     """
     success = False
-    if not does_file_exist(sac_configfile):
-        logger.info(
-            f"Configuration file '{sac_configfile}' does not exist; nothing to do"
-        )
+    if not does_file_exist(configfile):
+        logger.info(f"Configuration file '{configfile}' does not exist; nothing to do")
     else:
         logger.info("Deleting user account")
         success = del_user_from_yaml_config(
@@ -1083,16 +1075,14 @@ def add_cmd(
         True / False, depending on whether or not the entry was created/updated
     """
     success = False
-    if not does_file_exist(sac_configfile):
-        logger.info(
-            f"Configuration file '{sac_configfile}' does not exist; nothing to do"
-        )
+    if not does_file_exist(configfile):
+        logger.info(f"Configuration file '{configfile}' does not exist; nothing to do")
     else:
         logger.info(
             f"Adding new command-code '{command_code}' config for user '{callsign}'"
         )
         success = add_cmd_to_yaml_config(
-            configfile=sac_configfile,
+            configfile=configfile,
             callsign=callsign,
             command_code=command_code,
             command_string=command_string,
@@ -1125,14 +1115,12 @@ def del_cmd(configfile: str, callsign: str, command_code: str):
     """
 
     success = False
-    if not does_file_exist(sac_configfile):
-        logger.info(
-            f"Configuration file '{sac_configfile}' does not exist; nothing to do"
-        )
+    if not does_file_exist(configfile):
+        logger.info(f"Configuration file '{configfile}' does not exist; nothing to do")
     else:
         logger.info(f"Deleting command '{command_code}' for user '{callsign}'")
         success = del_cmd_from_yaml_config(
-            configfile=sac_configfile,
+            configfile=configfile,
             callsign=callsign,
             command_code=command_code,
         )
@@ -1263,58 +1251,58 @@ def wait_or_keypress(timeout_seconds: float) -> bool:
 
 if __name__ == "__main__":
     (
-        sac_configfile,
-        sac_add_user,
-        sac_add_command,
-        sac_del_user,
-        sac_del_command,
-        sac_callsign,
-        sac_ttl,
-        sac_totp_code,
-        sac_command_code,
-        sac_command_string,
-        sac_test_totp_code,
-        sac_show_secret,
-        sac_launch_as_subprocess,
-        sac_test_command_code,
-        sac_execute_command_code,
-        sac_aprs_test_arguments,
+        sabb_configfile,
+        sabb_add_user,
+        sabb_add_command,
+        sabb_del_user,
+        sabb_del_command,
+        sabb_callsign,
+        sabb_ttl,
+        sabb_totp_code,
+        sabb_command_code,
+        sabb_command_string,
+        sabb_test_totp_code,
+        sabb_show_secret,
+        sabb_launch_as_subprocess,
+        sabb_test_command_code,
+        sabb_execute_command_code,
+        sabb_aprs_test_arguments,
     ) = get_command_line_params_config()
 
-    if sac_add_user:
+    if sabb_add_user:
         add_user(
-            configfile=sac_configfile,
-            callsign=sac_callsign,
-            ttl=sac_ttl,
-            show_secret=sac_show_secret,
+            configfile=sabb_configfile,
+            callsign=sabb_callsign,
+            ttl=sabb_ttl,
+            show_secret=sabb_show_secret,
         )
         sys.exit(0)
 
-    if sac_del_user:
-        del_user(configfile=sac_configfile, callsign=sac_callsign)
+    if sabb_del_user:
+        del_user(configfile=sabb_configfile, callsign=sabb_callsign)
         sys.exit(0)
 
-    if sac_add_command:
+    if sabb_add_command:
         add_cmd(
-            configfile=sac_configfile,
-            callsign=sac_callsign,
-            command_code=sac_command_code,
-            command_string=sac_command_string,
-            launch_as_subprocess=sac_launch_as_subprocess,
+            configfile=sabb_configfile,
+            callsign=sabb_callsign,
+            command_code=sabb_command_code,
+            command_string=sabb_command_string,
+            launch_as_subprocess=sabb_launch_as_subprocess,
         )
         sys.exit(0)
 
-    if sac_del_command:
+    if sabb_del_command:
         del_cmd(
-            configfile=sac_configfile,
-            callsign=sac_callsign,
-            command_code=sac_command_code,
+            configfile=sabb_configfile,
+            callsign=sabb_callsign,
+            command_code=sabb_command_code,
         )
         sys.exit(0)
 
-    if sac_test_totp_code:
-        if not does_file_exist(sac_configfile):
-            logger.info(f"Given configuration file '{sac_configfile}' does not exist.")
+    if sabb_test_totp_code:
+        if not does_file_exist(sabb_configfile):
+            logger.info(f"Given configuration file '{sabb_configfile}' does not exist.")
             logger.info(
                 "Please run this program with option --add-user for an initial config file setup."
             )
@@ -1325,24 +1313,24 @@ if __name__ == "__main__":
                 command_string,
                 launch_as_subprocess,
             ) = identify_target_callsign_and_command_string(
-                configfile=sac_configfile,
-                callsign=sac_callsign,
-                totp_code=sac_totp_code,
+                configfile=sabb_configfile,
+                callsign=sabb_callsign,
+                totp_code=sabb_totp_code,
                 command_code=None,
             )
             if not success:
                 logger.info(
-                    f"Unable to identify matching call sign and/or totp/secret match in '{sac_configfile}'; exiting"
+                    f"Unable to identify matching call sign and/or totp/secret match in '{sabb_configfile}'; exiting"
                 )
             else:
                 logger.info(
-                    msg=f"Token '{sac_totp_code}' matches with target call sign '{target_callsign}'"
+                    msg=f"Token '{sabb_totp_code}' matches with target call sign '{target_callsign}'"
                 )
         sys.exit(0)
 
-    if sac_test_command_code or sac_execute_command_code:
-        if not does_file_exist(sac_configfile):
-            logger.info(f"Given configuration file '{sac_configfile}' does not exist.")
+    if sabb_test_command_code or sabb_execute_command_code:
+        if not does_file_exist(sabb_configfile):
+            logger.info(f"Given configuration file '{sabb_configfile}' does not exist.")
             logger.info(
                 "Please run this program with option --add-user for an initial config file setup."
             )
@@ -1353,29 +1341,31 @@ if __name__ == "__main__":
                 command_string,
                 launch_as_subprocess,
             ) = identify_target_callsign_and_command_string(
-                configfile=sac_configfile,
-                callsign=sac_callsign,
-                totp_code=sac_totp_code,
-                command_code=sac_command_code,
+                configfile=sabb_configfile,
+                callsign=sabb_callsign,
+                totp_code=sabb_totp_code,
+                command_code=sabb_command_code,
             )
             if not success:
                 logger.info(
-                    f"Unable to identify matching call sign and/or command_code in configuration file '{sac_configfile}'; exiting"
+                    f"Unable to identify matching call sign and/or command_code in configuration file '{sabb_configfile}'; exiting"
                 )
             else:
                 logger.info(
-                    msg=f"Command '{sac_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}'"
+                    msg=f"Command '{sabb_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}'"
                 )
                 logger.info(
                     msg="Replacing potential APRS parameters in the command string."
                 )
 
-                # Replace the callsign
-                command_string = command_string.replace("$0", sac_callsign)
-                for count, item in enumerate(sac_aprs_test_arguments, start=1):
+                # Replace the callsign. Add the call sign to the top of the list
+                sabb_aprs_test_arguments.insert(0, sabb_callsign)
+
+                # and now start iterating through the list and replace our content
+                for count, item in enumerate(sabb_aprs_test_arguments, start=0):
                     command_string = command_string.replace(f"${count}", item)
                 logger.info(f"final command_string: '{command_string}'")
 
-                if sac_execute_command_code:
+                if sabb_execute_command_code:
                     pass
         sys.exit(0)

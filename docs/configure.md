@@ -366,6 +366,9 @@ python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814
 
 ### Description
 
+> [!NOTE]
+> `--test-command-code` and `--execute-command-code` --> nutzen `--callsign` 
+
 ### Example
 `--execute-totp-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
 
@@ -377,6 +380,9 @@ This command uses the same code basis as `--test-command-code`. Instead of print
 
 ### Description
 This command uses the same code basis as `--test-command-code`. Instead of printing the `command-string` information to the console, this option actually executes the retrieved `command-string` information.
+
+> [!NOTE]
+> `--test-command-code` and `--execute-command-code` --> nutzen `--callsign` 
 
 ### Example
 `--execute-totp-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506`  
