@@ -246,15 +246,15 @@ Practical example:
 
 You have designed a `command-code` keyword `reboot` whose purpose is to reboot a specific server. Instead of hardcoding the server name, you want to pass it along as part of your APRS message. Additionally, you want to send back a message to the APRS callsign once the reboot has completed. To achieve this, you will do the following:
 
-- create a keyword `command-code` named `reboot`. Its associated `command-string` will be responsible for rebooting the server and will accept two parameters:
+- create a keyword `command-code` named `reboot`. Its associated `command-string` script will be responsible for rebooting the server and will accept two parameters:
     - the server name (represented by `$1`)
     - the originating callsign (represented by `$0`)
 
-| `--command-code` | `--command-string`         |
-|------------------|----------------------------|
-| `reboot`         | `source ./reboot.sh $0 $1` |
+| `--command-code` | `--command-string`                         |
+|------------------|--------------------------------------------|
+| `reboot`         | `source ./reboot.sh server=$1 callsign=$0` |
 
-The parameter placeholders defined by the user will later on be replaced by `secure-aprs-bastion-bot` with the values from the APRS message. Note that the order of the parameters is not fixed and can be freely defined by the user. For this example, we assume that the `reboot.sh` script accepts two parameters: parameter 1 is the user's call sign and parameter 2 is the name of the server that we have to reboot. All reboot logic is handled by `reboot.sh` itself.
+The parameter placeholders defined by the user will later on be replaced by `secure-aprs-bastion-bot` with the values from the APRS message. Note that the order of the parameters is not fixed and can be freely defined by the user. For this example, we assume that the `reboot.sh` script accepts two parameters: parameter 1 is the user's call sign and parameter 2 is the name of the server that we have to reboot. All reboot logic is handled by `reboot.sh` itself. Note that the user is responsible for designing (and locally securing) this script.
 
 Not that we have prepared `secure-aprs-bastion-bot`, let's send the message:
 
