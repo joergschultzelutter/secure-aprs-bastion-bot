@@ -265,7 +265,9 @@ def make_pretty_aprs_messages(
 
     # replace non-permitted APRS characters from the
     # message text as APRS-IS might choke on this content
-    # Details: see APRS specification pg. 71
+    # Details: see APRS specification chapter 15 taken from
+    # https://github.com/wb2osz/aprsspec
+    # "Messages, Bulletins and Announcements"
     message_to_add = re.sub("[{}|~]+", "", message_to_add)
 
     # Convert the message to plain ascii
