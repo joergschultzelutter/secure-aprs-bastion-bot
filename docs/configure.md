@@ -94,13 +94,13 @@ A user entry in the config file can be with or without trailing SSID. Each entry
 User accounts with_OUT_ trailing SSID can act as a 'wildcard' entry. If a user callsign WITH trailing SSID has access to the user account's secret withOUT SSID (and therefore can generate its associated TOTP code), the user account WITH trailing SSID will be granted access to the entries associated with the callsign withOUT SSID .
 
 Let's have a look at a scenario where we assume that the TOTP code never expires and that both call signs `DF1JSL` and `DF1JSL-1` are present
-in the external YAML config file. `DF1JSL-15` will NOT have a configuration entry in that file.
+in the external YAML configuration file. `DF1JSL-15` will NOT have a configuration entry in that configuration file.
 
 - Callsign 1: `DF1JSL-1`, TOTP : `123456` (based on `DF1JSL-1`'s secret)
 - Callsign 2: `DF1JSL`, TOTP : `471123` (based on `DF1JSL`'s secret)
 - Callsign 3: `DF1JSL-15`. This call sign is __NOT__ present in the YAML configuration file and therefore has no TOTP secret assigned to it.
 
-| Call sign in APRS message   | TOTP in APRS message | Access permitted   | Config data will be taken from                                                                                                                                        |
+| Call sign in APRS message   | TOTP in APRS message | Access permitted   | Configuration data will be taken from                                                                                                                                 |
 |-----------------------------|----------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `DF1JSL-1`                  | `123456`             | :white_check_mark: | `DF1JSL-1`                                                                                                                                                            |
 | `DF1JSL-1`                  | `471123`             | :white_check_mark: | `DF1JSL`                                                                                                                                                              |
