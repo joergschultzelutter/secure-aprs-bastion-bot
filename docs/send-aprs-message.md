@@ -5,7 +5,7 @@ This program is a Frankenstein'ed version of multiple APRS “send message” ro
 For notification targets other than APRS (e.g. Telegram messenger), I recommend using the message library [apprise](https://github.com/caronc/apprise) by Chris Caron which also supports regular APRS messages up to 67 bytes in length.
 
 >[!NOTE]
->The format of the message must be limited to content in ASCII 7-bit encoding.
+>The message format is automatically converted to ASCII 7-bit encoding, if possible, if the message is in a different character set format. In addition, APRS-relevant control characters are removed, if present.
 
 ## Usage
 
