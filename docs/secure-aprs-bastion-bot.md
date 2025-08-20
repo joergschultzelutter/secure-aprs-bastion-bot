@@ -11,5 +11,8 @@ In the configuration file of the `secure-aprs-bastion-bot`, the name of the prog
 #
 # This section is deliberately kept empty and can be used for storing your
 # individual APRS bot's configuration settings
+#
+# This is the external configuration file which contains the user 
+# configuration along with its command-code/command-script settings
 sabb_command_config_file=sabb_command_config.yaml
 ```
