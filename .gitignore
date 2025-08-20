@@ -211,4 +211,5 @@ __marimo__/
 apprise.yml
 data_files
 secure_aprs_bastion_bot.cfg
+sabb_command_config.yml
 
