@@ -24,8 +24,6 @@ from unidecode import unidecode
 import re
 import time
 import sys
-import subprocess
-import platform
 
 
 logging.basicConfig(
@@ -56,7 +54,7 @@ def get_command_line_params():
 
     Returns
     =======
-    configfile: 'str'
+    configfile: str
         name of the configuration file
     """
 
@@ -226,34 +224,34 @@ def make_pretty_aprs_messages(
 
     Parameters
     ==========
-    message_to_add: 'str'
+    message_to_add: str
         message string that is to be added to the list in a pretty way
         If string is longer than 67 chars, we will truncate the information
-    destination_list: 'list'
+    destination_list: list
         List with string elements which will be enriched with the
         'mesage_to_add' string. Default: empty list aka user wants new list
-    max_len: 'int':
+    max_len: int:
         Max length of the list's string len.
         The length is dependent on whether the user has activated trailing
         message number information in the outgoing message or not.
         When activated, the message length is 59 - otherwise, it is 67.
-    separator_char: 'str'
+    separator_char: str
         Separator that is going to be used for dividing the single
         elements that the user is going to add
-    add_sep: 'bool'
+    add_sep: bool
         True = we will add the separator when more than one item
                is in our string. This is the default
         False = do not add the separator (e.g. if we add the
                 very first line of text, then we don't want a
                 comma straight after the location
-    force_outgoing_unicode_messages: 'bool'
+    force_outgoing_unicode_messages: bool
         False = all outgoing UTF-8 content will be down-converted
                 to ASCII content
         True = all outgoing UTF-8 content will sent out 'as is'
 
     Returns
     =======
-    destination_list: 'list'
+    destination_list: list
         List array, containing 1..n human readable strings with
         the "message_to_add' input data
     """
@@ -330,15 +328,15 @@ def split_string_to_string_list(message_string: str, max_len: int):
 
     Parameters
     ==========
-    message_string: 'str'
+    message_string: str
         message string that is to be divided into 1..n strings of 'max_len"
         text length
-    max_len: 'int':
+    max_len: int:
         Default: 67; set to 59 in case of pagination
 
     Returns
     =======
-    split_strings: 'list'
+    split_strings: list
         List array, containing 1..n strings with a max len of 'max_len'
     """
     split_strings = [
@@ -353,7 +351,7 @@ def convert_text_to_plain_ascii(message_string: str):
     Converts a string to plain ASCII
     Parameters
     ==========
-    message_string: 'str'
+    message_string: str
         Text that needs to be converted
     Returns
     =======
@@ -373,7 +371,7 @@ def convert_text_to_plain_ascii(message_string: str):
 
 
 def send_aprs_message_list(
-    myaprsis: aprslib.inet.IS,
+    myaprsis: aprslib.inet.IS | None,
     message_text_array: list,
     destination_call_sign: str,
     source_call_sign: str,
@@ -388,24 +386,24 @@ def send_aprs_message_list(
     If 'simulate_send'= True, we still prepare the message but only send it to our log file
     Parameters
     ==========
-    myaprsis: 'aprslib.inet.IS'
+    myaprsis: aprslib.inet.IS
         Our aprslib object that we will use for the communication part
-    message_text_array: 'list'
+    message_text_array: list
         Contains 1..n entries of the content that we want to send to the user
-    destination_call_sign: 'str'
+    destination_call_sign: str
         Target user call sign that is going to receive the message (usually, this
         is the user's call sign who has sent us the initial message)
-    simulate_send: 'bool'
+    simulate_send: bool
         If True: Prepare string but only send it to logger
-    source_call_sign: 'str'
+    source_call_sign: str
         Our very own call sign
-    packet_delay: 'float'
+    packet_delay: float
         Delay after sending out our APRS acknowledgment request
         Used when there are still remaining messages
-    packet_delay_last_message: 'float'
+    packet_delay_last_message: float
         Delay after sending out our APRS acknowledgment request
         Used when there are no remaining messages
-    tocall: 'str'
+    tocall: str
         This bot uses the default TOCALL ("APMPAD")
 
     Returns
@@ -440,12 +438,14 @@ def finalize_pretty_aprs_messages(mylistarray: list, max_len: int) -> list:
 
     Parameters
     ==========
-    mylistarray: 'list'
+    mylistarray: list
         List of APRS messages
+    max_len: int
+        maximum length of the message
 
     Returns
     =======
-    listitem: 'list'
+    listitem: list
         Either formatted list (if more than one list entry was present) or
         the original list item
     """
@@ -465,7 +465,7 @@ def format_list_with_enumeration(mylistarray: list) -> list:
 
     Returns
     =======
-    listitem: 'list'
+    listitem: list
         Either formatted list (if more than one list entry was present) or
         the original list item
     """
@@ -531,7 +531,7 @@ if __name__ == "__main__":
             myaprsis=None,
             message_text_array=output_message,
             destination_call_sign=aprs_to_callsign,
-            simulate_send=aprs_simulate_send,
+            simulate_send=True,
             source_call_sign=aprs_from_callsign,
         )
     else:
@@ -541,7 +541,7 @@ if __name__ == "__main__":
         AIS.connect(blocking=True)
 
         # are we connected?
-        if AIS._connected == True:
+        if AIS._connected:
             logger.info(
                 msg=f"Established connection to APRS_IS: server={aprsis_server_name},"
                 f"port={aprsis_server_port}, APRS-IS User: {aprs_from_callsign}, APRS-IS passcode: {aprs_passcode}"
@@ -551,7 +551,7 @@ if __name__ == "__main__":
                 myaprsis=AIS,
                 message_text_array=output_message,
                 destination_call_sign=aprs_to_callsign,
-                simulate_send=aprs_simulate_send,
+                simulate_send=False,
                 source_call_sign=aprs_from_callsign,
             )
 

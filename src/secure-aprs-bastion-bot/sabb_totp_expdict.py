@@ -24,11 +24,6 @@
 from expiringdict import ExpiringDict
 from client_logger import logger
 
-#
-# This is our (future) global variable for the expiring dictionary
-#
-totp_dupe_cache: ExpiringDict = None
-
 
 # Helper method for creating our TOTP cache
 def create_expiring_totp_cache(max_len: int, max_age_seconds: int):
@@ -45,8 +40,6 @@ def create_expiring_totp_cache(max_len: int, max_age_seconds: int):
     Returns
     =======
     """
-
-    global totp_dupe_cache
 
     # Create the decaying TOTP cache. Any combination of TOTP code and callsign that is present in
     # this cache will be considered as already used and will not be processed

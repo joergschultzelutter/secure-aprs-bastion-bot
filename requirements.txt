@@ -2,3 +2,7 @@ pyotp
 qrcode
 pyyaml
 aprslib
+apprise
+expiringdict
+unidecode
+apscheduler
