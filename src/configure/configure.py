@@ -22,9 +22,7 @@
 # text as much as possible, thus rendering the output text to a format that is
 # more compatible with e.g. SMS devices.
 #
-import logging
 import sys
-from enum import verify
 
 import pyotp
 import qrcode
@@ -46,7 +44,7 @@ else:
     import tty
 
 # Default name of the to-be-generated output configuration file
-CONFIG_FILE_NAME = sabb_command_config.yaml
+CONFIG_FILE_NAME = "sabb_command_config.yaml"
 
 # Set up the global logger variable
 logging.basicConfig(
@@ -61,7 +59,7 @@ def ttl_check(ttl_value):
 
     Parameters
     ==========
-    ttl_value:
+    ttl_value: str
         our TTL value we want to check
 
     Returns
@@ -88,7 +86,7 @@ def totp_check(totp_value):
 
     Parameters
     ==========
-    totp_value:
+    totp_value: str
         our TOTP code that we want to check
 
     Returns
@@ -247,132 +245,138 @@ def get_command_line_params_config():
 
     args = parser.parse_args()
 
-    configfile = args.config_file
-    add_user = args.add_user
-    add_command = args.add_command
-    del_user = args.del_user
-    del_command = args.del_command
+    __configfile = args.config_file
+    __add_user = args.add_user
+    __add_command = args.add_command
+    __del_user = args.del_user
+    __del_command = args.del_command
     # Call sign is always in upper case characters
-    callsign = args.callsign.upper()
-    ttl = args.ttl
-    totp_code = args.totp_code
+    __callsign = args.callsign.upper()
+    __ttl = args.ttl
+    __totp_code = args.totp_code
     # command_code is always in lower case characters
-    command_code = args.command_code.lower()
-    command_string = args.command_string
-    launch_as_subprocess = args.launch_as_subprocess
-    test_totp_code = args.test_totp_code
-    test_command_code = args.test_command_code
-    execute_command_code = args.execute_command_code
-    show_secret = args.show_secret if add_user else False
-    aprs_test_arguments = args.aprs_test_arguments or []
+    __command_code = args.command_code.lower()
+    __command_string = args.command_string
+    __launch_as_subprocess = args.launch_as_subprocess
+    __test_totp_code = args.test_totp_code
+    __test_command_code = args.test_command_code
+    __execute_command_code = args.execute_command_code
+    __show_secret = args.show_secret if add_user else False
+    __aprs_test_arguments = args.aprs_test_arguments or []
 
     # Run some basic plausibility checks
 
-    if len(aprs_test_arguments) > 9:
+    if len(__aprs_test_arguments) > 9:
         logger.error(msg="Too many APRS arguments for testing purposes (0..9)")
         sys.exit(0)
 
-    if len(sab_callsign) > 0:
+    if len(__callsign) > 0:
         # Check whether we have a call sign with or without SSID
         regex_string = r"\b^([A-Z0-9]{1,3}[0-9][A-Z0-9]{0,3})(-[A-Z0-9]{1,2})?$\b"
-        matches = re.search(pattern=regex_string, string=sab_callsign)
+        matches = re.search(pattern=regex_string, string=__callsign)
         if not matches:
             logger.error(msg="Call sign must match a valid call sign format")
             sys.exit(0)
 
     if (
-        add_user
-        or del_user
-        or add_command
-        or del_command
-        or test_totp_code
-        or test_command_code
-        or execute_command_code
+        __add_user
+        or __del_user
+        or __add_command
+        or __del_command
+        or __test_totp_code
+        or __test_command_code
+        or __execute_command_code
     ):
-        if len(callsign) < 1:
+        if len(__callsign) < 1:
             logger.error(msg="Call sign is required")
             sys.exit(0)
 
-    if test_command_code or execute_command_code:
-        if add_command or del_command or add_user or del_user or test_totp_code:
+    if __test_command_code or __execute_command_code:
+        if (
+            __add_command
+            or __del_command
+            or __add_user
+            or __del_user
+            or __test_totp_code
+        ):
             logger.error(msg="Testing not possible with this combination")
             sys.exit(0)
-        if len(callsign) < 1:
+        if len(__callsign) < 1:
             logger.error(msg="Command code is required")
             sys.exit(0)
-        if len(totp_code) < 1:
+        if len(__totp_code) < 1:
             logger.error(msg="TOTP code is required")
             sys.exit(0)
 
-    if add_command or del_command:
-        if len(command_code) < 1:
+    if __add_command or __del_command:
+        if len(__command_code) < 1:
             logger.error(msg="Command code is required")
             sys.exit(0)
 
-    if test_totp_code:
-        if add_user or del_user or add_command or del_command:
+    if __test_totp_code:
+        if __add_user or __del_user or __add_command or __del_command:
             logger.error(
                 msg="--test-config and add/del commands cannot be run at the same time"
             )
             sys.exit(0)
-        if len(totp_code) < 1:
+        if len(__totp_code) < 1:
             logger.error(msg="TOTP code is required")
             sys.exit(0)
-        if execute_command_code:
+        if __execute_command_code:
             logger.error(
                 msg="--test-command-code and --execute-command-code cannot be run at the same time"
             )
             sys.exit(0)
 
-    if execute_command_code:
-        if add_user or del_user or add_command or del_command:
+    if __execute_command_code:
+        if __add_user or __del_user or __add_command or __del_command:
             logger.error(
                 msg="--execute-config and add/del commands cannot be run at the same time"
             )
             sys.exit(0)
-        if len(totp_code) < 1:
+        if len(__totp_code) < 1:
             logger.error("TOTP code is required")
             sys.exit(0)
-        if test_command_code:
+        if __test_command_code:
             logger.error(
                 msg="--test-command-code and --execute-command-code cannot be run at the same time"
             )
             sys.exit(0)
 
     if (
-        not test_totp_code
-        and not test_command_code
-        and not execute_command_code
-        and not add_command
-        and not del_command
-        and not add_user
-        and not del_user
+        not __test_totp_code
+        and not __test_command_code
+        and not __execute_command_code
+        and not __add_command
+        and not __del_command
+        and not __add_user
+        and not __del_user
     ):
         logger.error(msg="No command parameters specified; nothing to do")
         sys.exit(0)
 
-    if len(command_code) > 1:
-        if " " in command_code:
+    if len(__command_code) > 1:
+        if " " in __command_code:
             logger.error(msg="Invalid command code; must not contain spaces")
             sys.exit(0)
 
     return (
-        configfile,
-        add_user,
-        add_command,
-        del_user,
-        del_command,
-        callsign,
-        ttl,
-        totp_code,
-        command_code,
-        command_string,
-        test_totp_code,
-        show_secret,
-        launch_as_subprocess,
-        test_command_code,
-        execute_command_code,
-        aprs_test_arguments,
+        __configfile,
+        __add_user,
+        __add_command,
+        __del_user,
+        __del_command,
+        __callsign,
+        __ttl,
+        __totp_code,
+        __command_code,
+        __command_string,
+        __test_totp_code,
+        __show_secret,
+        __launch_as_subprocess,
+        __test_command_code,
+        __execute_command_code,
+        __aprs_test_arguments,
     )
 
 
@@ -421,7 +425,7 @@ def verify_totp_code(secret: str, totp_code: str):
     ==========
     secret: str
         user's TOTP secret
-    code: str
+    totp_code: str
         user's TOTP code
 
     Returns
@@ -453,16 +457,16 @@ def add_user_to_yaml_config(configfile: str, callsign: str, secret: str):
     """
 
     # Read the file from disk
-    success, data = read_config_file_from_disk(filename=configfile)
+    __success, data = read_config_file_from_disk(filename=configfile)
 
-    if not success:
+    if not __success:
         logger.debug(
             msg=f"Invalid file structure encountered in '{configfile}'; aborting"
         )
         return False
 
     data_updated = False
-    success = False
+    __success = False
 
     # iterate through the existing list and apply updates
     # in case the user already exists
@@ -478,9 +482,9 @@ def add_user_to_yaml_config(configfile: str, callsign: str, secret: str):
         data["users"].append({"callsign": callsign, "secret": secret, "commands": {}})
 
     # Write the config file back to disk
-    success = write_config_file_to_disk(filename=configfile, data=data)
+    __success = write_config_file_to_disk(filename=configfile, data=data)
 
-    return success
+    return __success
 
 
 def get_user_secret(configfile: str, callsign: str):
@@ -502,24 +506,25 @@ def get_user_secret(configfile: str, callsign: str):
         user's TOTP secret
     """
 
-    success = False
     secret = None
 
-    success, data = read_config_file_from_disk(filename=configfile)
-    if not success:
-        return success
+    __success, data = read_config_file_from_disk(filename=configfile)
+    if not __success:
+        return __success
+
+    __success = False
 
     # Get the secret for the user (if present)
     # Our search can only result in a single match; the secret can
     # only be associated with a SSID-less callsign _or_ a callsign with SSID
-    for item in data["users"]:
-        if "callsign" in item and item["callsign"] == callsign:
-            if "secret" in item:
-                secret = item["secret"]
-                success = True
+    for __item in data["users"]:
+        if "callsign" in __item and __item["callsign"] == callsign:
+            if "secret" in __item:
+                secret = __item["secret"]
+                __success = True
                 break
 
-    return success, secret
+    return __success, secret
 
 
 def get_user_command_string(configfile: str, callsign: str, command_code: str):
@@ -545,38 +550,38 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
         launch_as_subprocess flag for the user/command_line combination
     """
 
-    command_string = ""
-    launch_as_subprocess = False
+    __command_string = ""
+    __launch_as_subprocess = False
 
-    success, data = read_config_file_from_disk(filename=configfile)
-    if not success:
-        return success
+    __success, data = read_config_file_from_disk(filename=configfile)
+    if not __success:
+        return __success
 
-    success = False
+    __success = False
 
     # Get the secret for the user (if present)
-    for item in data["users"]:
-        if "callsign" in item and item["callsign"] == callsign:
+    for __item in data["users"]:
+        if "callsign" in __item and __item["callsign"] == callsign:
             # we have found our call sign. Now start
             # looking for the command code
-            for command in item["commands"]:
+            for command in __item["commands"]:
                 if command == command_code:
                     try:
                         # We have found our entry. Retrieve all values
-                        command_string = item["commands"][command]["command_string"]
-                        launch_as_subprocess = item["commands"][command][
+                        __command_string = item["commands"][command]["command_string"]
+                        __launch_as_subprocess = item["commands"][command][
                             "launch_as_subprocess"
                         ]
-                        success = True
+                        __success = True
                     except KeyError:
                         pass
                     break
-        if success:
+        if __success:
             break
     return (
-        success,
-        command_string,
-        launch_as_subprocess,
+        __success,
+        __command_string,
+        __launch_as_subprocess,
     )
 
 
@@ -596,15 +601,15 @@ def del_user_from_yaml_config(configfile: str, callsign: str):
     success: bool
         True / False, depending on whether or not the entry was deleted
     """
-    success, data = read_config_file_from_disk(filename=configfile)
-    if not success:
-        return success
+    __success, data = read_config_file_from_disk(filename=configfile)
+    if not __success:
+        return __success
 
     data["users"] = [user for user in data["users"] if user["callsign"] != callsign]
 
     # Write the config file back to disk
-    success = write_config_file_to_disk(filename=configfile, data=data)
-    return success
+    __success = write_config_file_to_disk(filename=configfile, data=data)
+    return __success
 
 
 def read_config_file_from_disk(filename: str):
@@ -623,7 +628,7 @@ def read_config_file_from_disk(filename: str):
     data: dict
         Dictionary containing the contents of the file
     """
-    success = False
+    __success = False
     data = {"users": []}
 
     if not does_file_exist(file_name=filename):
@@ -632,7 +637,7 @@ def read_config_file_from_disk(filename: str):
         )
         # We simply return the pre-defined dictionary
         # so let's consider this a success
-        success = True
+        __success = True
     else:
         try:
             with open(file=filename, mode="r") as yaml_file:
@@ -643,12 +648,12 @@ def read_config_file_from_disk(filename: str):
                 # as the file exists, it has to have a valid data structure
                 # otherwise, we will trigger an error
                 if "users" not in data:
-                    logger.warning(f"Invalid data structure in '{configfile}'")
+                    logger.warning(f"Invalid data structure in '{filename}'")
                 else:
-                    success = True
+                    __success = True
         except:
             logger.warning(f"Cannot read config file '{filename}'")
-    return success, data
+    return __success, data
 
 
 def write_config_file_to_disk(filename: str, data: dict):
@@ -667,20 +672,20 @@ def write_config_file_to_disk(filename: str, data: dict):
     success: bool
         True / False, depending on whether the file was written
     """
-    success = False
-    assert type(data) == dict
+    __success = False
+    assert type(data) is dict
 
     # Write the config file back to disk
     try:
         with open(file=filename, mode="w") as yaml_file:
             yaml.dump(data, yaml_file, default_flow_style=False, allow_unicode=True)
-        success = True
+        __success = True
         logger.info(f"Configuration file '{filename}' was successfully written")
     except Exception as ex:
         logger.debug(f"Exception occurred: {ex.__traceback__}")
         print(f"Cannot write config file '{filename}' to disk")
-        success = False
-    return success
+        __success = False
+    return __success
 
 
 def add_cmd_to_yaml_config(
@@ -713,12 +718,12 @@ def add_cmd_to_yaml_config(
     """
 
     # Read the file from disk
-    success, data = read_config_file_from_disk(filename=configfile)
+    __success, data = read_config_file_from_disk(filename=configfile)
 
-    if not success:
-        return success
+    if not __success:
+        return __success
 
-    success = False
+    __success = False
     found_data = False
 
     # Iterate through the list of call sign
@@ -740,9 +745,9 @@ def add_cmd_to_yaml_config(
         )
     else:
         # Write the config file back to disk
-        success = write_config_file_to_disk(filename=configfile, data=data)
+        __success = write_config_file_to_disk(filename=configfile, data=data)
 
-    return success
+    return __success
 
 
 def del_cmd_from_yaml_config(configfile: str, callsign: str, command_code: str):
@@ -765,13 +770,13 @@ def del_cmd_from_yaml_config(configfile: str, callsign: str, command_code: str):
     """
 
     # Read the file from disk
-    success, data = read_config_file_from_disk(filename=configfile)
+    __success, data = read_config_file_from_disk(filename=configfile)
 
-    if not success:
-        return success
+    if not __success:
+        return __success
 
     found_data = False
-    success = False
+    __success = False
 
     for user in data["users"]:
         if user["callsign"] == callsign:
@@ -785,13 +790,13 @@ def del_cmd_from_yaml_config(configfile: str, callsign: str, command_code: str):
         )
     else:
         # Write the config file back to disk
-        success = write_config_file_to_disk(filename=configfile, data=data)
+        __success = write_config_file_to_disk(filename=configfile, data=data)
 
-    return success
+    return __success
 
 
 def identify_target_callsign_and_command_string(
-    configfile: str, callsign: str, totp_code: str, command_code: str
+    configfile: str, callsign: str, totp_code: str, command_code: str | None
 ):
     """
     Retrieves the callsign/totp_code match and identifies the command_string for the given command_code.
@@ -853,64 +858,78 @@ def identify_target_callsign_and_command_string(
     launch_as_subprocess: bool
         True if the program is to be launched as a subprocess, False otherwise
         Always False if no command_code was provided
+    secret: str
+        Secret associated with this callsign
     """
 
     # Read the file from disk
-    success, data = read_config_file_from_disk(filename=configfile)
+    __success, data = read_config_file_from_disk(filename=configfile)
 
-    if not success:
-        return False, None, None
+    if not __success:
+        return False, None, None, None
 
-    success = False
-    target_callsign = None
-    command_string = None
-    launch_as_subprocess = False
+    __success = False
+    __target_callsign = None
+    __command_string = None
+    __secret = None
+    __launch_as_subprocess = False
 
     # Determine if we are only supposed to check the TOTP code and skip the command_code validation
     perform_full_check = (
-        True if type(command_code) == str and len(command_code) > 0 else False
+        True if type(command_code) is str and len(command_code) > 0 else False
     )
 
     # build the SSID-less call sign
     callsign_truncated = callsign.split("-")[0]
 
     # and now iterate through the config file
-    for item in data["users"]:
-        if "callsign" in item and item["callsign"] in (callsign, callsign_truncated):
+    for __item in data["users"]:
+        if "callsign" in __item and __item["callsign"] in (
+            callsign,
+            callsign_truncated,
+        ):
             # We have found a match, let's retrieve the secret
-            if "secret" in item:
-                secret = item["secret"]
+            if "secret" in __item:
+                __secret = __item["secret"]
                 # Validate the given TOTP code against that secret
-                if verify_totp_code(secret=item["secret"], totp_code=totp_code):
+                if verify_totp_code(secret=__item["secret"], totp_code=totp_code):
                     # We found a match for the callsign (note that the input callsign
                     # and our new one may differ for those cases our target callsign
                     # is ssid-less!
-                    target_callsign = item["callsign"]
+                    __target_callsign = __item["callsign"]
                     # We might be required to skip the next step for those cases
                     # where
                     if perform_full_check:
                         # now let's iterate through the target callsign's list of command
                         # codes and try to determine what command string we are supposed
                         # to execute
-                        for command in item["commands"]:
+                        for command in __item["commands"]:
                             if command == command_code:
                                 # We found a match!
                                 try:
-                                    command_string = item["commands"][command][
+                                    __command_string = __item["commands"][command][
                                         "command_string"
                                     ]
-                                    launch_as_subprocess = item["commands"][command][
-                                        "launch_as_subprocess"
-                                    ]
-                                    success = True
+                                    __launch_as_subprocess = __item["commands"][
+                                        command
+                                    ]["launch_as_subprocess"]
+                                    __success = True
                                 except KeyError:
-                                    command_string = launch_as_subprocess = None
+                                    __command_string = __launch_as_subprocess = None
                                 break
+                    # no full check requested; return ok but set command_string and
+                    # launch_as_subprocess to None as we don't retrieve this data
                     else:
-                        success = True
-                        command_string = launch_as_subprocess = None
+                        __success = True
+                        __command_string = __launch_as_subprocess = None
                     break
-    return success, target_callsign, command_string, launch_as_subprocess
+    return (
+        __success,
+        __target_callsign,
+        __command_string,
+        __launch_as_subprocess,
+        __secret,
+    )
 
 
 def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
@@ -933,7 +952,7 @@ def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
     success: bool
         True / False, depending on whether or not the entry was created/updated
     """
-    success = False
+    __success = False
 
     # Do not fail if the config file does not exist
     if not does_file_exist(configfile):
@@ -982,7 +1001,7 @@ def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
         content = input("Enter CONTINUE or QUIT: ")
         if content == "QUIT":
             logger.debug(f"{add_user.__name__}: aborting")
-            return success
+            return __success
 
     # User has entered CONTINUE. Validate secret against TOTP code from user
     content = ""
@@ -990,26 +1009,32 @@ def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
         content = input("Enter the 6-digit TOTP code or enter QUIT to exit:")
         if content == "QUIT":
             logger.debug(f"{add_user.__name__}: aborting")
-            success = False
-            return success
+            __success = False
+            return __success
         else:
             if not verify_totp_code(secret=secret, totp_code=content):
                 print("This TOTP code is invalid")
                 content = ""
+                continue
             else:
                 # write to YAML file
-                success = add_user_to_yaml_config(
+                __success = add_user_to_yaml_config(
                     configfile=configfile, callsign=callsign, secret=secret
                 )
-                if success:
-                    print("")
+                print("")
+                if __success:
                     logger.info(
                         msg=f"User '{callsign}' was successfully added to config YAML file"
                     )
                     logger.info(
                         msg="Now use --add-command and add some command codes for that user"
                     )
-                    return success
+                else:
+                    logger.info(
+                        msg=f"Unable to write entry for '{callsign}' to config YAML file"
+                    )
+                break
+    return __success
 
 
 def del_user(configfile: str, callsign: str):
@@ -1028,12 +1053,12 @@ def del_user(configfile: str, callsign: str):
     success: bool
         True / False, depending on whether or not the entry was created/updated
     """
-    success = False
+    __success = False
     if not does_file_exist(configfile):
         logger.info(f"Configuration file '{configfile}' does not exist; nothing to do")
     else:
         logger.info("Deleting user account")
-        success = del_user_from_yaml_config(
+        __success = del_user_from_yaml_config(
             configfile=configfile,
             callsign=callsign,
         )
@@ -1043,7 +1068,7 @@ def del_user(configfile: str, callsign: str):
             logger.info(
                 f"Unable to delete the user account '{callsign}' - e.g. user account does not exist"
             )
-    return success
+    return __success
 
 
 def add_cmd(
@@ -1074,25 +1099,25 @@ def add_cmd(
     success: bool
         True / False, depending on whether or not the entry was created/updated
     """
-    success = False
+    __success = False
     if not does_file_exist(configfile):
         logger.info(f"Configuration file '{configfile}' does not exist; nothing to do")
     else:
         logger.info(
             f"Adding new command-code '{command_code}' config for user '{callsign}'"
         )
-        success = add_cmd_to_yaml_config(
+        __success = add_cmd_to_yaml_config(
             configfile=configfile,
             callsign=callsign,
             command_code=command_code,
             command_string=command_string,
             launch_as_subprocess=launch_as_subprocess,
         )
-        if success:
+        if __success:
             logger.info(
                 f"Command '{command_code}' for user '{callsign}' added to config file"
             )
-        return success
+    return __success
 
 
 def del_cmd(configfile: str, callsign: str, command_code: str):
@@ -1114,17 +1139,17 @@ def del_cmd(configfile: str, callsign: str, command_code: str):
         True / False, depending on whether or not the entry was created/updated
     """
 
-    success = False
+    __success = False
     if not does_file_exist(configfile):
         logger.info(f"Configuration file '{configfile}' does not exist; nothing to do")
     else:
         logger.info(f"Deleting command '{command_code}' for user '{callsign}'")
-        success = del_cmd_from_yaml_config(
+        __success = del_cmd_from_yaml_config(
             configfile=configfile,
             callsign=callsign,
             command_code=command_code,
         )
-        if success:
+        if __success:
             logger.info(
                 f"Command '{command_code}' for user '{callsign}' removed from config file"
             )
@@ -1132,7 +1157,7 @@ def del_cmd(configfile: str, callsign: str, command_code: str):
             logger.info(
                 "Unable to delete the command name - e.g. command name does not exist or other error occurred"
             )
-    return success
+    return __success
 
 
 def execute_program(command: str | list, wait_for_completion: bool = True):
@@ -1200,7 +1225,7 @@ def wait_or_keypress(timeout_seconds: float) -> bool:
     has_tty = sys.stdin.isatty()
     if not has_tty:
         logger.warning(
-            msg="IDE/Piped-mode detected; you need to press any key and confirm this setting with Enter"
+            msg="IDE/Piped-mode detected; you need to press any key *AND* confirm this setting with Enter"
         )
 
     def key_listener():
@@ -1312,6 +1337,7 @@ if __name__ == "__main__":
                 target_callsign,
                 command_string,
                 launch_as_subprocess,
+                secret,
             ) = identify_target_callsign_and_command_string(
                 configfile=sabb_configfile,
                 callsign=sabb_callsign,
