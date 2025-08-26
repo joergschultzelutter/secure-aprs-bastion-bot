@@ -74,3 +74,6 @@ python send-aprs-message.py --from-callsign=DF1JSL-1 --to-callsign=DF1JSL-2 --pa
 2025-08-07 12:03:49,706 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :occaecat cupidatat non proident, sunt in culpa qui officia  (07/08)'
 2025-08-07 12:03:59,711 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :deserunt mollit anim id est laborum                         (08/08)'
 ```
+
+>[!NOTE]
+>`--numeric-message-pagination` allows a maximum of 99 partial messages to be sent. Texts whose content exceeds this length are truncated after the 99th partial message. If `--numeric-message-pagination` is not used, however, this length restriction does not apply.
