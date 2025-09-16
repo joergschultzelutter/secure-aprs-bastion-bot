@@ -36,6 +36,7 @@ import platform
 import subprocess
 import threading
 
+
 if platform.system() == "Windows":
     import msvcrt
 else:
@@ -1167,38 +1168,42 @@ def execute_program(command: str | list, wait_for_completion: bool = True):
     Parameters
     ==========
     command: str or list
-        single command or a command with the list of arguments
-    wait_for_completion: 'bool'
-        True = wait until external program completes its execution (default)
-        False = Do not wait but start external program as background job
+        Single command or a command with arguments.
+    wait_for_completion: bool
+        True  = Wait until external program completes its execution (default).
+        False = Start external program as background job
+                after 20 seconds delay and return immediately.
 
     Returns
     =======
-        subprocess.Popen or int:   if wait_for_completion==False: return POpen object
-                                   if wait_for_completion==True: return program's return code
-                                   Returns None in case of error
+        int   if wait_for_completion == True: program's return code
+        None  if wait_for_completion == False or in case of error
     """
-    try:
-        if platform.system() == "Windows":
-            process = subprocess.Popen(command, shell=True)
-        else:
-            if isinstance(command, str):
-                command_list = command.split()
-                process = subprocess.Popen(command_list)
-            elif isinstance(command, list):
-                process = subprocess.Popen(command)
+    def _start_process(cmd):
+        try:
+            if platform.system() == "Windows":
+                subprocess.Popen(cmd, shell=True)
             else:
-                raise ValueError("Command must either be of type 'str' or 'list'")
+                if isinstance(cmd, str):
+                    subprocess.Popen(cmd.split())
+                elif isinstance(cmd, list):
+                    subprocess.Popen(cmd)
+                else:
+                    raise ValueError("Command must be of type 'str' or 'list'")
+        except Exception as e:
+            logger.debug(f"Error while starting process: {e}")
 
+    try:
         if wait_for_completion:
-            return_code = process.wait()
-            return return_code
+            process = _start_process(command)
+            if process is not None:
+                return process.wait()
+            return None
         else:
-            return process
-
-    except FileNotFoundError:
-        logger.debug(f"Error: Command '{command}' not found")
-        return None
+            timer = threading.Timer(20.0, _start_process, args=(command,))
+            timer.daemon = True
+            timer.start()
+            return None
     except Exception as e:
         logger.debug(f"General error has occurred: {e}")
         return None
