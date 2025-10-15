@@ -54,13 +54,12 @@ def get_command_line_params():
 
     parser.add_argument(
         "--configfile",
-        default="core_aprs_client.cfg",
+        default="secure_aprs_bastion_bot.cfg",
         type=argparse.FileType("r"),
-        help="APRS framework config file name (default is 'core_aprs_client.cfg')",
+        help="APRS framework config file name (default is 'secure_aprs_bastion_bot.cfg')",
     )
 
     args = parser.parse_args()
-
     cfg = args.configfile.name
 
     if not os.path.isfile(cfg):
