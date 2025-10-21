@@ -12,13 +12,13 @@ For notification targets other than APRS (e.g. Telegram messenger), I recommend 
 ```
 python send-aprs-message.py --help
 
-sage: send-aprs-message.py  [-h]
-                            [--from-callsign APRS_FROM_CALLSIGN]
-                            [--passcode APRS_PASSCODE]
-                            [--to-callsign APRS_TO_CALLSIGN]
-                            [--aprs-message APRS_MESSAGE]
-                            [--numeric-message-pagination]
-                            [--simulate-send]
+Usage: send-aprs-message.py     [-h]
+                                [--from-callsign APRS_FROM_CALLSIGN]
+                                [--passcode APRS_PASSCODE]
+                                [--to-callsign APRS_TO_CALLSIGN]
+                                [--aprs-message APRS_MESSAGE]
+                                [--numeric-message-pagination]
+                                [--simulate-send]
 
 options:
   -h, --help                            show this help message and exit
@@ -76,4 +76,4 @@ python send-aprs-message.py --from-callsign=DF1JSL-1 --to-callsign=DF1JSL-2 --pa
 ```
 
 >[!NOTE]
->`--numeric-message-pagination` allows a maximum of 99 partial messages to be sent. Texts whose content exceeds this length are truncated after the 99th partial message. If `--numeric-message-pagination` is not used, however, this length restriction does not apply.
+>`--numeric-message-pagination` allows a maximum of 99 partial messages to be sent. Texts whose content exceeds this length are truncated after the 99th partial message. If `--numeric-message-pagination` is _not_ used, however, this length restriction does not apply.

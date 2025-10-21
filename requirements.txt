@@ -6,3 +6,4 @@ apprise
 expiringdict
 unidecode
 apscheduler
+core-aprs-client
