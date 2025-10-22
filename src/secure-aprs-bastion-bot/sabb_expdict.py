@@ -22,19 +22,19 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 from expiringdict import ExpiringDict
-from client_logger import logger
+from sabb_logger import logger
 
 
-# Helper method for creating our TOTP cache
-def create_expiring_totp_cache(max_len: int, max_age_seconds: int):
+# Helper method for creating our APRS message cache
+def create_expiring_dict(max_len: int, max_age_seconds: int):
     """
     Helper method for creating the ExpiringDict
 
     Parameters
     ==========
-    max_len: 'int'
+    max_len: int
        Number of max dictionary entries
-    max_age_seconds: 'int'
+    max_age_seconds: int
        life span per entry in seconds
 
     Returns
@@ -44,13 +44,13 @@ def create_expiring_totp_cache(max_len: int, max_age_seconds: int):
     # Create the decaying TOTP cache. Any combination of TOTP code and callsign that is present in
     # this cache will be considered as already used and will not be processed
     logger.debug(
-        msg=f"TOTP dupe detection cache set to {str(max_len)} max possible entries and a TTL of {str(max_age_seconds / 60)} mins"
+        msg=f"TOTP message dupe cache set to {str(max_len)} max possible entries and a TTL of {str(max_age_seconds / 60)} mins"
     )
-    totp_dupe_cache = ExpiringDict(
+    totp_message_cache = ExpiringDict(
         max_len=max_len,
         max_age_seconds=max_age_seconds,
     )
-    return totp_dupe_cache
+    return totp_message_cache
 
 
 if __name__ == "__main__":

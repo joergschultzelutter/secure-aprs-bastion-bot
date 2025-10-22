@@ -30,11 +30,9 @@ import os
 import sys
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(module)s -%(levelname)s - %(message)s",
-)
-logger = logging.getLogger(__name__)
+from sabb_logger import logger
+from sabb_shared import totp_message_cache
+from sabb_expdict import create_expiring_dict
 
 
 def get_command_line_params():
@@ -86,6 +84,16 @@ if __name__ == "__main__":
         log_level=logging.DEBUG,
         input_parser=parse_input_message,
         output_generator=generate_output_message,
+    )
+
+    # Create the expiring dictionary object for the TOTP records
+    totp_message_cache = create_expiring_dict(
+        max_len=client.config_data["secure_aprs_bastion_bot"][
+            "sabb_totp_cache_max_len"
+        ],
+        max_age_seconds=client.config_data["secure_aprs_bastion_bot"][
+            "sabb_totp_cache_max_age_seconds"
+        ],
     )
 
     # Activate the APRS client and connect to APRS-IS
