@@ -10,7 +10,7 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 
 ## Features
 
-- Control of programs using predefined keywords (`--command-code`) and scripts (`--command-string`) associated with these keywords. The user sends a `--command-code` to `secure-aprs-bastion-bot`, which then executes the local script `--command-string` that is associated to the `--command-code`. **The user is responsible for creating these individual scripts.**
+- Control of programs using predefined keywords (`--command-code`) and scripts (`--command-string`) associated with these keywords. The user sends a `--command-code` message to `secure-aprs-bastion-bot`, which then executes the local script `--command-string` that is associated to the `--command-code`. **The user is responsible for creating these individual scripts.**
 - In addition to the call sign of the incoming message, up to 9 optional parameters can be passed to the `--command-string` as part of the APRS message for control purposes.
 - Authorization, authentication, and security:
   - Executable programs are assigned locally per call sign; i.e., `--command-code`s assigned to the call sign `DF1ABC` cannot be accessed by `DF1XYZ` (and vice versa).
