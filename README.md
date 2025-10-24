@@ -10,19 +10,20 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 
 ## Features
 
-- Control of programs using predefined keywords (`--command-code`) and scripts (`--command-script`). The user sends a `--command-code` to `secure-aprs-bastion-bot`, which then executes the local script `--command-string`. **The user is responsible for creating these individual scripts.**
-- In addition to the call sign of the incoming message, up to 9 optional parameters can be passed to the `--command-script` as part of the APRS message for control purposes.
+- Control of programs using predefined keywords (`--command-code`) and scripts (`--command-string`) associated with these keywords. The user sends a `--command-code` to `secure-aprs-bastion-bot`, which then executes the local script `--command-string` that is associated to the `--command-code`. **The user is responsible for creating these individual scripts.**
+- In addition to the call sign of the incoming message, up to 9 optional parameters can be passed to the `--command-string` as part of the APRS message for control purposes.
 - Authorization, authentication, and security:
   - Executable programs are assigned locally per call sign; i.e., `--command-code`s assigned to the call sign `DF1ABC` cannot be accessed by `DF1XYZ` (and vice versa).
-  - `secure-aprs-bastion-bot` requires one-time passwords (TOTP) which are individual to each authenticated / configured user. The secrets for these tokens are defined when setting up the user configuration and can be configured with a validity of 30 seconds to 5 minutes. In addition to the duplicate check of the actual APRS message, an additional TOTP/call sign duplicate check is performed. This check prevents one-time passwords from being used multiple times during their validity period, effectively preventing hi-jacking and misuse of the token in question as best as possible over an unsecured plain-text APRS connection.
-- User account and command setup:
+  - `secure-aprs-bastion-bot` requires one-time passwords (TOTP) which are individual to each authenticated / configured call sign. The secrets for these tokens are defined when setting up the call sign configuration and can be configured with a validity of 30 seconds to 5 minutes. In addition to the duplicate check of the actual APRS message, an additional TOTP/call sign duplicate check is performed. This check prevents one-time passwords from being used multiple times during their validity period, effectively preventing hi-jacking and misuse of the token in question as best as possible over an unsecured plain-text APRS connection.
+- Call sign and command setup:
   - The configuration data is set up and tested using a configuration program provided (`configure.py`).
-  - The configuration can be done at the call sign plus SSID level _or_ exclusively at the call sign level without SSID (base call sign). In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit the base call sign's TOTP token for authorization and authentication.
+  - User accounts are configured on a call sign level.
+  - The user account configuration can be done at the call sign plus SSID level _or_ exclusively at the call sign level without SSID (base call sign). In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit the base call sign's TOTP token for authorization and authentication.
   - When configuring the base call sign, it is also not necessary to configure all other call signs with SSID individually. The prerequisite for using this configuration is, of course, the use of the TOTP token of the base call sign. Further details can be found in the [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md) program documentation.
 - Program execution:
-  - The programs to be executed can be started either synchronously or asynchronously.
+  - The programs to be executed can be started either synchronously or as a detached process.
     - Synchronous execution first executes the desired script. After script termination,  `secure-aprs-bastion-bot` sends an APRS confirmation to the user. This is the default behavior.
-    - Asynchronous processing first sends the APRS confirmation to the user and _then_ starts the desired program as a separate process.  `secure-aprs-bastion-bot` will _not_ wait for the program to finish executing. Such processing may be necessary, for example, when restarting a server.
+    - Asynchronous processing first sends the APRS confirmation to the user and starts the desired program as a separate process.  `secure-aprs-bastion-bot` will _not_ wait for the program to finish executing. Such processing may be necessary, for example, when restarting a server.
   - After completion of such a program sequence, regardless of its execution type (synchronous or asynchronous), an APRS message can be sent back to the caller as part of the user script and a supporting Python script (`send-aprs-message.py`). Alternatively, other recommended tools such as [Apprise](https://github.com/caronc/apprise) can be used.
 
 # Program-specific documentation
@@ -36,8 +37,8 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 - Clone this repository
 - `pip install -r requirements.txt` (or use the `requirements.txt` file from the respective project's sub directories in case you just want to install a single program)
 - Configure the bot`s configuration file:
-  - run [configure.py](docs/configure.md) and create at least one user account (`--add-user`)
-  - run [configure.py](docs/configure.md) again and create at least one `--command-code` / `--command-string` relationship entry (`--add-command`)
+  - run [configure.py](docs/configure.md) and create at least one user account (`--add-user`), based on a call sign with or without SSID.
+  - run [configure.py](docs/configure.md) again and add at least one `--command-code` / `--command-string` relationship entry (`--add-command`) to that user account.
   - Finally, use [configure.py](docs/configure.md) for local configuration file testing
   - The configuration file generated by `configure.py` is then copied to the installation directory of `secure-aprs-bastion-bot` and processed by the bot.
 - Amend the bot's configuration file. The bot is based on my `core-aprs-client` framework ([repository link](https://github.com/joergschultzelutter/core-aprs-client)). You might want to [disable e.g. beaconing and/or bulletin messages](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md).
@@ -55,16 +56,16 @@ The additional parameter `$0`, on the other hand, _always_ contains the call sig
 
 Example 1 - `--command-code` without optional parameters
 
-| APRS message             | `TOTP code` | `--command-code` | `$0`        | `$1`  | `$2` | .... | `$9` |
-| ------------------------ | ----------- |------------------| ----------- | ----- | ---- | ---- | ---- |
-| `123456reboot`           | `123456`    | `reboot`         | `DF1JSL-1`  | n/a   | n/a  |      | n/a  |
+| APRS message             | `TOTP code` | `--command-code` | `$0`        | `$1`  | `$2` | `$3` | .... | `$9` |
+| ------------------------ | ----------- |------------------| ----------- | ------| ---- | ---- | ---- | ---- |
+| `123456reboot`           | `123456`    | `reboot`         | `DF1JSL-1`  | n/a   | n/a  | n/a  | n/a  | n/a  |
 
 
 Example 1 - `command-code` with optional parameters
 
-| APRS message             | `TOTP code` | `--command-code` | `$0`        | `$1`       | `$2` | .... | `$9` |
-| ------------------------ | ----------- |------------------| ----------- | ---------- | ---- | ---- | ---- |
-| `123456reboot debmu41 5` | `123456`    | `reboot`         | `DF1JSL-1`  | `debmu41`  | `5`  |      | n/a  |
+| APRS message             | `TOTP code` | `--command-code` | `$0`        | `$1`       | `$2` | `$3` | .... | `$9` |
+| ------------------------ | ----------- |------------------| ----------- | ---------- | ---- | ---- | ---- | ---- |
+| `123456reboot debmu41 5` | `123456`    | `reboot`         | `DF1JSL-1`  | `debmu41`  | `5`  | n/a  |      | n/a  |
 
 > [!TIP]
 > tl;dr: A user always sends the `--command-code` as an APRS message to the `secure-aprs-bastion-bot`. The bot determines the `--command-code` and any optional parameters from the message, identifies the corresponding `--command-string`, replaces potential placeholders for the optional parameters, and then executes the modified `--command-string`.
@@ -105,8 +106,8 @@ The command of the edited `--command-string` is then executed by `secure-aprs-ba
 
 | Return value    | Description                                                                                                                                                                                                        |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `200 ok`        | The user's call sign and `--command-code` were found in the configuration file. The TOTP code was valid. The `--command-script` was executed. The script was waited for until it finished executing.               |
-| `202 accepted`  | The user's call sign and `--command-code` were found in the configuration file. The TOTP code was valid. The `--command-script` was started as a separate process. No wait was performed for the script to finish. |
+| `200 ok`        | The user's call sign and `--command-code` were found in the configuration file. The TOTP code was valid. The `--command-string` was executed. The script was waited for until it finished executing.               |
+| `202 accepted`  | The user's call sign and `--command-code` were found in the configuration file. The TOTP code was valid. The `--command-string` was started as a separate process. No wait was performed for the script to finish. |
 | `403 forbidden` | The call sign and/or the `--command-code` is not stored in the configuration file and/or the transmitted TOTP code is invalid. This is the program's default return code                                                                                    |
 
 
