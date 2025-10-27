@@ -127,3 +127,12 @@ The command of the edited `--command-string` is then executed by `secure-aprs-ba
   
 - Q: _Why is it recommended to create dedicated scripts (serving a single predefined purpose) and only use these? Wouldn't it be easier to transfer the whole command line sequence as free text?_
 - A: Sure you can. Create a corresponding `--command-code` and fill its associated `--command-string` _exclusively_ with free text parameters (`$1` .. `$9`). You can also drive your car at 200 km/h towards a rock face without wearing a seat belt, swim in shark-infested waters, or jump out of an airplane without a parachute. All of these options carry a real risk of ending very badly. Keep in mind that you would be transmitting sensitive data such as user credentials via an unsecured clear-text transmission media (APRS). See also my earlier comments on program security.
+
+## Technical details
+
+`secure-aprs-bastion-bot` uses my [`core-aprs-client`](https://www.github.com/joergschultzelutter/core-aprs-client) framework.
+
+## The fine print
+
+- If you intend to host an instance of this program, you must be a licensed radio amateur. BYOP: Bring your own (APRS-IS) passcode. If you don't know what this is, then this program is not for you.
+- APRS is a registered trademark of APRS Software and Bob Bruninga, WB4APR.
