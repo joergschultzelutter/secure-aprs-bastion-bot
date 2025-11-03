@@ -29,10 +29,12 @@ import argparse
 import os
 import sys
 import logging
+from datetime import datetime
+import timezone
 
 from sabb_logger import logger
 from sabb_shared import totp_message_cache
-from sabb_expdict import create_expiring_dict
+from sabb_expdict import create_totp_expiringdict
 
 
 def get_command_line_params():
@@ -98,3 +100,46 @@ if __name__ == "__main__":
 
     # Activate the APRS client and connect to APRS-IS
     client.activate_client()
+
+
+def get_totp_expiringdict_key(callsign: str,totp_code: str):
+    """
+    Checks for an entry in our TOTP expiring dictionary cache.
+    If we find that entry in our list before that entry has expired,
+    we consider the request as a duplicate and will not process it again
+
+    Parameters
+    ==========
+    callsign: str
+        User's callsign, e.g. DF1JSL-1
+    totp_code: str
+        six-digit numeric TOTP code
+
+    Returns
+    =======
+    key: 'Tuple'
+        Key tuple consisting of 'callsign' and 'totp_code' or
+        value 'None' if we were unable to locate the entry
+    """
+    key = tuple(callsign,totp_code)
+    key = key if key in sabb_shared.totp_message_cache else None
+    return key
+
+def set_totp_expiringdict_key(callsign: str,totp_code: str):
+    """
+    Adds an entry to our TOTP expiring dictionary cache.
+
+    Parameters
+    ==========
+    callsign: str
+        User's callsign, e.g. DF1JSL-1
+    totp_code: str
+        six-digit numeric TOTP code
+
+    Returns
+    =======
+    totp_message_cache: Expiringdict
+        The updated version of our ExpiringDict object
+    """
+    sabb_shared.totp_message_cache[tuple(callsign,totp_code)] = datetime.now(timezone.utc)
+    return sabb_shared.totp_message_cache
