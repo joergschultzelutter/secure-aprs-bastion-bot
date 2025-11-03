@@ -22,8 +22,8 @@
 from CoreAprsClient import CoreAprsClient
 
 # Your custom input parser and output generator code
-from input_parser import parse_input_message
-from output_generator import generate_output_message
+from sabb_input_parser import parse_input_message
+from sabb_output_generator import generate_output_message
 
 import argparse
 import os
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     client.activate_client()
 
 
-def get_totp_expiringdict_key(callsign: str,totp_code: str):
+def get_totp_expiringdict_key(callsign: str, totp_code: str):
     """
     Checks for an entry in our TOTP expiring dictionary cache.
     If we find that entry in our list before that entry has expired,
@@ -121,11 +121,12 @@ def get_totp_expiringdict_key(callsign: str,totp_code: str):
         Key tuple consisting of 'callsign' and 'totp_code' or
         value 'None' if we were unable to locate the entry
     """
-    key = tuple(callsign,totp_code)
+    key = tuple(callsign, totp_code)
     key = key if key in sabb_shared.totp_message_cache else None
     return key
 
-def set_totp_expiringdict_key(callsign: str,totp_code: str):
+
+def set_totp_expiringdict_key(callsign: str, totp_code: str):
     """
     Adds an entry to our TOTP expiring dictionary cache.
 
@@ -141,5 +142,7 @@ def set_totp_expiringdict_key(callsign: str,totp_code: str):
     totp_message_cache: Expiringdict
         The updated version of our ExpiringDict object
     """
-    sabb_shared.totp_message_cache[tuple(callsign,totp_code)] = datetime.now(timezone.utc)
+    sabb_shared.totp_message_cache[tuple(callsign, totp_code)] = datetime.now(
+        timezone.utc
+    )
     return sabb_shared.totp_message_cache
