@@ -26,9 +26,9 @@ from sabb_logger import logger
 
 
 # Helper method for creating our APRS message cache
-def create_expiring_dict(max_len: int, max_age_seconds: int):
+def create_totp_expiringdict(max_len: int, max_age_seconds: int):
     """
-    Helper method for creating the ExpiringDict
+    Helper method for creating the TOTP ExpiringDict
 
     Parameters
     ==========
