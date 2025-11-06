@@ -23,6 +23,38 @@ from sabb_shared import totp_message_cache
 import re
 
 
+def dismantle_aprs_message(aprs_message: str):
+    _success = False
+    totp = None
+    params = None
+    command_code = None
+
+    # Convert our APRS message string to lowercase
+    aprs_message = aprs_message.lower()
+
+    # try to determine our target pattern. Our message has to start with
+    # a six-digit TOTP code, following 1..10 separate words (separator: space)
+    pattern = re.compile(
+        r"^"
+        r"(?P<totp>\d{6})"  # six digits at start
+        r"\s*"  # optional space(s) after digits
+        r"(?P<params>[^\s]+(?: [^\s]+){0,9})"  # 1–10 words, separated by single spaces
+        r"$"
+    )
+
+    # did we find anything?
+    matches = pattern.match(aprs_message)
+    if matches:
+        # get the totp code
+        totp = matches.group("code")
+        # get the 1..10 words and convert them to a list item
+        params = matches.group("params").strip().split()
+        # remove the very first item from that list; this is our command code
+        command_code = params.pop(0)
+        _success = True
+    return _success, totp, command_code, params
+
+
 def parse_input_message(aprs_message: str, from_callsign: str):
     """
     This is a stub for your custom APRS input parser.
@@ -53,15 +85,6 @@ def parse_input_message(aprs_message: str, from_callsign: str):
         by the 'output_generator' module for generating the APRS message.
     """
 
-    # Initially assume that the user has sent us no valid keyword
-    # This will trigger the output parser's error handler, thus allowing it
-    # to send usage instructions to the user
-    success = False
-
-    # now define a variable which later on tells the output processor what the
-    # user expects from us. Per default, that variable is empty
-    command_code = ""
-
     # The following variable is used in conjunction with errors during parsing.
     # Assuming that e.g. your keyword is used for pulling a wx report for a certain
     # city but the user forgot to specify that additional parameter, you can use this
@@ -72,47 +95,27 @@ def parse_input_message(aprs_message: str, from_callsign: str):
     # does not work for you
     input_parser_error_message = ""
 
-    # Convert our APRS message string to lowercase
-    aprs_message = aprs_message.lower()
-
-    # try to determine our target pattern. Our message has to start with
-    # a six-digit TOTP code, following 1..10 separate words (separator: space)
-    pattern = re.compile(
-        r"^"
-        r"(?P<totp>\d{6})"  # six digits at start
-        r"\s*"  # optional space(s) after digits
-        r"(?P<params>[^\s]+(?: [^\s]+){0,9})"  # 1–10 words, separated by single spaces
-        r"$"
+    success, totp, command_code, params = dismantle_aprs_message(
+        aprs_message=aprs_message
     )
-
-    # did we find anything?
-    matches = pattern.match(aprs_message)
-    if matches:
-        # get the totp code
-        totp = matches.group("code")
-        # get the 1..10 words and convert them to a list item
-        params = matches.group("params").strip().split()
-        # remove the very first item from that list; this is our command code
-        command_code = params.pop(0)
-        success = True
-
-        # finally, create the input parser response object
-        input_parser_response_object = {
-            "from_callsign": from_callsign,
-            "totp_code": totp,
-            "command_code": command_code,
-            "command_params": params,
-        }
-    else:
-        input_parser_response_object = {}
+    if not success:
         input_parser_error_message = "Could not parse APRS message"
+        input_parser_response_object = {}
+        # set the return code
+        return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
+
+        return return_code, input_parser_error_message, input_parser_response_object
+
+    # finally, create the input parser response object
+    input_parser_response_object = {
+        "from_callsign": from_callsign,
+        "totp_code": totp,
+        "command_code": command_code,
+        "command_params": params,
+    }
 
     # set the return code
-    return_code = (
-        CoreAprsClientInputParserStatus.PARSE_OK
-        if success
-        else CoreAprsClientInputParserStatus.PARSE_ERROR
-    )
+    return_code = CoreAprsClientInputParserStatus.PARSE_OK
 
     return return_code, input_parser_error_message, input_parser_response_object
 

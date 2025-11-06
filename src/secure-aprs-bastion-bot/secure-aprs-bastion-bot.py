@@ -29,8 +29,8 @@ import argparse
 import os
 import sys
 import logging
-from datetime import datetime
-import timezone
+from datetime import datetime, timezone
+import sabb_shared
 
 from sabb_logger import logger
 from sabb_shared import totp_message_cache
@@ -71,6 +71,8 @@ def get_command_line_params():
 
 if __name__ == "__main__":
 
+    logger.debug(msg="Starting APRS bastion bot")
+
     # Get the configuration file name
     configfile = get_command_line_params()
 
@@ -89,7 +91,7 @@ if __name__ == "__main__":
     )
 
     # Create the expiring dictionary object for the TOTP records
-    totp_message_cache = create_expiring_dict(
+    sabb_shared.totp_message_cache = create_totp_expiringdict(
         max_len=client.config_data["secure_aprs_bastion_bot"][
             "sabb_totp_cache_max_len"
         ],
@@ -97,6 +99,15 @@ if __name__ == "__main__":
             "sabb_totp_cache_max_age_seconds"
         ],
     )
+
+    # Verify if the Command Config file exists
+    if not os.path.isfile(
+        client.config_data["secure_aprs_bastion_bot"]["sabb_command_config"]
+    ):
+        logger.error(
+            msg=f"Command Config file '{client.config_data["secure_aprs_bastion_bot"]["sabb_command_config"]}' does not exist; exiting"
+        )
+        sys.exit(0)
 
     # Activate the APRS client and connect to APRS-IS
     client.activate_client()
@@ -121,7 +132,8 @@ def get_totp_expiringdict_key(callsign: str, totp_code: str):
         Key tuple consisting of 'callsign' and 'totp_code' or
         value 'None' if we were unable to locate the entry
     """
-    key = tuple(callsign, totp_code)
+    key = (callsign, totp_code)
+    key = tuple(key)
     key = key if key in sabb_shared.totp_message_cache else None
     return key
 
@@ -142,7 +154,8 @@ def set_totp_expiringdict_key(callsign: str, totp_code: str):
     totp_message_cache: Expiringdict
         The updated version of our ExpiringDict object
     """
-    sabb_shared.totp_message_cache[tuple(callsign, totp_code)] = datetime.now(
-        timezone.utc
-    )
+
+    key = (callsign, totp_code)
+    key = tuple(key)
+    sabb_shared.totp_message_cache[key] = datetime.now(timezone.utc)
     return sabb_shared.totp_message_cache
