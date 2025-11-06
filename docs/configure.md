@@ -79,13 +79,13 @@ options:
 
 | Command                  | Description                                                                                                      | Associated parameter(s)                                                   |
 |--------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `--add-user`             | Adds (or updates) a user to the configuration file                                                               | `--callsign`,`-ttl`,`--show-secret`                                       |
-| `--delete-user`          | Deletes a user from the configuration file                                                                       | `--callsign`                                                              |
-| `--add-command`          | Adds (or updates) a command code/command string for a user to the configuration file                             | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
-| `--delete-command`       | Deletes a command code for a user from the configuration file                                                    | `--callsign`,`--command-code`                                             |
-| `--test-totp-code`       | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
-| `--test-command-code`    | Uses a `--callsign`/`--command-code` combination and returns the associated `--command-string` (whereas present) | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
-| `--execute-command-code` | Same as `--test-command-code`, but actually executes the associated `--command-string` setting                   | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| [`--add-user`](configure.md#--add-user---add-a-user-to-the-config-file)             | Adds (or updates) a user to the configuration file                                                               | `--callsign`,`-ttl`,`--show-secret`                                       |
+| [`--delete-user`](configure.md#--delete-user---deletes-a-user-from-the-config-file)          | Deletes a user from the configuration file                                                                       | `--callsign`                                                              |
+| [`--add-command`](configure.md#--add-command---adds-a-command-codecommand-string-to-the-config-file)          | Adds (or updates) a command code/command string for a user to the configuration file                             | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
+| [`--delete-command`](configure.md#--delete-command---deletes-a-command-codecommand-string-from-the-config-file)       | Deletes a command code for a user from the configuration file                                                    | `--callsign`,`--command-code`                                             |
+| [`--test-totp-code`](configure.md#--test-totp-code---tests-a-users-totp-code-against-the-users-secret)       | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
+| [`--test-command-code`](configure.md#--test-command-code---tests-a---callsign--command-code-combination)    | Uses a `--callsign`/`--command-code` combination and returns the associated `--command-string` (whereas present) | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| [`--execute-command-code`](configure.md#--execute-command-code---executes-a---callsign--commannd-code-combination) | Same as `--test-command-code`, but actually executes the associated `--command-string` setting                   | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
 
 ## Usage
 
