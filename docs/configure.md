@@ -13,7 +13,7 @@ This program is used for the creation of [secure-aprs-bastion-bot](secure-aprs-b
 
 blah
 
-## Command Line Options - Overview
+## Parameter Options - Overview
 
 ```
 usage: configure.py     [-h] 
@@ -62,8 +62,6 @@ options:
                         For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --test-command-code/--execute-command-code
 ```
 
-## Parameters - Overview
-
 | Parameter                | Description                                                                                                                                                                                                                                                                  | Type           | Default                    |
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|----------------------------|
 | `--configfile`           | External config file. `configure.py` will create this file if it does not exist.                                                                                                                                                                                             | `str`          | `sabb_command_config.yml`  |
@@ -74,8 +72,6 @@ options:
 | `--launch-as-subprocess` | When specified, the bot will NOT wait for the `--command-string`'s program execution. In addition, the APRS confirmation will be sent to the user _prior_ to the program's execution.                                                                                        | `bool`         | `False`                    |
 | `--ttl`                  | TOTP TTL value in seconds (`30`..`300`). Default: 30 (seconds)                                                                                                                                                                                                               | `int`          | `30`                       |
 | `--aprs-test-arguments`  | Used in combination with either `--test-totp-code` or `--execute-totp-code`. Simulates the parameter input `$1`..`$9` from an incoming APRS message. 0..9 parameters are supported. Parameter separator = space. Input Parameter `$0` _always_ contains the user's callsign. | list of `str`  | `[]` (empty list)          |
-
-## Commands - Overview
 
 | Command                  | Description                                                                                                      | Associated parameter(s)                                                   |
 |--------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
