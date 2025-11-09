@@ -69,8 +69,8 @@ def read_config_file_from_disk(filename: str):
     return __success, data
 
 
-def identify_target_callsign_and_command_string(
-    configfile: str, callsign: str, totp_code: str, command_code: str | None
+def identify_target_callsign_and_command_string_from_memory(
+    data: dict, callsign: str, totp_code: str, command_code: str | None
 ):
     """
     Retrieves the callsign/totp_code match and identifies the command_string for the given command_code.
@@ -110,8 +110,8 @@ def identify_target_callsign_and_command_string(
 
     Parameters
     ==========
-    configfile: str
-        Name of the external YAML configuration file
+    data: dict
+        Content from the external YAML file
     callsign: str
         Callsign code of the user
     totp_code: str
@@ -135,12 +135,6 @@ def identify_target_callsign_and_command_string(
     secret: str
         Secret associated with this callsign
     """
-
-    # Read the file from disk
-    __success, data = read_config_file_from_disk(filename=configfile)
-
-    if not __success:
-        return False, None, None, None
 
     __success = False
     __target_callsign = None

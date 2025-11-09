@@ -21,7 +21,12 @@
 from CoreAprsClient import CoreAprsClientInputParserStatus
 import sabb_shared
 import re
-from sabb_utils import get_modification_time, read_config_file_from_disk
+from sabb_utils import (
+    get_modification_time,
+    read_config_file_from_disk,
+    identify_target_callsign_and_command_string_from_memory,
+)
+import copy
 
 
 def dismantle_aprs_message(aprs_message: str):
@@ -105,11 +110,11 @@ def parse_input_message(aprs_message: str, from_callsign: str, **kwargs):
             filename=sabb_shared.command_config_filename
         )
         if __success:
-            sabb_shared.config_data = __data.copy()
+            sabb_shared.config_data = __data.deepcopy()
             sabb_shared.config_initial_timestamp = config_updated_timestamp
 
     # Dismantle the incoming APRS message
-    success, totp, command_code, params = dismantle_aprs_message(
+    success, totp_code, command_code, command_params = dismantle_aprs_message(
         aprs_message=aprs_message
     )
     if not success:
@@ -119,12 +124,31 @@ def parse_input_message(aprs_message: str, from_callsign: str, **kwargs):
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         return return_code, input_parser_error_message, input_parser_response_object
 
+    # Attempt to locate the execution parameters
+    success, target_callsign, command_string, launch_as_subprocess = (
+        identify_target_callsign_and_command_string_from_memory(
+            data=sabb_shared.config_data,
+            callsign=from_callsign,
+            totp_code=totp_code,
+            command_code=command_code,
+        )
+    )
+
+    if not success:
+        input_parser_error_message = (
+            "Unable to retrieve command code for given callsign"
+        )
+        input_parser_response_object = {}
+        # set the return code
+        return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
+        return return_code, input_parser_error_message, input_parser_response_object
+
     # finally, create the input parser response object
     input_parser_response_object = {
         "from_callsign": from_callsign,
-        "totp_code": totp,
+        "totp_code": totp_code,
         "command_code": command_code,
-        "command_params": params,
+        "command_params": command_params,
     }
 
     # set the return code

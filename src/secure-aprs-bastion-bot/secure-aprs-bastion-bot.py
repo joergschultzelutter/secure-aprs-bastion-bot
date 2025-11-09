@@ -149,7 +149,8 @@ if __name__ == "__main__":
         ],
     )
 
-    # remember the command config filename
+    # Save the command config filename - we may need to re-read the file
+    # in case its content has changed during runtime
     sabb_shared.command_config_filename = client.config_data["secure_aprs_bastion_bot"][
         "sabb_command_config"
     ]
@@ -161,6 +162,7 @@ if __name__ == "__main__":
         )
         sys.exit(0)
 
+    # Read the config file from disk
     success, sabb_shared.config_data = read_config_file_from_disk(
         filename=sabb_shared.command_config_filename
     )
@@ -170,10 +172,10 @@ if __name__ == "__main__":
         )
         sys.exit(0)
 
-    # remember the initial config file timestamp
+    # remember the file's initial config file timestamp
     sabb_shared.config_initial_timestamp = get_modification_time(
         filename=sabb_shared.command_config_filename
     )
 
-    # Activate the APRS client and connect to APRS-IS
+    # Finally, activate the APRS client and connect to APRS-IS
     client.activate_client()
