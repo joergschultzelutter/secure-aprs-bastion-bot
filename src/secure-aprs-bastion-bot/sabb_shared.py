@@ -23,6 +23,9 @@
 #
 
 totp_message_cache = None
+config_initial_timestamp = None
+config_data = None
+command_config_filename = None
 
 if __name__ == "__main__":
     pass

@@ -418,13 +418,13 @@ def does_file_exist(file_name: str):
     return os.path.isfile(file_name)
 
 
-def verify_totp_code(secret: str, totp_code: str):
+def verify_totp_code(totp_secret: str, totp_code: str):
     """
     Verifies a given TOTP code against the given secret.
 
     Parameters
     ==========
-    secret: str
+    totp_secret: str
         user's TOTP secret
     totp_code: str
         user's TOTP code
@@ -434,7 +434,7 @@ def verify_totp_code(secret: str, totp_code: str):
     status: bool
         True / False, depending on whether or not the code matches
     """
-    totp = pyotp.TOTP(secret)
+    totp = pyotp.TOTP(totp_secret)
     return totp.verify(otp=totp_code)
 
 
@@ -893,7 +893,7 @@ def identify_target_callsign_and_command_string(
             if "secret" in __item:
                 __secret = __item["secret"]
                 # Validate the given TOTP code against that secret
-                if verify_totp_code(secret=__item["secret"], totp_code=totp_code):
+                if verify_totp_code(totp_secret=__item["secret"], totp_code=totp_code):
                     # We found a match for the callsign (note that the input callsign
                     # and our new one may differ for those cases our target callsign
                     # is ssid-less!
@@ -1013,7 +1013,7 @@ def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
             __success = False
             return __success
         else:
-            if not verify_totp_code(secret=secret, totp_code=content):
+            if not verify_totp_code(totp_secret=secret, totp_code=content):
                 print("This TOTP code is invalid")
                 content = ""
                 continue
@@ -1179,6 +1179,7 @@ def execute_program(command: str | list, wait_for_completion: bool = True):
         int   if wait_for_completion == True: program's return code
         None  if wait_for_completion == False or in case of error
     """
+
     def _start_process(cmd):
         try:
             if platform.system() == "Windows":

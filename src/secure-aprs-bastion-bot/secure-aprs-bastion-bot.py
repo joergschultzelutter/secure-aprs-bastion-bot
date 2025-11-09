@@ -35,6 +35,7 @@ import sabb_shared
 from sabb_logger import logger
 from sabb_shared import totp_message_cache
 from sabb_expdict import create_totp_expiringdict
+from sabb_utils import get_modification_time, read_config_file_from_disk
 
 
 def get_command_line_params():
@@ -67,50 +68,6 @@ def get_command_line_params():
         sys.exit(0)
 
     return cfg
-
-
-if __name__ == "__main__":
-
-    logger.debug(msg="Starting APRS bastion bot")
-
-    # Get the configuration file name
-    configfile = get_command_line_params()
-
-    # Create the CoreAprsClient object. Supply the
-    # following parameters:
-    #
-    # - configuration file name
-    # - log level (from Python's 'logging' package)
-    # - function names for both input processor and output generator
-    #
-    client = CoreAprsClient(
-        config_file=configfile,
-        log_level=logging.DEBUG,
-        input_parser=parse_input_message,
-        output_generator=generate_output_message,
-    )
-
-    # Create the expiring dictionary object for the TOTP records
-    sabb_shared.totp_message_cache = create_totp_expiringdict(
-        max_len=client.config_data["secure_aprs_bastion_bot"][
-            "sabb_totp_cache_max_len"
-        ],
-        max_age_seconds=client.config_data["secure_aprs_bastion_bot"][
-            "sabb_totp_cache_max_age_seconds"
-        ],
-    )
-
-    # Verify if the Command Config file exists
-    if not os.path.isfile(
-        client.config_data["secure_aprs_bastion_bot"]["sabb_command_config"]
-    ):
-        logger.error(
-            msg=f"Command Config file '{client.config_data["secure_aprs_bastion_bot"]["sabb_command_config"]}' does not exist; exiting"
-        )
-        sys.exit(0)
-
-    # Activate the APRS client and connect to APRS-IS
-    client.activate_client()
 
 
 def get_totp_expiringdict_key(callsign: str, totp_code: str):
@@ -159,3 +116,64 @@ def set_totp_expiringdict_key(callsign: str, totp_code: str):
     key = tuple(key)
     sabb_shared.totp_message_cache[key] = datetime.now(timezone.utc)
     return sabb_shared.totp_message_cache
+
+
+if __name__ == "__main__":
+
+    logger.debug(msg="Starting APRS bastion bot")
+
+    # Get the configuration file name
+    configfile = get_command_line_params()
+
+    # Create the CoreAprsClient object. Supply the
+    # following parameters:
+    #
+    # - configuration file name
+    # - log level (from Python's 'logging' package)
+    # - function names for both input processor and output generator
+    #
+    client = CoreAprsClient(
+        config_file=configfile,
+        log_level=logging.DEBUG,
+        input_parser=parse_input_message,
+        output_generator=generate_output_message,
+    )
+
+    # Create the expiring dictionary object for the TOTP records
+    sabb_shared.totp_message_cache = create_totp_expiringdict(
+        max_len=client.config_data["secure_aprs_bastion_bot"][
+            "sabb_totp_cache_max_len"
+        ],
+        max_age_seconds=client.config_data["secure_aprs_bastion_bot"][
+            "sabb_totp_cache_max_age_seconds"
+        ],
+    )
+
+    # remember the command config filename
+    sabb_shared.command_config_filename = client.config_data["secure_aprs_bastion_bot"][
+        "sabb_command_config"
+    ]
+
+    # Verify if the Command Config file exists
+    if not os.path.isfile(sabb_shared.command_config_filename):
+        logger.error(
+            msg=f"Command Config file '{sabb_shared.command_config_filename}' does not exist; exiting"
+        )
+        sys.exit(0)
+
+    success, sabb_shared.config_data = read_config_file_from_disk(
+        filename=sabb_shared.command_config_filename
+    )
+    if not success:
+        logger.error(
+            msg=f"Unable to read command config file '{sabb_shared.command_config_filename}'; exiting"
+        )
+        sys.exit(0)
+
+    # remember the initial config file timestamp
+    sabb_shared.config_initial_timestamp = get_modification_time(
+        filename=sabb_shared.command_config_filename
+    )
+
+    # Activate the APRS client and connect to APRS-IS
+    client.activate_client()

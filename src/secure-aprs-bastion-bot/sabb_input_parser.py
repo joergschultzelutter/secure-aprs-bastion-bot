@@ -19,8 +19,9 @@
 #
 
 from CoreAprsClient import CoreAprsClientInputParserStatus
-from sabb_shared import totp_message_cache
+import sabb_shared
 import re
+from sabb_utils import get_modification_time, read_config_file_from_disk
 
 
 def dismantle_aprs_message(aprs_message: str):
@@ -55,7 +56,7 @@ def dismantle_aprs_message(aprs_message: str):
     return _success, totp, command_code, params
 
 
-def parse_input_message(aprs_message: str, from_callsign: str):
+def parse_input_message(aprs_message: str, from_callsign: str, **kwargs):
     """
     This is a stub for your custom APRS input parser.
 
@@ -95,6 +96,19 @@ def parse_input_message(aprs_message: str, from_callsign: str):
     # does not work for you
     input_parser_error_message = ""
 
+    # Check if the command config file has been changed and re-import it, if necessary
+    config_updated_timestamp = get_modification_time(filename=kwargs["command_config"])
+
+    # Re-read the config file from disk, if necessary
+    if config_updated_timestamp != sabb_shared.config_initial_timestamp:
+        __success, __data = read_config_file_from_disk(
+            filename=sabb_shared.command_config_filename
+        )
+        if __success:
+            sabb_shared.config_data = __data.copy()
+            sabb_shared.config_initial_timestamp = config_updated_timestamp
+
+    # Dismantle the incoming APRS message
     success, totp, command_code, params = dismantle_aprs_message(
         aprs_message=aprs_message
     )
@@ -103,7 +117,6 @@ def parse_input_message(aprs_message: str, from_callsign: str):
         input_parser_response_object = {}
         # set the return code
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
-
         return return_code, input_parser_error_message, input_parser_response_object
 
     # finally, create the input parser response object
