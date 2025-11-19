@@ -18,7 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from CoreAprsClient import CoreAprsClientInputParserStatus
+from CoreAprsClient import CoreAprsClientInputParserStatus, CoreAprsClient
 import sabb_shared
 import re
 from sabb_utils import (
@@ -61,12 +61,16 @@ def dismantle_aprs_message(aprs_message: str):
     return _success, totp, command_code, params
 
 
-def parse_input_message(aprs_message: str, from_callsign: str, **kwargs):
+def parse_input_message(
+    instance: CoreAprsClient, aprs_message: str, from_callsign: str, **kwargs
+):
     """
     This is a stub for your custom APRS input parser.
 
     Parameters
     ==========
+    instance: CoreAprsClient
+        Instance of the core-aprs-client object.
     aprs_message: str
         The APRS message that the user has provided us with (1..67
         bytes in length). Parse the content and figure out what
@@ -75,6 +79,8 @@ def parse_input_message(aprs_message: str, from_callsign: str, **kwargs):
         Ham radio callsign that sent the message to us.
         Might be required by the input processor e.g. in case you
         have to determine the from_callsign's latitude/longitude.
+    **kwargs: dict
+        Optional keyword arguments
 
     Returns
     =======
@@ -89,6 +95,9 @@ def parse_input_message(aprs_message: str, from_callsign: str, **kwargs):
     input_parser_response_object: dict | object
         Dictionary object where we store the data that is required
         by the 'output_generator' module for generating the APRS message.
+        Note that you can also return other objects such as classes. Just ensure that
+        both input_parser and output_generator share the very same
+        structure for this variable.
     """
 
     # The following variable is used in conjunction with errors during parsing.
@@ -102,7 +111,9 @@ def parse_input_message(aprs_message: str, from_callsign: str, **kwargs):
     input_parser_error_message = ""
 
     # Check if the command config file has been changed and re-import it, if necessary
-    config_updated_timestamp = get_modification_time(filename=kwargs["command_config"])
+    config_updated_timestamp = get_modification_time(
+        filename=sabb_shared.command_config_filename
+    )
 
     # Re-read the config file from disk, if necessary
     if config_updated_timestamp != sabb_shared.config_initial_timestamp:

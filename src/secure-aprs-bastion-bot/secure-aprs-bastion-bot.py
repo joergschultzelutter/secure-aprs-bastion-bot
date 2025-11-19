@@ -24,6 +24,7 @@ from CoreAprsClient import CoreAprsClient
 # Your custom input parser and output generator code
 from sabb_input_parser import parse_input_message
 from sabb_output_generator import generate_output_message
+from sabb_post_processor import post_processing
 
 import argparse
 import os
