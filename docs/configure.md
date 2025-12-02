@@ -376,7 +376,7 @@ python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814
 #### Introduction
 
 > [!TIP]
-> Use this function to determine whether your combination of call sign and TOTP code is valid.
+> Use this function to determine whether your combination of call sign and TOTP code is valid and retrieve the `--command-string` for your `--command-code` at the very same time.
 
 #### Description
 
