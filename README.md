@@ -115,7 +115,7 @@ The command of the edited `--command-string` is then executed by `secure-aprs-ba
 | `510 not extended` | The identified `--command-string` still contains placeholders after `core-aprs-client` [replaced the placeholders with the user's additional parameters](/README.md#anatomy-of-an-aprs-message-to-secure-aprs-bastion-bot). Usually, this means that you created a user script with placeholders - but the APRS user did submit an insufficient/lower number of additional parameters to `core-aprs-client`. | 
 
 > [!TIP]
-> If you receive a `510 not extended` error, check the number of user-submissable parameter placeholders in your  `--command-string` (`$1`..`$9`) against the number of parameters in your APRS message; he latter must be at least equal to the number of user-transmittable parameter placeholders in your user script. If you transmit more user parameters in your APRS message than are available in your `--command-string`, no error will be triggered; these additional parameters will simply be ignored.
+> If you receive a `510 not extended` error, check the number of user-submissable parameter placeholders in your  `--command-string` (`$1`..`$9`) against the number of parameters in your APRS message; the latter must be at least equal to the number of user-transmittable parameter placeholders in your user script. If you transmit more user parameters in your APRS message than are available in your `--command-string`, no error will be triggered; these additional parameters will simply be ignored.
 
 ## FAQ
 
