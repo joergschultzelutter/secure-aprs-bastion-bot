@@ -371,7 +371,7 @@ python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814
 2025-08-03 17:16:39,737 configure -INFO- Token '761814' matches with target call sign 'DF1JSL'
 ```
 
-### `--test-command-code` - tests a `--callsign`/`--command-code` combination
+### `--test-command-code` - tests a `--callsign`/`--command-code` combination and retrieves the `--command-script`
 
 #### Introduction
 
@@ -387,7 +387,7 @@ python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814
 #### Example
 `--execute-totp-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
 
-### `--execute-command-code` - executes a `--callsign`/`--commannd-code` combination
+### `--execute-command-code` - executes the `--command-script` that is associated with the `--callsign`/`--command-code` combination
 
 #### Introduction
 
