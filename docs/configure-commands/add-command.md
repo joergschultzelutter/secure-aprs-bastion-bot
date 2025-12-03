@@ -31,7 +31,7 @@ Supported placeholders:
 - `$0` - always represents the call sign from which the APRS message originated. Example: `DF1JSL-1`
 - `$1`..`$9` are free-text parameters which are passed along with the incoming APRS message
 
-## Practical example:
+### Practical example:
 
 You have designed a `command-code` keyword `reboot` whose purpose is to reboot a specific server. Instead of hardcoding the server name, you want to pass it along as part of your APRS message. Additionally, you want to send back a message to the APRS callsign once the reboot has completed. To achieve this, you will do the following:
 
