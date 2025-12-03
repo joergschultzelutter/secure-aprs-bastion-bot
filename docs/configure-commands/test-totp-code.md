@@ -1,4 +1,4 @@
-# `--test-totp-code` - tests a user's TOTP code against the user's secret
+# `--test-totp-code`
 
 ## Introduction
 
