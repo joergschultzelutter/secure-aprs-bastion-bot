@@ -1,12 +1,12 @@
 # `--add-user`
 
-#### Introduction
+## Introduction
 
 Adds or updates a user (`--callsign`) to the external YAML `--configfile`. Unlike the other commands, `--add-user` is an _interactive_ process. First, it will generate a TOTP QR code which you will scan with your mobile phone's password manager. Then, the program will ask you to verify that TOTP code by specifying the current 6-digit code.
 
 Except for `--add-user`, all other modifications to the configuration file can be done manually (e.g. by editing the configuration file directly).
 
-#### Description
+## Description
 
 `python configure.py --add-user --callsign=DF1JSL-1`
 
@@ -21,7 +21,7 @@ Creates _or updates_ a configuration for a callsign with a TOTP TTL of 30 second
 > [!TIP]
 > The default value for the token's validity is `30` seconds. Use the `--ttl` setting to change this setting to a value between 30..300.
 
-#### Example
+## Example
 ```
 python configure.py --add-user --callsign=DF1JSL-1 
 2025-07-27 18:52:43,446 configure -INFO- Creating new configuration file sabb_command_config.yaml
@@ -68,7 +68,7 @@ Amend config file as per program documentation, then use the --test-totp-token o
 
 Process finished with exit code 0
 ```
-### Config file 
+## Config file 
 This example shows the config file after adding the user. As you can see, there are no commands associated with this user. We'll do this in the next step.
 
 ```
