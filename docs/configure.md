@@ -2,10 +2,10 @@
 
 This program is used for the creation of [secure-aprs-bastion-bot](secure-aprs-bastion-bot.md)'s YAML configuration file. It supports a couple of actions such as:
 
-- Create / Update (`--add-user`) / Delete (`--delete-user`) a user entry along with its associated TOTP secret
-- Create / Update (`--add-command`) / Delete (`--delete-command`) a user's command code / command line entries
-- Test the TOTP token against the user's TOTP secret (`--test-totp-code`)
-- Retrieve and/or execute a user / command code combination (`--test-command-code`, `--execute-command-code`)
+- Create / Update ([`--add-user`](configure-commands/add-user.md)) / Delete ([`--delete-user`](configure-commands/delete-user.md)) a user entry along with its associated TOTP secret
+- Create / Update ([`--add-command`](configure-commands/add-command.md)) / Delete ([`--delete-command`](configure-commands/delete-command.md)) a user's command code / command line entries
+- Test the TOTP token against the user's TOTP secret ([`--test-totp-code`](configure-commands/test-totp-code.md))
+- Retrieve and/or execute a user / command code combination ([`--test-command-code`](configure-commands/test-command-code.md), [`--execute-command-code`](configure-commands/execute-command-code.md))
 
 [secure-aprs-bastion-bot](secure-aprs-bastion-bot.md) will use the resulting configuration file. Note that `configure.py` acts as both configuration tool and gatekeeper / validator; `secure-aprs-bastion-bot` itself assumed that the configuration file structure is valid and hardly performs any validation checks. You can apply manual changes to most sections of the configuration file - but if it breaks, you get to keep both pieces.
 
@@ -77,23 +77,22 @@ options:
 
 ## Commands
 
-| Command                                                                                                            | Description                                                                                                      | Associated parameter(s)                                                   |
-|--------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| [`--add-user`](configure.md#--add-user---add-a-user-to-the-config-file)                                            | Adds (or updates) a user to the configuration file                                                               | `--callsign`,`-ttl`,`--show-secret`                                       |
-| [`--delete-user`](configure.md#--delete-user---deletes-a-user-from-the-config-file)                                | Deletes a user from the configuration file                                                                       | `--callsign`                                                              |
-| [`--add-command`](configure.md#--add-command---adds-a-command-codecommand-string-to-the-config-file)               | Adds (or updates) a command code/command string for a user to the configuration file                             | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
-| [`--delete-command`](configure.md#--delete-command---deletes-a-command-codecommand-string-from-the-config-file)    | Deletes a command code for a user from the configuration file                                                    | `--callsign`,`--command-code`                                             |
-| [`--test-totp-code`](configure.md#--test-totp-code---tests-a-users-totp-code-against-the-users-secret)             | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
-| [`--test-command-code`](configure.md#--test-command-code---tests-a---callsign--command-code-combination)           | Uses a `--callsign`/`--command-code` combination and returns the associated `--command-string` (whereas present) | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
-| [`--execute-command-code`](configure.md#--execute-command-code---executes-a---callsign--commannd-code-combination) | Same as `--test-command-code`, but actually executes the associated `--command-string` setting                   | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| Command                                                                | Description                                                                                                      | Associated parameter(s)                                                   |
+|------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| [`--add-user`](configure-commands/add-user.md)                         | Adds (or updates) a user to the configuration file                                                               | `--callsign`,`-ttl`,`--show-secret`                                       |
+| [`--delete-user`](configure-commands/delete-user.md)                   | Deletes a user from the configuration file                                                                       | `--callsign`                                                              |
+| [`--add-command`](configure-commands/add-command.md)                   | Adds (or updates) a command code/command string for a user to the configuration file                             | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
+| [`--delete-command`](configure-commands/delete-command.md)             | Deletes a command code for a user from the configuration file                                                    | `--callsign`,`--command-code`                                             |
+| [`--test-totp-code`](configure-commands/test-totp-code.md)             | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
+| [`--test-command-code`](configure-commands/test-command-code.md)       | Uses a `--callsign`/`--command-code` combination and returns the associated `--command-string` (whereas present) | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| [`--execute-command-code`](configure-commands/execute-command-code.md) | Same as `--test-command-code`, but actually executes the associated `--command-string` setting                   | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
 
 ## Usage
 
-- First, run `--add-user` and create 1...n user accounts in the configuration file.
-- Then, run `--add-command` for each of these user accounts and create 1...n `--command-code`/`--command-string` entries (you can also use an editor for this step)
+- First, run `[`--add-user`](configure-commands/add-user.md) and create 1...n user accounts in the configuration file.
+- Then, run [`--add-command`](configure-commands/add-command.md) for each of these user accounts and create 1...n `--command-code`/`--command-string` entries (you can also use an editor for this step)
 
-## Additional documentation
-### Deep-Dive: Understand how user authorization / authentication works
+## Deep-Dive: Understand how user authorization / authentication works
 
 A user entry in the config file can be with or without trailing SSID. Each entry has its very own secret and therefore its very own TOTP code.
 
@@ -134,275 +133,3 @@ Except for the `--add-user` functionality which generates the user's TOTP secret
 - `--command-code` information is always stored lowercase in the configuration file (e.g. `sayhello` and not `SayHello`, `SAYHELLO` etc).
 
 When in doubt, always use `configure.py` for abiding to these constraints.
-
-## Commands
-### `--add-user` - add a user to the config file
-
-#### Introduction
-
-Adds or updates a user (`--callsign`) to the external YAML `--configfile`. Unlike the other commands, `--add-user` is an _interactive_ process. First, it will generate a TOTP QR code which you will scan with your mobile phone's password manager. Then, the program will ask you to verify that TOTP code by specifying the current 6-digit code.
-
-Except for `--add-user`, all other modifications to the configuration file can be done manually (e.g. by editing the configuration file directly).
-
-#### Description
-
-`python configure.py --add-user --callsign=DF1JSL-1`
-
-Creates _or updates_ a configuration for a callsign with a TOTP TTL of 30 seconds. During the configuration process, the user's secret will not get displayed. If you try to create an entry which already exists in the `--configfile`, its secret setting will be updated.
-
-- run `python configure.py --add-user --callsign=DF1JSL-1`
-- use a mobile phone for scanning the QR barcode and saving it to your password manager
-- If you want to abort the process, enter `QUIT`. Otherwise, enter `CONTINUE`.
-- Use your phone's password manager to retrieve the current TOTP token for the secret which was just generated. Enter the secret. If the code validates, `configure.py` will write/update the configuration file with the new user data. If you don't want to do this, enter `QUIT` instead.
-- If the user was already present in that config file, its secret will get updated.
-
-> [!TIP]
-> The default value for the token's validity is `30` seconds. Use the `--ttl` setting to change this setting to a value between 30..300.
-
-#### Example
-```
-python configure.py --add-user --callsign=DF1JSL-1 
-2025-07-27 18:52:43,446 configure -INFO- Creating new configuration file sabb_command_config.yaml
-2025-07-27 18:52:43,446 configure -INFO- Adding new user account
-2025-07-27 18:52:43,446 configure -INFO- Generating TOTP credentials for user 'DF1JSL-1' with TTL '30'
-                                                     
-                                                     
-    █▀▀▀▀▀█  █▀ █▄▀█▀▄ ▀▄ ██▄▄█▀█ ▀▄▄▀ ▄▀ █▀▀▀▀▀█    
-    █ ███ █ ▄█▀█▄█▄█ █▄▀ █▀█    ▀ ▄    █▄ █ ███ █    
-    █ ▀▀▀ █ ▀▄   ▄█  ▄▄▀█▀▀▀█▄█▀█▀███ ▀▀▀ █ ▀▀▀ █    
-    ▀▀▀▀▀▀▀ ▀▄█▄▀ █ █ ▀▄█ ▀ █▄▀ █▄▀ █▄▀ ▀ ▀▀▀▀▀▀▀    
-    ██   █▀▀    ▄▀██ ▄ ▀█████▄▄  ███ ▄▄█▄▄▄ █▀▄      
-     ▀  █▀▀▀█ ▀█ ▀▀███▄▀█▄▀  ▀███▄    █▀▄ ▀  █▄▀     
-     █  ██▀█▄██▀▀▄██ ▀▀▄ ▀ ▀▀ ▀█  ▀ ▀ █▄   █▀▀▄██    
-    ▄▄ ▀▀█▀▀█▀▄▄ ▄▄ █ █▄█▀ ▄▀█▄█▀▄▀   ▄█▀▄ █ ███     
-     ▄█ ██▀▄▄▀▄▄ ▄ ▀ ▄ ▄█ ██ ▄ ▀ ███ █▀▄▄█▀▄▄█▄██    
-    ▀ ▄█▄█▀ ▄██ █ ▀▀▀▄  ▄▄▀██▄▄▄█▀ ▄▄▀ ▄█▄▄ ▄▄█ ▀    
-     █▄██▀▀▀█▀ ▄ █ ██▀▀▀█▀▀▀█ ▀██▀ █▄▄ ▀█▀▀▀█▄▄█     
-     ▄  █ ▀ ██  ▀▀█ ▀█▀ █ ▀ █▀▀██▀█ ██  █ ▀ ███ ▄    
-    ▄ ▀▄██▀█▀█  █  ▀▀█▀█▀██▀▀█▀▄█▄███ ▀██▀▀▀▀ ▄██    
-    ▀▄▀█  ▀▀█ ▄▀█ ▀▀▀  ▄▄▀█ ▄▀▀▄▀▄▄▄▄▀██▀ ▀▄ █▄█     
-    ▀ █▄██▀ ▄█▄█▄▀▄▄▀▀▀▄▀█▄▀█▀▄▀▀ ▀█▀██▄▄▀ ▀▀█▄██    
-     ▀▀█▄█▀▄▀▀████▀▄ ▀▀▄█ ▀     ██ ██▄▄██▄█▄▄██▄▀    
-    ▀▀███▄▀▄ █▀▄▀▄▄ ▀▄█▄     ▀█  ▄▄▀ ▄▄ ▄█▀ █ ▄▀     
-     ▄▄▄█ ▀█▄▄ ▄ █ ▄▀█  ██▀▄█ ▀█▄  ▄▄█▀█ ▄ █ ▄▄█▄    
-    ▀  ▀▀ ▀ ██ ▄▄ ██  ▀██▀▀▀█▀▄██▀▄▀▄▀▀██▀▀▀█▀  █    
-    █▀▀▀▀▀█ █████▀▀▀█▀▀ █ ▀ ███▀ ▄██  ▄██ ▀ █ █▀▄    
-    █ ███ █  █ ▀█▀▀ ▀▄ █▀▀▀█▀▀ ▄  █▀ ▄ ▀▀▀▀▀██▄█     
-    █ ▀▀▀ █ ▄▀█ █   ▀▄██▄ ▄█▀  ▄ █ █▀  ▀▄▀▀▀█▄█ ▀    
-    ▀▀▀▀▀▀▀ ▀▀▀▀ ▀  ▀▀▀▀ ▀   ▀ ▀▀▀  ▀▀    ▀▀▀▀ ▀     
-                                                     
-                                                     
-Scan this QR code with your authenticator app. When done,
-enter CONTINUE for code verification
-or enter QUIT for exiting the program.
-
-Enter CONTINUE or QUIT: CONTINUE
-Enter the 6-digit TOTP code or enter QUIT to exit:494186
-
-2025-07-27 18:53:46,982 configure -WARNING- Configuration file 'sabb_command_config.yaml' does not exist, will create a new one
-2025-07-27 18:53:46,984 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully written
-User 'DF1JSL-1' was successfully added to config YAML file
-Amend config file as per program documentation, then use the --test-totp-token option for a config test
-
-Process finished with exit code 0
-```
-### Config file 
-This example shows the config file after adding the user. As you can see, there are no commands associated with this user. We'll do this in the next step.
-
-```
-users:
-- callsign: DF1JSL-1
-  commands: {}
-  secret: HFV5Z3DBATOSZW24N5QZPHGGSCNRZ7EV
-```
-
-### `--add-command` - adds a command code/command string to the config file
-
-#### Introduction
-
-Adds or updates a `--command code`/`--command string` for an existing user (`--callsign`) and writes/updates it to the config file. 
-
-#### Description
-
-This option creates or updates the `--command-code` / `--command-string` combination.
-
-
-##### `--command-code`
-
-A `--command-code` is an alias for the `--command-string` entry. `--command-code` entries will be sent be the user via APRS messaging to the bot - which will then execute the associated `--command-string`
-
-> [!NOTE]
-> `--command-code` must not contain any space characters as spaces are used for separating the `--command-code` from additional parameters in the message; see ``--command-string`
-
-Example:
-
-| APRS `--command-code` ... | ... translates to `--command-string` |
-|---------------------------|--------------------------------------|
-| `sayhello`                | `source ./hi.sh`                     |
-
-##### `--command-string`
-
-The `command-string` supports up to 10 parameters which you can pass along with your APRS message. If detected, `secure-aprs-bastion-bot` will retrieve those parameters from the APRS message and replace the placeholders in the `command-string` value prior to executing it.
-
-Supported placeholders:
-
-- `$0` - always represents the call sign from which the APRS message originated. Example: `DF1JSL-1`
-- `$1`..`$9` are free-text parameters which are passed along with the incoming APRS message
-
-#### Practical example:
-
-You have designed a `command-code` keyword `reboot` whose purpose is to reboot a specific server. Instead of hardcoding the server name, you want to pass it along as part of your APRS message. Additionally, you want to send back a message to the APRS callsign once the reboot has completed. To achieve this, you will do the following:
-
-- create a keyword `command-code` named `reboot`. Its associated `command-string` script will be responsible for rebooting the server and will accept two parameters:
-    - the server name (represented by `$1`)
-    - the originating callsign (represented by `$0`)
-
-| `--command-code` | `--command-string`                         |
-|------------------|--------------------------------------------|
-| `reboot`         | `source ./reboot.sh server=$1 callsign=$0` |
-
-The parameter placeholders defined by the user will later on be replaced by `secure-aprs-bastion-bot` with the values from the APRS message. Note that the order of the parameters is not fixed and can be freely defined by the user. For this example, we assume that the `reboot.sh` script accepts two parameters: parameter 1 is the user's call sign and parameter 2 is the name of the server that we have to reboot. All reboot logic is handled by `reboot.sh` itself. Note that the user is responsible for designing (and locally securing) this script.
-
-Not that we have prepared `secure-aprs-bastion-bot`, let's send the message:
-
-- `DF1JSL-9` transmits an APRS message to the `secure-aprs-bastion-bot`:
-    - first six digits = TOTP code (`123456`)
-    - followed by the actual keyword (`reboot`)
-    - spaces separate additional keywords. We want to reboot a specific machine, e.g. `debmu417`
-- Example APRS message: `123456reboot debmu417` results to
-    - `$0` translating to value `DF1JSL-9`
-    - `$1` translating to value `debmu417`
-- `secure-aprs-bastion-bot` will pass along these parameters to the `reboot.sh` script and replace them in the given `--command-string` value, effectively executing `source ./reboot.sh DF1JSL-9 debmu417`. 
-- `reboot.sh` is then to restart the `debmu417` server. When completed, it is supposed to send an APRS message back to `DF1JSL-9`, indicating that the reboot has completed.
-
-#### Example
-```
-python configure.py --add-user --callsign=DF1JSL-1 --command-code=sayhello --command-string="source ./hi.sh"
-```
-
-#### Config File
-```
-users:
-- callsign: DF1JSL-1
-  commands:
-    sayhello:
-      command_string: source ./hi.sh
-      launch_as_subprocess: false
-  secret: HFV5Z3DBATOSZW24N5QZPHGGSCNRZ7EV
-```
-
-> [!NOTE]
-> `--launch-as-subprocess` determines if the bot will wait for the program execution or not
-
-- `launch-as-subprocess`==`false`: The `secure-aprs-bastion-bot` will execute the code provided via `--command-string`. After its completion, an outgoing APRS message to the sender will be generated. This is the bot's default behavior and is good for situations where a simple task is to be executed.
-- `launch-as-subprocess`==`true`: First, `secure-aprs-bastion-bot` will send a confirmation message to the sender. Then, it will launch the execution of the `--command-string` code. This is useful for those cases where e.g. you want to reboot the server which hosts the `secure-aprs-bastion-bot` 
-
-### `--delete-command` - deletes a command code/command string from the config file
-
-#### Introduction
-
-Deletes a `--command-code` / `--command-string` combination from the config file (whereas present)
-
-#### Description
-
-#### Example
-```
-python configure.py --delete-command --callsign=DF1JSL-1 --command-code=sayhello
-```
-
-### `--delete-user` - deletes a user from the config file
-
-#### Introduction
-
-`--delete-user` deletes a user from the configuration file.
-
-#### Description
-
-This command deletes a user (along with all of his settings, including `--command-code`/`--commannd-string` entries) from the configuration file.
-
-#### Example
-```
-python configure.py --delete-user --callsign=DF1JSL-1
-```
-
-### `--test-totp-code` - tests a user's TOTP code against the user's secret
-
-#### Introduction
-
-Tests a user's TOTP code against the user's secret and returns a simple "valid" / "invalid" message to the user.
-
-> [!NOTE]
-> Use this function to determine whether your combination of call sign and TOTP code is valid.
-
-#### Description
-
-`configure.py` will try to read the user entry from the configuration file. If found, it will try to validate the given TOTP code against the user's secret. A simple "code is valid" or "code is invalid" message will get printed to the command line.
-
-#### Examples
-
-- Configuration entries for `DF1JSL-1` and `DF1JSL` exist in the external YAML configuration file
-- Configuration entries for `DF1JSL-15` do _NOT_ exist in the external YAML configuration file
-
-Failed attempt
-```
-python configure.py --test-command-code --callsign=df1jsl-1 --totp=502506 
-2025-08-03 16:56:05,828 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
-2025-08-03 16:56:05,828 configure -INFO- Unable to identify matching call sign and/or command_code in configuration file 'sabb_command_config.yaml'; exiting
-```  
-
-Successful attempt, not using the wildcard callsign's TOTP token (read: the TOTP token which belongs to `DF1JSL-1`)
-```
-python configure.py --test-totp-code --callsign=df1jsl-1 --totp=779856 
-2025-08-03 17:13:45,797 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
-2025-08-03 17:13:45,798 configure -INFO- Token '779856' matches with target call sign 'DF1JSL-1'
-```
-
-Successful attempt, using the wildcard TOTP token (read: the TOTP token which belongs to `DF1JSL`). Note that instead of retrieving the target callsign `DF1JSL-1`, this retrieval attempt did return the SSID-less callsign `DF1JSL`
-```
-python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814 
-2025-08-03 17:16:39,736 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
-2025-08-03 17:16:39,737 configure -INFO- Token '761814' matches with target call sign 'DF1JSL'
-```
-
-Successful attempt, using the wildcard TOTP token (read: the TOTP token which belongs to `DF1JSL`) for `DF1JSL-15` which has no entry in the configuration file. As we use the SSID-less TOTP token from `DF1JSL`, we are able to retrieve the configuration data.
-```
-python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814 
-2025-08-03 17:16:39,736 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
-2025-08-03 17:16:39,737 configure -INFO- Token '761814' matches with target call sign 'DF1JSL'
-```
-
-### `--test-command-code` - tests a `--callsign`/`--command-code` combination and retrieves the `--command-script`
-
-#### Introduction
-
-> [!TIP]
-> Use this function to determine whether your combination of call sign and TOTP code is valid and retrieve the `--command-string` for your `--command-code` at the very same time.
-
-#### Description
-
-> [!NOTE]
-> This is an extended version of `--test-totp-code`. In addition to validating the call sign-TOTP code combination, it also attempts to determine the corresponding `--command-string` using the specified `--command-code`. If the user has also passed `----aprs-test-arguments`, it will attempt to replace their placeholders in the `--command-string`. 
-> When using `--test-command-code`, only the final `--command-string` is output on the command line; `--execute-command-code`, on the other hand, also executes the determined `--command-string`.
-
-#### Example
-`--execute-totp-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
-
-### `--execute-command-code` - executes the `--command-script` that is associated with the `--callsign`/`--command-code` combination
-
-#### Introduction
-
-> [!TIP]
-> Use this function to determine whether your combination of call sign and TOTP code is valid and retrieve the `--command-string` for your `--command-code` at the very same time. Once retrieved, the `--command-code` string is then executed. 
-
-#### Description
-This command uses the same code basis as `--test-command-code`. Instead of printing the `command-string` information to the console, this option actually executes the retrieved `command-string` information. 
-
-To give the user the opportunity to cancel the execution of the script, a ten-second countdown is started between the determination of the script and its execution, during which the execution of the script can be terminated at any time by pressing a key. 
-
-After this period has elapsed, the script starts. If it has been configured as a standalone process (--launch-as-subprocess), it starts as a background process. In all other cases, the system waits for the script to finish.
-
-> [!NOTE]
-> `--test-command-code` and `--execute-command-code` --> nutzen `--callsign` 
-
-#### Example
-`--execute-totp-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506`  
