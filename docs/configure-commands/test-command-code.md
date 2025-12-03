@@ -1,4 +1,4 @@
-# `--test-command-code` - tests a `--callsign`/`--command-code` combination and retrieves the `--command-script`
+# `--test-command-code`
 
 ## Introduction
 
