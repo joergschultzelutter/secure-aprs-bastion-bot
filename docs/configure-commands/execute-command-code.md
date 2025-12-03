@@ -1,4 +1,4 @@
-# `--execute-command-code` - executes the `--command-script` that is associated with the `--callsign`/`--command-code` combination
+# `--execute-command-code`
 
 ## Introduction
 
