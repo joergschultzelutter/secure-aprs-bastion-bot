@@ -1398,6 +1398,14 @@ if __name__ == "__main__":
                     command_string = command_string.replace(f"${count}", item)
                 logger.info(f"final command_string: '{command_string}'")
 
+                # Check if we have received fewer user-specified parameters than expected
+                # if that is the case, our string still contains placeholders
+                regex_string = r"\$[0-9]"
+                matches = re.search(pattern=regex_string, string=command_string)
+                if matches:
+                    logger.error(msg="510 not extended")
+                    sys.exit(0)
+
                 if sabb_execute_command_code:
                     pass
         sys.exit(0)

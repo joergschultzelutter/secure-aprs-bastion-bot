@@ -27,6 +27,7 @@ from sabb_utils import (
     identify_target_callsign_and_command_string_from_memory,
 )
 import copy
+from sabb_logger import logger
 
 
 def dismantle_aprs_message(aprs_message: str):
@@ -54,7 +55,7 @@ def dismantle_aprs_message(aprs_message: str):
         # get the totp code
         totp = matches.group("code")
         # get the 1..10 words and convert them to a list item
-        params = matches.group("params").strip().split()
+        params = list(matches.group("params").strip().split())
         # remove the very first item from that list; this is our command code
         command_code = params.pop(0)
         _success = True
@@ -129,11 +130,15 @@ def parse_input_message(
         aprs_message=aprs_message
     )
     if not success:
-        input_parser_error_message = "Could not parse APRS message"
+        input_parser_error_message = sabb_shared.http_msg_403
         input_parser_response_object = {}
         # set the return code
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         return return_code, input_parser_error_message, input_parser_response_object
+
+    # enrich the command_params list with the callsign
+    # Replace the callsign. Add the call sign to the top of the list
+    command_params.insert(0, from_callsign)
 
     # Attempt to locate the execution parameters
     success, target_callsign, command_string, launch_as_subprocess = (
@@ -145,12 +150,33 @@ def parse_input_message(
         )
     )
 
+    # Abort the process if we were unable to find the command OR there was a mismatch with
+    # the given TOTP code. Do not disclose the origin of the error to the user
     if not success:
-        input_parser_error_message = (
-            "Unable to retrieve command code for given callsign"
-        )
+        # provide generic APRS response to the user
+        input_parser_error_message = sabb_shared.http_msg_403
         input_parser_response_object = {}
         # set the return code
+        return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
+        return return_code, input_parser_error_message, input_parser_response_object
+
+    # Debug information
+    logger.debug(
+        msg=f"Command Code: '{command_code}', Command String: '{command_string}', LaunchAsSubProcess: '{launch_as_subprocess}'"
+    )
+
+    # and now start iterating through the list and replace our content
+    for count, item in enumerate(command_params, start=0):
+        command_string = command_string.replace(f"${count}", item)
+    logger.debug(f"final command_string: '{command_string}'")
+
+    # Check if we have received fewer user-specified parameters than expected
+    # if that is the case, our string still contains placeholders
+    regex_string = r"\$[0-9]"
+    matches = re.search(pattern=regex_string, string=command_string)
+    if matches:
+        input_parser_error_message = sabb_shared.http_msg_510
+        input_parser_response_object = {}
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         return return_code, input_parser_error_message, input_parser_response_object
 
@@ -158,8 +184,8 @@ def parse_input_message(
     input_parser_response_object = {
         "from_callsign": from_callsign,
         "totp_code": totp_code,
-        "command_code": command_code,
-        "command_params": command_params,
+        "command_string": command_string,
+        "launch_as_subprocess": launch_as_subprocess,
     }
 
     # set the return code
