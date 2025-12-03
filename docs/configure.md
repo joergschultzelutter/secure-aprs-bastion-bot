@@ -85,7 +85,7 @@ options:
 | [`--delete-command`](configure-commands/delete-command.md)             | Deletes a command code for a user from the configuration file                                                    | `--callsign`,`--command-code`                                             |
 | [`--test-totp-code`](configure-commands/test-totp-code.md)             | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
 | [`--test-command-code`](configure-commands/test-command-code.md)       | Uses a `--callsign` / [`--command-code`](/docs/configure-commands/add-command.md#--command-code) combination and returns the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) (whereas present) | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
-| [`--execute-command-code`](configure-commands/execute-command-code.md) | Same as [`--command-code`](/docs/configure-commands/add-command.md#--command-code), but actually executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting                   | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| [`--execute-command-code`](configure-commands/execute-command-code.md) | Same as [`--test-command-code`](configure-commands/test-command-code.md), but actually executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting                   | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
 
 ## Usage
 
