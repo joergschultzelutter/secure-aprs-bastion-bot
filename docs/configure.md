@@ -384,8 +384,6 @@ python configure.py --test-totp-code --callsign=df1jsl-1 --totp=761814
 > This is an extended version of `--test-totp-code`. In addition to validating the call sign-TOTP code combination, it also attempts to determine the corresponding `--command-string` using the specified `--command-code`. If the user has also passed `----aprs-test-arguments`, it will attempt to replace their placeholders in the `--command-string`. 
 > When using `--test-command-code`, only the final `--command-string` is output on the command line; `--execute-command-code`, on the other hand, also executes the determined `--command-string`.
 
-Translated with DeepL.com (free version)
-
 #### Example
 `--execute-totp-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
 
@@ -393,10 +391,15 @@ Translated with DeepL.com (free version)
 
 #### Introduction
 
-This command uses the same code basis as `--test-command-code`. Instead of printing the `command-string` information to the console, this option actually executes the retrieved `command-string` information.
+> [!TIP]
+> Use this function to determine whether your combination of call sign and TOTP code is valid and retrieve the `--command-string` for your `--command-code` at the very same time. Once retrieved, the `--command-code` string is then executed. 
 
 #### Description
-This command uses the same code basis as `--test-command-code`. Instead of printing the `command-string` information to the console, this option actually executes the retrieved `command-string` information.
+This command uses the same code basis as `--test-command-code`. Instead of printing the `command-string` information to the console, this option actually executes the retrieved `command-string` information. 
+
+To give the user the opportunity to cancel the execution of the script, a ten-second countdown is started between the determination of the script and its execution, during which the execution of the script can be terminated at any time by pressing a key. 
+
+After this period has elapsed, the script starts. If it has been configured as a standalone process (--launch-as-subprocess), it starts as a background process. In all other cases, the system waits for the script to finish.
 
 > [!NOTE]
 > `--test-command-code` and `--execute-command-code` --> nutzen `--callsign` 
