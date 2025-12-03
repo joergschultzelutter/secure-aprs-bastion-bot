@@ -84,13 +84,13 @@ options:
 | [`--add-command`](configure-commands/add-command.md)                   | Adds (or updates) a command code/command string for a user to the configuration file                             | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
 | [`--delete-command`](configure-commands/delete-command.md)             | Deletes a command code for a user from the configuration file                                                    | `--callsign`,`--command-code`                                             |
 | [`--test-totp-code`](configure-commands/test-totp-code.md)             | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
-| [`--test-command-code`](configure-commands/test-command-code.md)       | Uses a `--callsign`/`--command-code` combination and returns the associated `--command-string` (whereas present) | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
-| [`--execute-command-code`](configure-commands/execute-command-code.md) | Same as `--test-command-code`, but actually executes the associated `--command-string` setting                   | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| [`--test-command-code`](configure-commands/test-command-code.md)       | Uses a `--callsign`/`[`--command-code`](/docs/configure-commands/add-command.md#--command-code) combination and returns the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) (whereas present) | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| [`--execute-command-code`](configure-commands/execute-command-code.md) | Same as [`--command-code`](/docs/configure-commands/add-command.md#--command-code), but actually executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting                   | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
 
 ## Usage
 
-- First, run `[`--add-user`](configure-commands/add-user.md) and create 1...n user accounts in the configuration file.
-- Then, run [`--add-command`](configure-commands/add-command.md) for each of these user accounts and create 1...n `--command-code`/`--command-string` entries (you can also use an editor for this step)
+- First, run [`--add-user`](configure-commands/add-user.md) and create 1...n user accounts in the configuration file.
+- Then, run [`--add-command`](configure-commands/add-command.md) for each of these user accounts and create 1...n [`--command-code`](/docs/configure-commands/add-command.md#--command-code)/[`--command-string`](/docs/configure-commands/add-command.md#--command-string) entries (you can also use an editor for this step)
 
 ## Deep-Dive: Understand how user authorization / authentication works
 
