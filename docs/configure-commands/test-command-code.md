@@ -12,4 +12,4 @@
 > When using `--test-command-code`, only the final `--command-string` is output on the command line; `--execute-command-code`, on the other hand, also executes the determined `--command-string`.
 
 ## Example
-`--execute-totp-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
+`--test-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
