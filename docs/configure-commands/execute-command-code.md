@@ -13,4 +13,7 @@ To give the user the opportunity to cancel the execution of the script, a ten-se
 After this period has elapsed, the script starts. If it has been configured as a standalone process (--launch-as-subprocess), it starts as a background process. In all other cases, the system waits for the script to finish.
 
 ## Example
+
 `--execute-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506`  
+
+`--test-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
