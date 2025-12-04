@@ -6,7 +6,7 @@
 
 ## Description
 
-This command deletes a user (along with all of his settings, including `--command-code`/`--commannd-string` entries) from the configuration file.
+This command deletes a user (along with **all** of his settings, including [`--command-code`](add-command.md#--command-code) / [`--command-string`](add-command.md#--command-string) entries) from the configuration file.
 
 ## Example
 ```
