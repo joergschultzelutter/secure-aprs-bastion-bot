@@ -1,7 +1,7 @@
 # `secure-aprs-bastion-bot.py`
 
 >[!NOTE]
-> `secure-aprs-bastion-bot.py` is based on [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client). All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md). Only the parameters specific to the `secure-aprs-bastion-bot` (custom configuration) are described in this document section. Normally, you are not required to apply any changes to this configuration section.
+> `secure-aprs-bastion-bot.py` uses my [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client) framework. All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md). Only the parameters specific to the `secure-aprs-bastion-bot` (custom configuration) are described in this document section. Normally, you are not required to apply any changes to this configuration section.
 
 The configuration file created by [`configure.py`](configure.md) is the basis for the programs to be executed by `secure-aprs-bastion-bot.py`. The name of this configuration file is defined and stored in the `secure_aprs_bastion_bot` section of `secure-aprs-bastion-bot.py`. Details can be found at [this link](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration_subsections/config_custom.md) and in the next paragraph of this document. 
 
@@ -13,6 +13,9 @@ Changes to the external configuration file `sabb_command_config_file` are detect
 | `sabb_totp_cache_max_entries`  | `int` | `250`                      | Defines the maximum number of callsign/TOTP entries that are checked for ingress duplicates.                                                                                            |
 | `sabb_totp_cache_time_to_live` | `int` | `300` (5 mins)             | Sets the life span for a dupe detection's dictionary entry (unit of measure = seconds).                                                                                                 |
 
+
+> [!TIP]
+> `secure-aprs-bastion-bot` automatically detects whether the `sabb_command_config_file` configuration file has changed and re-reads it if necessary. This means that it is not necessary to restart the bot when the configuration file `sabb_command_config_file` is changed.
 
 The respective section from `core-aprs-client`'s config file lists as follows:
 
