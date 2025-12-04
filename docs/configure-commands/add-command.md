@@ -51,13 +51,17 @@ Not that we have prepared `secure-aprs-bastion-bot`, let's send the message:
     - first six digits = TOTP code (`123456`)
     - followed by the actual keyword (`reboot`)
     - spaces separate additional keywords. We want to reboot a specific machine, e.g. `debmu417`
+    - Complete APRS message now looks like this: `123456reboot debmu417`
 - Example APRS message: `123456reboot debmu417` results to
-    - `$0` translating to value `DF1JSL-9`
+    - `$0` translating to value `DF1JSL-9` (remember that this parameter is always present, regardless of whether you have provided addional parameters or not.
     - `$1` translating to value `debmu417`
 - `secure-aprs-bastion-bot` will pass along these parameters to the `reboot.sh` script and replace them in the given `--command-string` value, effectively executing `source ./reboot.sh DF1JSL-9 debmu417`. 
 - `reboot.sh` is then to restart the `debmu417` server. When completed, it is supposed to send an APRS message back to `DF1JSL-9`, indicating that the reboot has completed.
 
 ## Example
+
+Create a `--command-code` named `sayhello`. When sent to `core-aprs-client` is then to execute the `--command-string` with the content `source ./hi.sh`. 
+
 ```
 python configure.py --add-user --callsign=DF1JSL-1 --command-code=sayhello --command-string="source ./hi.sh"
 ```
@@ -76,5 +80,5 @@ users:
 > [!NOTE]
 > `--launch-as-subprocess` determines if the bot will wait for the program execution or not
 
-- `launch-as-subprocess`==`false`: The `secure-aprs-bastion-bot` will execute the code provided via `--command-string`. After its completion, an outgoing APRS message to the sender will be generated. This is the bot's default behavior and is good for situations where a simple task is to be executed.
+- `launch-as-subprocess`==`false` (aka not set) : The `secure-aprs-bastion-bot` will execute the code provided via `--command-string`. After its completion, an outgoing APRS message to the sender will be generated. This is the bot's default behavior and is good for situations where a simple task is to be executed.
 - `launch-as-subprocess`==`true`: First, `secure-aprs-bastion-bot` will send a confirmation message to the sender. Then, it will launch the execution of the `--command-string` code. This is useful for those cases where e.g. you want to reboot the server which hosts the `secure-aprs-bastion-bot` 
