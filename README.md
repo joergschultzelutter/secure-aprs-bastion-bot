@@ -20,10 +20,10 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
   - User accounts are configured on a call sign level.
   - The user account configuration can be done at the call sign plus SSID level _or_ exclusively at the call sign level without SSID (base call sign). In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit the base call sign's TOTP token for authorization and authentication.
   - When configuring the base call sign, it is also not necessary to configure all other call signs with SSID individually. The prerequisite for using this configuration is, of course, the use of the TOTP token of the base call sign. Further details can be found in the [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md) program documentation.
-- Program execution:
+- Program execution (`--launch-as-subprocess` switch):
   - The programs to be executed can be started either synchronously or as a detached process.
-    - Synchronous execution first executes the desired script. After script termination,  `secure-aprs-bastion-bot` sends an APRS confirmation to the user. This is the default behavior.
-    - Asynchronous processing first sends the APRS confirmation to the user and starts the desired program as a separate process.  `secure-aprs-bastion-bot` will _not_ wait for the program to finish executing. Such processing may be necessary, for example, when restarting a server.
+    - Synchronous execution first executes the desired script. After script termination,  `secure-aprs-bastion-bot` sends an APRS confirmation to the user. This is the default behavior where `--launch-as-subprocess` was not set.
+    - Asynchronous processing first sends the APRS confirmation to the user and starts the desired program _as a separate process_.  `secure-aprs-bastion-bot` will _not_ wait for the program to finish executing. Such processing may be necessary, for example, when restarting a server.
   - After completion of such a program sequence, regardless of its execution type (synchronous or asynchronous), an APRS message can be sent back to the caller as part of the user script and a supporting Python script (`send-aprs-message.py`). Alternatively, other recommended tools such as [Apprise](https://github.com/caronc/apprise) can be used.
 
 # Program-specific documentation
