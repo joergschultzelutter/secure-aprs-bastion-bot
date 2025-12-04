@@ -69,7 +69,7 @@ Amend config file as per program documentation, then use the --test-totp-token o
 Process finished with exit code 0
 ```
 ## Config file 
-This example shows the config file after adding the user. As you can see, there are no commands associated with this user. We'll do this in the next step.
+This example shows the config file after adding the user. As you can see, there are no commands associated with this user. We'll do this in the [next step](add-command.md).
 
 ```
 users:
