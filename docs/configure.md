@@ -77,6 +77,8 @@ options:
 
 ## Commands
 
+All commands are described in the linked documentation files.
+
 | Command                                                                | Description                                                                                                      | Associated parameter(s)                                                   |
 |------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
 | [`--add-user`](configure-commands/add-user.md)                         | Adds (or updates) a user to the configuration file                                                               | `--callsign`,`-ttl`,`--show-secret`                                       |
@@ -89,8 +91,8 @@ options:
 
 ## Usage
 
-- First, run [`--add-user`](configure-commands/add-user.md) and create 1...n user accounts in the configuration file.
-- Then, run [`--add-command`](configure-commands/add-command.md) for each of these user accounts and create 1...n [`--command-code`](/docs/configure-commands/add-command.md#--command-code)/[`--command-string`](/docs/configure-commands/add-command.md#--command-string) entries (you can also use an editor for this step)
+- First, run [`--add-user`](configure-commands/add-user.md) and create 1...n user accounts in the configuration file. Use [`--test-totp-code`](configure-commands/test-totp-code.md) and check if your user account's secret validates against the TOTP code on your mobile device.
+- Then, run [`--add-command`](configure-commands/add-command.md) for each of these user accounts and create 1...n [`--command-code`](/docs/configure-commands/add-command.md#--command-code)/[`--command-string`](/docs/configure-commands/add-command.md#--command-string) entries (you can also use an editor for this step). Use [`--test-command-code`](configure-commands/test-command-code.md) and/or [`--execute-command-code`](configure-commands/execute-command-code.md) for testing.
 
 ## Deep-Dive: Understand how user authorization / authentication works
 
@@ -98,12 +100,15 @@ A user entry in the config file can be with or without trailing SSID. Each entry
 
 User accounts with_OUT_ trailing SSID can act as a 'wildcard' entry. If a user callsign WITH trailing SSID has access to the user account's secret withOUT SSID (and therefore can generate its associated TOTP code), the user account WITH trailing SSID will be granted access to the entries associated with the callsign withOUT SSID .
 
-Let's have a look at a scenario where we assume that the TOTP code never expires and that both call signs `DF1JSL` and `DF1JSL-1` are present
-in the external YAML configuration file. `DF1JSL-15` will NOT have a configuration entry in that configuration file.
+> [!NOTE]
+> Instead of creating the same configuration redundantly for all SSIDs of the callsign, for example, it can be configured only once for the main callsign (_without_ SSID) and used by all associated callsigns _with_ SSID, provided that they then provide the token of the main call sign for authentication and authorization.
+
+Let's have a look at a scenario where we assume that the given TOTP code never expires and that both call signs `DF1JSL` and `DF1JSL-1` are present
+in the external YAML configuration file. Additionally, `DF1JSL-15` will NOT have a configuration entry in that configuration file.
 
 - Callsign 1: `DF1JSL-1`, TOTP : `123456` (based on `DF1JSL-1`'s secret)
 - Callsign 2: `DF1JSL`, TOTP : `471123` (based on `DF1JSL`'s secret)
-- Callsign 3: `DF1JSL-15`. This call sign is __NOT__ present in the YAML configuration file and therefore has no TOTP secret assigned to it.
+- Callsign 3: `DF1JSL-15`. This call sign is __NOT__ present in the YAML configuration file and therefore has not been assigned its own TOTP secret.
 
 | Call sign in APRS message   | TOTP in APRS message | Access permitted   | Configuration data will be taken from                                                                                                                                 |
 |-----------------------------|----------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
