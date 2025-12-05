@@ -8,6 +8,8 @@ Adds or updates a [`--command code`](add-command.md#--command-code)/[`--command 
 
 This option creates or updates the [`--command code`](add-command.md#--command-code)/[`--command string`](add-command.md#--command-string) combination.
 
+The user is responsible for creating the [`--command string`](add-command.md#--command-string) content.
+
 
 ### `--command-code`
 
