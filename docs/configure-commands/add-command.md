@@ -6,7 +6,7 @@ Adds or updates a [`--command code`](add-command.md#--command-code)/[`--command 
 
 ## Description
 
-| Command         | Description                                                                                                      | Associated parameter(s)                                                   |
+| Command         | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                    |
 |-----------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
 | `--add-command` | Adds (or updates) a command code/command string for a user to the configuration file                             | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
 
