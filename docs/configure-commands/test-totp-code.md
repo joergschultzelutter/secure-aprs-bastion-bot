@@ -13,9 +13,9 @@ Tests a user's TOTP code against the user's secret and returns a simple "valid" 
 
 ## Parameters
 
-| Command                                                                | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                                                  |
-|------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `--test-totp-code`            | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
+| Command                                                                | Description                                                                                                      | [Parameters](/docs/configure.md#parameters) (mandatory)                   | [Parameters](/docs/configure.md#parameters) (optional)                   |
+|------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `--test-totp-code`            | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                | n/a                                                |
 
 
 ## Examples
