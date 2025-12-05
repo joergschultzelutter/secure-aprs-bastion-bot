@@ -2,9 +2,10 @@
 
 ## Introduction
 
-Deletes a [`--command-code`](add-command.md#--command-code) / [`--command-string`](add-command.md#--command-string) combination from the config file (whereas present)
+Deletes a single [`--command-code`](add-command.md#--command-code) / [`--command-string`](add-command.md#--command-string) combination from the config file (whereas present). 
 
 ## Description
+Deletes a single [`--command-code`](add-command.md#--command-code) / [`--command-string`](add-command.md#--command-string) combination from the config file (whereas present). 
 
 ## Example
 ```
