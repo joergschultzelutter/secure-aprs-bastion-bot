@@ -10,9 +10,9 @@ This command deletes a user (along with **all** of his settings, including [`--c
 
 ## Parameters
 
-| Command         | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                                                   |
-|-----------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `--delete-user` | Deletes a user from the configuration file                                                                       | `--callsign`                                                              |
+| Command         | Description                                                                                                      | [Parameters](/docs/configure.md#parameters) (mandatory)| [Parameters](/docs/configure.md#parameters) (optional)|
+|-----------------|------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|-------------------------------------------------------|
+| `--delete-user` | Deletes a user from the configuration file                                                                       | `--callsign`                                           | n/a                                                   |
 
 ## Example
 ```
