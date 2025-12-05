@@ -3,7 +3,7 @@
 >[!NOTE]
 > `secure-aprs-bastion-bot.py` uses my [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client) framework. All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md). Only the parameters specific to the `secure-aprs-bastion-bot` (custom configuration) are described in this document section. Normally, you are not required to apply any changes to this configuration section.
 
-![Overview](/img/sabb_config_file.jpg)
+![Overview](/img/sabb_config_files.jpg)
 
 The configuration file created by [`configure.py`](configure.md) is the basis for the programs to be executed by `secure-aprs-bastion-bot.py`. The name of this configuration file is defined and stored in the `secure_aprs_bastion_bot` section of `secure-aprs-bastion-bot.py`. Details can be found at [this link](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration_subsections/config_custom.md) and in the next paragraph of this document. 
 
