@@ -14,9 +14,9 @@ After this period has elapsed, the script starts. If it has been configured as a
 
 ## Parameters
 
-| Command                  | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                                                   |
-|--------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `--execute-command-code` | Same as [`--test-command-code`](configure-commands/test-command-code.md), but actually executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| Command                  | Description                                                                                                      | [Parameters](/docs/configure.md#parameters) (mandatory)                                     | [Parameters](/docs/configure.md#parameters) (optional)                                     |
+|--------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `--execute-command-code` | Same as [`--test-command-code`](configure-commands/test-command-code.md), but actually executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting | `--callsign`,`--totp-code`, `--command-code` | `--aprs-test-arguments`     |
 
 
 ## Example
