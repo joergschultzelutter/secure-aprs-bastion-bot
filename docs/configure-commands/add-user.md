@@ -23,9 +23,9 @@ Creates _or updates_ a configuration for a callsign with a TOTP TTL of 30 second
 
 ## Parameters
 
-| Command      | Description                                           | [Associated parameters](/docs/configure.md#parameters)              |
-|--------------|-------------------------------------------------------|--------------------------------------|
-| `--add-user` | Adds (or updates) a user to the configuration file    | `--callsign`,`-ttl`,`--show-secret`  |
+| Command      | Description                                           | [Parameters](/docs/configure.md#parameters) (mandatory) | [Parameters](/docs/configure.md#parameters) (optional) |
+|--------------|-------------------------------------------------------|--------------------------------------|--------------------------------------|
+| `--add-user` | Adds (or updates) a user to the configuration file    | `--callsign`  | `-ttl`,`--show-secret` |
 
 ## Example
 ```
