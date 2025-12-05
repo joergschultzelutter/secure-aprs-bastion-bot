@@ -8,6 +8,10 @@ Except for `--add-user`, all other modifications to the configuration file can b
 
 ## Description
 
+| Command      | Description                                           | Associated parameter(s)              |
+|--------------|-------------------------------------------------------|--------------------------------------|
+| `--add-user` | Adds (or updates) a user to the configuration file    | `--callsign`,`-ttl`,`--show-secret`  |
+
 `python configure.py --add-user --callsign=DF1JSL-1`
 
 Creates _or updates_ a configuration for a callsign with a TOTP TTL of 30 seconds. During the configuration process, the user's secret will not get displayed. If you try to create an entry which already exists in the `--configfile`, its secret setting will be updated.
