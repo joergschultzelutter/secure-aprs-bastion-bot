@@ -14,7 +14,7 @@ The user is responsible for creating the [`--command string`](add-command.md#--c
 
 | Command         | Description                                                                             | [Parameters](/docs/configure.md#parameters) (mandatory)        | [Parameters](/docs/configure.md#parameters) (optional)         |
 |-----------------|-----------------------------------------------------------------------------------------|----------------------------------------------------------------|----------------------------------------------------------------|
-| `--add-command` | Adds (or updates) a command code/command string for a user to the configuration file    | `--callsign`,`--command-code`,`--command-string` | `--launch-as-subprocess`                                                     |
+| `--add-command` | Adds (or updates) a command code/command string for a user to the configuration file    | `--callsign`, `--command-code`, `--command-string` | `--launch-as-subprocess`                                                     |
 
 ### `--command-code`
 
