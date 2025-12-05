@@ -8,9 +8,9 @@ Deletes a single [`--command-code`](add-command.md#--command-code) / [`--command
 Deletes a single [`--command-code`](add-command.md#--command-code) / [`--command-string`](add-command.md#--command-string) combination from the config file (whereas present). 
 
 ## Parameters
-| Command            | Description                                                                                                      | [Parameters](/docs/configure.md#parameters) (mandatory) | [Parameters](/docs/configure.md#parameters) (optional) |
-|--------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------| ------------------------------------------------------ |
-| `--delete-command` | Deletes a command code for a user from the configuration file                                                    | `--callsign`,`--command-code`                           | n/a |
+| Command            | Description                                                   | [Parameters](/docs/configure.md#parameters) (mandatory) | [Parameters](/docs/configure.md#parameters) (optional) |
+|--------------------|---------------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|
+| `--delete-command` | Deletes a command code for a user from the configuration file | `--callsign`,`--command-code`                           | n/a                                                    |
 
 ## Example
 ```
