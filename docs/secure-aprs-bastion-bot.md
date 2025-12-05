@@ -7,7 +7,7 @@
 
 The configuration file created by [`configure.py`](configure.md) is the basis for the programs to be executed by `secure-aprs-bastion-bot.py`. The name of this configuration file is defined and stored in the `secure_aprs_bastion_bot` section of `secure-aprs-bastion-bot.py`. Details can be found at [this link](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration_subsections/config_custom.md) and in the next paragraph of this document. 
 
-Changes to the external configuration file `sabb_command_config_file` are detected by `secure-aprs-bastion-bot.py` and result in the configuration parameters being re-read; it is therefore _not_ necessary to restart `secure-aprs-bastion-bot.py` when the `sabb_command_config_file` configuration file is changed.
+Changes to the user/command configuration file specified at the `sabb_command_config_file` config file section are detected by `secure-aprs-bastion-bot.py` and result in the configuration parameters being re-read; it is therefore _not_ necessary to restart `secure-aprs-bastion-bot.py` when the `sabb_command_config.` configuration file is changed.
 
 | Config variable                | Type  | Default value              | Description                                                                                                                                                                             |
 |--------------------------------|-------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
