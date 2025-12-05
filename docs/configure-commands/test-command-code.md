@@ -13,9 +13,9 @@
 
 ## Parameters
 
-| Command                                                                | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                                                  |
-|------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `--test-command-code`  | Uses a `--callsign` / [`--command-code`](/docs/configure-commands/add-command.md#--command-code) combination and returns the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) (whereas present) | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| Command                                                                | Description                                                                                                      | [Parameters](/docs/configure.md#parameters) (mandatory)            | [Parameters](/docs/configure.md#parameters) (optional)            |
+|------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `--test-command-code`  | Uses a `--callsign` / [`--command-code`](/docs/configure-commands/add-command.md#--command-code) combination and returns the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) (whereas present) | `--callsign`,`--totp-code`, `--command-code` | `--aprs-test-arguments`     |
 
 ## Example
 ```
