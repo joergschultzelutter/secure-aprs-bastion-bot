@@ -6,14 +6,15 @@ Adds or updates a [`--command code`](add-command.md#--command-code)/[`--command 
 
 ## Description
 
-| Command         | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                    |
-|-----------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `--add-command` | Adds (or updates) a command code/command string for a user to the configuration file                             | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
-
 This option creates or updates the [`--command code`](add-command.md#--command-code)/[`--command string`](add-command.md#--command-string) combination.
 
 The user is responsible for creating the [`--command string`](add-command.md#--command-string) content.
 
+## Parameters
+
+| Command         | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                    |
+|-----------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `--add-command` | Adds (or updates) a command code/command string for a user to the configuration file                             | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
 
 ### `--command-code`
 
