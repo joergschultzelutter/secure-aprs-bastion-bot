@@ -13,7 +13,7 @@ Tests a user's TOTP code against the user's secret and returns a simple "valid" 
 
 ## Parameters
 
-| Command                                                                | Description                                                                                                      | Associated parameter(s)                                                   |
+| Command                                                                | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                                                  |
 |------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
 | `--test-totp-code`            | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
 
