@@ -21,6 +21,6 @@ After this period has elapsed, the script starts. If it has been configured as a
 
 ## Example
 
-`--execute-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506`  
+`python configure.py --execute-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506`  
 
-`--test-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
+`python configure.py --test-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
