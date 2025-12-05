@@ -12,6 +12,13 @@ To give the user the opportunity to cancel the execution of the script, a ten-se
 
 After this period has elapsed, the script starts. If it has been configured as a standalone process (--launch-as-subprocess), it starts as a background process. In all other cases, the system waits for the script to finish.
 
+## Parameters
+
+| Command                  | Description                                                                                                      | Associated parameter(s)                                                   |
+|--------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `--execute-command-code` | Same as [`--test-command-code`](configure-commands/test-command-code.md), but actually executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+
+
 ## Example
 
 `--execute-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506`  
