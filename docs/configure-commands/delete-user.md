@@ -8,7 +8,9 @@
 
 This command deletes a user (along with **all** of his settings, including [`--command-code`](add-command.md#--command-code) / [`--command-string`](add-command.md#--command-string) entries) from the configuration file.
 
-| Command         | Description                                                                                                      | Associated parameter(s)                                                   |
+## Parameters
+
+| Command         | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                                                   |
 |-----------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
 | `--delete-user` | Deletes a user from the configuration file                                                                       | `--callsign`                                                              |
 
