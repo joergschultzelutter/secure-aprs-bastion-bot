@@ -7,10 +7,10 @@ Deletes a single [`--command-code`](add-command.md#--command-code) / [`--command
 ## Description
 Deletes a single [`--command-code`](add-command.md#--command-code) / [`--command-string`](add-command.md#--command-string) combination from the config file (whereas present). 
 
-| Command            | Description                                                                                                      | Associated parameter(s)                                                   |
+## Parameters
+| Command            | Description                                                                                                      | [Associated parameters](/docs/configure.md#parameters)                                                   |
 |--------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
 | `--delete-command` | Deletes a command code for a user from the configuration file                                                    | `--callsign`,`--command-code`                                             |
-
 
 ## Example
 ```
