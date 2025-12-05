@@ -26,12 +26,12 @@ Example:
 
 ### `--command-string`
 
-The `command-string` supports up to 10 parameters which you can pass along with your APRS message. If detected, `secure-aprs-bastion-bot` will retrieve those parameters from the APRS message and replace the placeholders in the `command-string` value prior to executing it.
+The `command-string` supports up to 10 parameters which you can pass along with your APRS message. If detected, `secure-aprs-bastion-bot` will retrieve those parameters from the APRS message and replace the placeholders in the `command-string` value prior to executing it. See [this documentation](/README.md#anatomy-of-an-aprs-message-to-secure-aprs-bastion-bot) for further details.
 
 Supported placeholders:
 
 - `$0` - always represents the call sign from which the APRS message originated. Example: `DF1JSL-1`
-- `$1`..`$9` are free-text parameters which are passed along with the incoming APRS message
+- `$1`..`$9` are optional free-text parameters which may have been passed along with the incoming APRS message
 
 ### Practical example:
 
