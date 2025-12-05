@@ -11,6 +11,13 @@ Tests a user's TOTP code against the user's secret and returns a simple "valid" 
 
 `configure.py` will try to read the user entry from the configuration file. If found, it will try to validate the given TOTP code against the user's secret. A simple "code is valid" or "code is invalid" message will get printed to the command line.
 
+## Parameters
+
+| Command                                                                | Description                                                                                                      | Associated parameter(s)                                                   |
+|------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `--test-totp-code`            | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                      | `--callsign`,`--totp-code`                                                |
+
+
 ## Examples
 
 - Configuration entries for `DF1JSL-1` and `DF1JSL` exist in the external YAML configuration file
