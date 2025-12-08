@@ -1,11 +1,19 @@
 # `secure-aprs-bastion-bot.py`
 
->[!NOTE]
-> `secure-aprs-bastion-bot.py` uses my [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client) framework. All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md). Only the parameters specific to the `secure-aprs-bastion-bot` (custom configuration) are described in this document section. Normally, you are not required to apply any changes to this configuration section.
+## Introduction
+
+`secure-aprs-bastion-bot.py` uses my [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client) framework and stores its APRS-bot-specific content in the configuration file `secure-aprs-bastion-bot.cfg`.
+
+- You can find a [preconfigured template file](/src/secure-aprs-bastion-bot/secure-aprs-bastion-bot.cfg.TEMPLATE) in `secure-aprs-bastion-bot`'s source folder.
+- All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md).
+- Only the parameters specific to the `secure-aprs-bastion-bot` (custom configuration) are described in the following document section. Normally, you are not required to apply any changes to this configuration section.
+- Mandatory tasks for installing your very own `secure-aprs-bastion-bot` instance:
+  - rename the existing template `secure-aprs-bastion-bot.cfg.TEMPLATE` to `secure-aprs-bastion-bot.cfg`
+  - amend the template file's [mandatory configuration sections](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md#mandatory-configuration-file-sections).
+
+The configuration template file establishes a link between the bot's configuration file `secure-aprs-bastion-bot.cfg` and the additional configuration file `sabb-command-config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `command-code`s, and `command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure-aprs-bastion-bot.cfg` configuration file.
 
 ![Overview](/img/sabb_config_files.svg)
-
-The configuration file created by [`configure.py`](configure.md) is the basis for the programs to be executed by `secure-aprs-bastion-bot.py`. The name of this configuration file is defined and stored in the `secure_aprs_bastion_bot` section of `secure-aprs-bastion-bot.py`. Details can be found at [this link](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration_subsections/config_custom.md) and in the next paragraph of this document. 
 
 Changes to the user/command configuration file specified at the `sabb_command_config_file` config file section are detected by `secure-aprs-bastion-bot.py` and result in the configuration parameters being re-read; it is therefore _not_ necessary to restart `secure-aprs-bastion-bot.py` when the `sabb_command_config.` configuration file is changed.
 
@@ -19,7 +27,7 @@ Changes to the user/command configuration file specified at the `sabb_command_co
 > [!TIP]
 > `secure-aprs-bastion-bot` automatically detects whether the `sabb_command_config_file` configuration file has changed and re-reads it if necessary. This means that it is not necessary to restart the bot when the configuration file `sabb_command_config_file` is changed.
 
-The respective section from `core-aprs-client`'s config file lists as follows:
+The respective section from `core-aprs-client`'s config file for `[secure_aprs_bastion_bot]` lists as follows:
 
 ```
 [secure_aprs_bastion_bot]
