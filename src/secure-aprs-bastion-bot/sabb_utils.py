@@ -1,7 +1,9 @@
 import os
 from sabb_logger import logger
+import sabb_shared
 import yaml
 import pyotp
+from datetime import datetime, timezone
 
 
 def get_modification_time(filename: str):
@@ -163,7 +165,7 @@ def identify_target_callsign_and_command_string_from_memory(
                 if verify_totp_code(totp_secret=__item["secret"], totp_code=totp_code):
                     # We found a match for the callsign (note that the input callsign
                     # and our new one may differ for those cases our target callsign
-                    # is ssid-less!
+                    # is ssid-less!)
                     __target_callsign = __item["callsign"]
                     # We might be required to skip the next step for those cases
                     # where
@@ -214,10 +216,58 @@ def verify_totp_code(totp_secret: str, totp_code: str):
     Returns
     =======
     status: bool
-        True / False, depending on whether or not the code matches
+        True / False, depending on whether the code matches
     """
     totp = pyotp.TOTP(totp_secret)
     return totp.verify(otp=totp_code)
+
+
+def get_totp_expiringdict_key(callsign: str, totp_code: str):
+    """
+    Checks for an entry in our TOTP expiring dictionary cache.
+    If we find that entry in our list before that entry has expired,
+    we consider the request as a duplicate and will not process it again
+
+    Parameters
+    ==========
+    callsign: str
+        User's callsign, e.g. DF1JSL-1
+    totp_code: str
+        six-digit numeric TOTP code
+
+    Returns
+    =======
+    key: 'Tuple'
+        Key tuple consisting of 'callsign' and 'totp_code' or
+        value 'None' if we were unable to locate the entry
+    """
+    key = (callsign, totp_code)
+    key = tuple(key)
+    key = key if key in sabb_shared.totp_message_cache else None
+    return key
+
+
+def set_totp_expiringdict_key(callsign: str, totp_code: str):
+    """
+    Adds an entry to our TOTP expiring dictionary cache.
+
+    Parameters
+    ==========
+    callsign: str
+        User's callsign, e.g. DF1JSL-1
+    totp_code: str
+        six-digit numeric TOTP code
+
+    Returns
+    =======
+    totp_message_cache: Expiringdict
+        The updated version of our ExpiringDict object
+    """
+
+    key = (callsign, totp_code)
+    key = tuple(key)
+    sabb_shared.totp_message_cache[key] = datetime.now(timezone.utc)
+    return sabb_shared.totp_message_cache
 
 
 if __name__ == "__main__":

@@ -136,6 +136,16 @@ def parse_input_message(
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         return return_code, input_parser_error_message, input_parser_response_object
 
+    # Check if the TOTP code is already present in our expiringdict object
+
+
+
+
+
+
+
+
+
     # enrich the command_params list with the callsign
     # Replace the callsign. Add the call sign to the top of the list
     command_params.insert(0, from_callsign)
@@ -190,6 +200,14 @@ def parse_input_message(
 
     # set the return code
     return_code = CoreAprsClientInputParserStatus.PARSE_OK
+
+    # Add call sign/totp code to our expiringdict object
+    # or forward it to the next steps?
+
+
+
+
+
 
     return return_code, input_parser_error_message, input_parser_response_object
 
