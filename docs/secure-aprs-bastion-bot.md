@@ -11,6 +11,17 @@
   - rename the existing template `secure-aprs-bastion-bot.cfg.TEMPLATE` to `secure-aprs-bastion-bot.cfg`
   - amend the template file's [mandatory configuration sections](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md#mandatory-configuration-file-sections).
 
+## Running the program
+
+```python
+usage: secure-aprs-bastion-bot.py [-h] [--configfile CONFIGFILE]
+
+options:
+  -h, --help                show this help message and exit
+  --configfile CONFIGFILE   Program config file name (default is 'secure_aprs_bastion_bot.cfg')
+```
+ Ideally, run the program via `nohup python secure-aprs-bastion-bot.py >nohup.out &`.
+
 ## Configuration file
 The configuration template file establishes a link between the bot's configuration file `secure-aprs-bastion-bot.cfg` and the additional configuration file `sabb-command-config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `command-code`s, and `command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure-aprs-bastion-bot.cfg` configuration file.
 
