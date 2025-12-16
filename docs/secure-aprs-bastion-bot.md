@@ -23,11 +23,11 @@ options:
  Ideally, run the program via `nohup python secure-aprs-bastion-bot.py >nohup.out &`.
 
 ## Configuration file
-The configuration template file establishes a link between the bot's configuration file `secure-aprs-bastion-bot.cfg` and the additional configuration file `sabb-command-config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `command-code`s, and `command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure-aprs-bastion-bot.cfg` configuration file.
+The bpt's configuration file establishes a link between the bot's configuration file `secure-aprs-bastion-bot.cfg` and the additional configuration file `sabb-command-config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `--command-code`s, and `--command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure_aprs_bastion_bot.cfg` configuration file.
 
 ![Overview](/img/sabb_config_files.svg)
 
-Changes to the user/command configuration file specified at the `sabb_command_config_file` config file section are detected by `secure-aprs-bastion-bot.py` and result in the configuration parameters being re-read; it is therefore _not_ necessary to restart `secure-aprs-bastion-bot.py` when the `sabb_command_config.` configuration file is changed.
+Changes to the user/command configuration file specified at the `sabb_command_config_file` config file section are detected by `secure-aprs-bastion-bot.py` and result in the configuration parameters being re-read; it is therefore _not_ necessary to restart `secure-aprs-bastion-bot.py` when the `sabb_command_config` configuration file is changed.
 
 | Config variable                | Type  | Default value              | Description                                                                                                                                                                             |
 |--------------------------------|-------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -37,7 +37,7 @@ Changes to the user/command configuration file specified at the `sabb_command_co
 
 
 > [!TIP]
-> `secure-aprs-bastion-bot` automatically detects whether the `sabb_command_config_file` configuration file has changed and re-reads it if necessary. This means that it is not necessary to restart the bot when the configuration file `sabb_command_config_file` is changed.
+> `secure-aprs-bastion-bot` automatically detects whether the `sabb_command_config_file` configuration file has changed and re-reads it if necessary. This means that it is **_not_** necessary to restart the bot when the configuration file `sabb_command_config_file` is changed.
 
 ### Configuration file - excerpt 
 The respective section from `core-aprs-client`'s config file for `[secure_aprs_bastion_bot]` lists as follows:
