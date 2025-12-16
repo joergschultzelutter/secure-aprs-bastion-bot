@@ -11,6 +11,7 @@
   - rename the existing template `secure-aprs-bastion-bot.cfg.TEMPLATE` to `secure-aprs-bastion-bot.cfg`
   - amend the template file's [mandatory configuration sections](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md#mandatory-configuration-file-sections).
 
+## Configuration file
 The configuration template file establishes a link between the bot's configuration file `secure-aprs-bastion-bot.cfg` and the additional configuration file `sabb-command-config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `command-code`s, and `command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure-aprs-bastion-bot.cfg` configuration file.
 
 ![Overview](/img/sabb_config_files.svg)
@@ -27,6 +28,7 @@ Changes to the user/command configuration file specified at the `sabb_command_co
 > [!TIP]
 > `secure-aprs-bastion-bot` automatically detects whether the `sabb_command_config_file` configuration file has changed and re-reads it if necessary. This means that it is not necessary to restart the bot when the configuration file `sabb_command_config_file` is changed.
 
+### Configuration file - excerpt 
 The respective section from `core-aprs-client`'s config file for `[secure_aprs_bastion_bot]` lists as follows:
 
 ```
@@ -42,3 +44,7 @@ sabb_totp_cache_max_entries = 250
 # max time span of TOTP dupe detection in seconds (300 sec = 5 mins)
 sabb_totp_cache_time_to_live = 300
 ```
+
+### Configuration file - full sample template
+
+lorem ipsum
