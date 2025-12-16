@@ -47,4 +47,8 @@ sabb_totp_cache_time_to_live = 300
 
 ### Configuration file - full sample template
 
+This secton displays the complete [preconfigured template file](/src/secure-aprs-bastion-bot/secure-aprs-bastion-bot.cfg.TEMPLATE). All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md).
+
+```
 lorem ipsum
+```
