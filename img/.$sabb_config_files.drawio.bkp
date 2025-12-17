@@ -13,7 +13,7 @@
         <mxCell id="QQCWTj5-bRNXvzXqbGkn-3" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="QQCWTj5-bRNXvzXqbGkn-10" vertex="1">
           <mxGeometry width="640" height="180" as="geometry" />
         </mxCell>
-        <mxCell id="QQCWTj5-bRNXvzXqbGkn-4" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;&lt;b&gt;sabb_command_config.yml&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Users, command-codes,&amp;nbsp;&lt;/div&gt;&lt;div&gt;and command-string&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="QQCWTj5-bRNXvzXqbGkn-10" vertex="1">
+        <mxCell id="QQCWTj5-bRNXvzXqbGkn-4" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;&lt;b&gt;sabb_command_config.yml&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Users, command-codes,&amp;nbsp;&lt;/div&gt;&lt;div&gt;and command-strings&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="QQCWTj5-bRNXvzXqbGkn-10" vertex="1">
           <mxGeometry x="70" y="45" width="220" height="90" as="geometry" />
         </mxCell>
         <mxCell id="QQCWTj5-bRNXvzXqbGkn-5" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;&lt;b&gt;secure_aprs_bastion_bot.cfg&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;APRS Bot Master&amp;nbsp;&lt;/div&gt;&lt;div&gt;configuration file&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="QQCWTj5-bRNXvzXqbGkn-10" vertex="1">
