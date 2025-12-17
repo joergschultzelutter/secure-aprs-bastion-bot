@@ -2,13 +2,13 @@
 
 ## Introduction
 
-`secure-aprs-bastion-bot.py` uses my [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client) framework and stores its APRS-bot-specific content in the configuration file `secure-aprs-bastion-bot.cfg`.
+`secure-aprs-bastion-bot.py` uses my [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client) framework and stores its APRS-bot-specific content in the configuration file `secure_aprs_bastion_bot.cfg`.
 
 - You can find a [preconfigured template file](/src/secure-aprs-bastion-bot/secure-aprs-bastion-bot.cfg.TEMPLATE) in `secure-aprs-bastion-bot`'s source folder.
 - All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md).
 - Only the parameters specific to the `secure-aprs-bastion-bot` (custom configuration) are described in the following document section. Normally, you are not required to apply any changes to this configuration section.
 - Mandatory tasks for installing your very own `secure-aprs-bastion-bot` instance:
-  - rename the existing template `secure-aprs-bastion-bot.cfg.TEMPLATE` to `secure-aprs-bastion-bot.cfg`
+  - rename the existing template `secure_aprs_bastion_bot.cfg.TEMPLATE` to `secure_aprs_bastion_bot.cfg`
   - amend the template file's [mandatory configuration sections](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md#mandatory-configuration-file-sections).
 
 ## Running the program
@@ -23,7 +23,7 @@ options:
  Ideally, run the program via `nohup python secure-aprs-bastion-bot.py >nohup.out &`.
 
 ## Configuration file
-The bpt's configuration file establishes a link between the bot's configuration file `secure-aprs-bastion-bot.cfg` and the additional configuration file `sabb-command-config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `--command-code`s, and `--command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure_aprs_bastion_bot.cfg` configuration file.
+The bpt's configuration file establishes a link between the bot's configuration file `secure_aprs_bastion_bot.cfg` and the additional configuration file `sabb_command_config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `--command-code`s, and `--command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure_aprs_bastion_bot.cfg` configuration file.
 
 ![Overview](/img/sabb_config_files.svg)
 
@@ -35,9 +35,6 @@ Changes to the user/command configuration file specified at the `sabb_command_co
 | `sabb_totp_cache_max_entries`  | `int` | `250`                      | Defines the maximum number of callsign/TOTP entries that are checked for ingress duplicates.                                                                                            |
 | `sabb_totp_cache_time_to_live` | `int` | `300` (5 mins)             | Sets the life span for a dupe detection's dictionary entry (unit of measure = seconds).                                                                                                 |
 
-
-> [!TIP]
-> `secure-aprs-bastion-bot` automatically detects whether the `sabb_command_config_file` configuration file has changed and re-reads it if necessary. This means that it is **_not_** necessary to restart the bot when the configuration file `sabb_command_config_file` is changed.
 
 ### Configuration file - excerpt 
 The respective section from `core-aprs-client`'s config file for `[secure_aprs_bastion_bot]` lists as follows:
@@ -56,7 +53,7 @@ sabb_totp_cache_max_entries = 250
 sabb_totp_cache_time_to_live = 300
 ```
 
-### Configuration file - full sample template
+### Configuration file - complete sample template
 
 This section displays the complete [preconfigured template file](/src/secure-aprs-bastion-bot/secure-aprs-bastion-bot.cfg.TEMPLATE). All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md).
 
