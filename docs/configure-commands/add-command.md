@@ -14,7 +14,7 @@ The user is responsible for creating the [`--command string`](add-command.md#--c
 
 | Command         | Description                                                                          | [Parameters](/docs/configure.md#parameters) (mandatory) | [Parameters](/docs/configure.md#parameters) (optional) |
 |-----------------|--------------------------------------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|
-| `--add-command` | Adds (or updates) a command code/command string for a user to the configuration file | `--callsign`, `--command-code`, `--command-string`      | `--launch-as-subprocess`                               |
+| `--add-command` | Adds (or updates) a command code/command string for a user to the configuration file | `--callsign`, `--command-code`, `--command-string`      | `--detached-launch`                                    |
 
 ### `--command-code`
 
@@ -80,14 +80,15 @@ users:
   commands:
     sayhello:
       command_string: source ./hi.sh
-      launch_as_subprocess: false
+      detached_launch: false
   secret: HFV5Z3DBATOSZW24N5QZPHGGSCNRZ7EV
+  ttl: 30
 ```
 
 > [!NOTE]
-> `--launch-as-subprocess` determines if the bot will wait for the program execution or not
+> `--detached-launch` determines if the bot will wait for the program execution or not
 
-- `launch-as-subprocess`==`false` (aka not set) : The `secure-aprs-bastion-bot` will execute the code provided via [`--command string`](add-command.md#--command-string). After its completion, an outgoing APRS message to the sender will be generated. This is the bot's default behavior and is good for situations where a simple task is to be executed.
-- `launch-as-subprocess`==`true`: First, `secure-aprs-bastion-bot` will send a confirmation message to the sender. Then, it will launch the execution of the [`--command string`](add-command.md#--command-string) code. This is useful for those cases where e.g. you want to reboot the server which hosts the `secure-aprs-bastion-bot` 
+- `detached-launch`==`false` (aka not set) : The `secure-aprs-bastion-bot` will execute the code provided via [`--command string`](add-command.md#--command-string). After its completion, an outgoing APRS message to the sender will be generated. This is the bot's default behavior and is good for situations where a simple task is to be executed.
+- `detached-launch`==`true`: First, `secure-aprs-bastion-bot` will send a confirmation message to the sender. Then, it will launch the execution of the [`--command string`](add-command.md#--command-string) code. This is useful for those cases where e.g. you want to reboot the server which hosts the `secure-aprs-bastion-bot` 
 
 Once you have run both [`--add-user`](add-user.md) and `--add-command` commands, you can now use [`--test-command-code`](test-command-code.md) and [`--execute-command-code`](execute-command-code.md) for testing of your configuration file.

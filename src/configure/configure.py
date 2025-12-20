@@ -221,11 +221,11 @@ def get_command_line_params_config():
     )
 
     parser.add_argument(
-        "--launch-as-subprocess",
-        dest="launch_as_subprocess",
+        "--detached-launch",
+        dest="detached_launch",
         action="store_true",
         default=False,
-        help="If specified: launch the command as a subprocess and do not wait for its completion",
+        help="If specified: launch the command as a detached subprocess and do not wait for its completion",
     )
 
     parser.add_argument(
@@ -258,7 +258,7 @@ def get_command_line_params_config():
     # command_code is always in lower case characters
     __command_code = args.command_code.lower()
     __command_string = args.command_string
-    __launch_as_subprocess = args.launch_as_subprocess
+    __detached_launch = args.detached_launch
     __test_totp_code = args.test_totp_code
     __test_command_code = args.test_command_code
     __execute_command_code = args.execute_command_code
@@ -354,6 +354,7 @@ def get_command_line_params_config():
         and not __del_user
     ):
         logger.error(msg="No command parameters specified; nothing to do")
+        parser.print_help()
         sys.exit(0)
 
     if len(__command_code) > 1:
@@ -374,7 +375,7 @@ def get_command_line_params_config():
         __command_string,
         __test_totp_code,
         __show_secret,
-        __launch_as_subprocess,
+        __detached_launch,
         __test_command_code,
         __execute_command_code,
         __aprs_test_arguments,
@@ -418,7 +419,7 @@ def does_file_exist(file_name: str):
     return os.path.isfile(file_name)
 
 
-def verify_totp_code(totp_secret: str, totp_code: str):
+def verify_totp_code(totp_secret: str, totp_code: str, ttl_interval: int = 30):
     """
     Verifies a given TOTP code against the given secret.
 
@@ -428,17 +429,21 @@ def verify_totp_code(totp_secret: str, totp_code: str):
         user's TOTP secret
     totp_code: str
         user's TOTP code
+    ttl_interval: int
+        TOTP's TTL interval
 
     Returns
     =======
     status: bool
         True / False, depending on whether or not the code matches
     """
-    totp = pyotp.TOTP(totp_secret)
+    totp = pyotp.TOTP(totp_secret, interval=ttl_interval)
     return totp.verify(otp=totp_code)
 
 
-def add_user_to_yaml_config(configfile: str, callsign: str, secret: str):
+def add_user_to_yaml_config(
+    configfile: str, callsign: str, secret: str, ttl_interval: int
+):
     """
     Writes a new user to the config file.
 
@@ -450,6 +455,8 @@ def add_user_to_yaml_config(configfile: str, callsign: str, secret: str):
         User's callsign
     secret: str
         user's TOTP secret
+    ttl_interval: int
+        TOTP's TTL interval
 
     Returns
     =======
@@ -474,13 +481,21 @@ def add_user_to_yaml_config(configfile: str, callsign: str, secret: str):
     for user in data["users"]:
         if user["callsign"] == callsign:
             user["secret"] = secret
+            user["ttl"] = ttl_interval
             data_updated = True
             break
 
-    # We were upable to update the user as it didn't exist
+    # We were unable to update the user as it didn't exist
     # So let's create a new entry instead
     if not data_updated:
-        data["users"].append({"callsign": callsign, "secret": secret, "commands": {}})
+        data["users"].append(
+            {
+                "callsign": callsign,
+                "secret": secret,
+                "ttl": ttl_interval,
+                "commands": {},
+            }
+        )
 
     # Write the config file back to disk
     __success = write_config_file_to_disk(filename=configfile, data=data)
@@ -505,13 +520,15 @@ def get_user_secret(configfile: str, callsign: str):
         True / False, depending on whether or not the data was retrieved
     secret: str
         user's TOTP secret
+    ttl_interval: int
+        TOTP's TTL interval
     """
 
-    secret = None
+    _secret = _ttl_interval = None
 
     __success, data = read_config_file_from_disk(filename=configfile)
     if not __success:
-        return __success
+        return __success, _secret, _ttl_interval
 
     __success = False
 
@@ -521,11 +538,12 @@ def get_user_secret(configfile: str, callsign: str):
     for __item in data["users"]:
         if "callsign" in __item and __item["callsign"] == callsign:
             if "secret" in __item:
-                secret = __item["secret"]
+                _secret = __item["secret"]
+                _ttl_interval = __item["ttl"]
                 __success = True
                 break
 
-    return __success, secret
+    return __success, _secret, _ttl_interval
 
 
 def get_user_command_string(configfile: str, callsign: str, command_code: str):
@@ -544,15 +562,15 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the data was retrieved
+        True / False, depending on whether the data was retrieved
     command_string: str
         command string for the user/command_line combination
-    launch_as_subprocess: bool
-        launch_as_subprocess flag for the user/command_line combination
+    detached_launch: bool
+        detached_launch flag for the user/command_line combination
     """
 
     __command_string = ""
-    __launch_as_subprocess = False
+    __detached_launch = False
 
     __success, data = read_config_file_from_disk(filename=configfile)
     if not __success:
@@ -570,9 +588,7 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
                     try:
                         # We have found our entry. Retrieve all values
                         __command_string = item["commands"][command]["command_string"]
-                        __launch_as_subprocess = item["commands"][command][
-                            "launch_as_subprocess"
-                        ]
+                        __detached_launch = item["commands"][command]["detached_launch"]
                         __success = True
                     except KeyError:
                         pass
@@ -582,7 +598,7 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
     return (
         __success,
         __command_string,
-        __launch_as_subprocess,
+        __detached_launch,
     )
 
 
@@ -694,7 +710,7 @@ def add_cmd_to_yaml_config(
     callsign: str,
     command_code: str,
     command_string: str,
-    launch_as_subprocess=False,
+    detached_launch=False,
 ):
     """
     Writes a new command for an existing user to the config file.
@@ -709,7 +725,7 @@ def add_cmd_to_yaml_config(
         The command code for our new command
     command_string: str
         The command string for our new command
-    launch_as_subprocess: bool
+    detached_launch: bool
         Wait or do not wait for the command_string execution
 
     Returns
@@ -730,11 +746,11 @@ def add_cmd_to_yaml_config(
     # Iterate through the list of call sign
     for user in data["users"]:
         if user["callsign"] == callsign:
-            # We have found our our user
+            # We have found our user
             # now let's create/update our command entry
             user.setdefault("commands", {})[command_code] = {
                 "command_string": command_string,
-                "launch_as_subprocess": launch_as_subprocess,
+                "detached_launch": detached_launch,
             }
             found_data = True
             break
@@ -856,8 +872,8 @@ def identify_target_callsign_and_command_string(
     command_string: str
         Command string for the callsign/command_code combination (or None if no matching callsign was found)
         Always None if no command_code was provided
-    launch_as_subprocess: bool
-        True if the program is to be launched as a subprocess, False otherwise
+    detached_launch: bool
+        True if the program is to be launched as a detached subprocess, False otherwise
         Always False if no command_code was provided
     secret: str
         Secret associated with this callsign
@@ -873,7 +889,7 @@ def identify_target_callsign_and_command_string(
     __target_callsign = None
     __command_string = None
     __secret = None
-    __launch_as_subprocess = False
+    __detached_launch = False
 
     # Determine if we are only supposed to check the TOTP code and skip the command_code validation
     perform_full_check = (
@@ -892,8 +908,11 @@ def identify_target_callsign_and_command_string(
             # We have found a match, let's retrieve the secret
             if "secret" in __item:
                 __secret = __item["secret"]
+                _ttl = __item["ttl"]
                 # Validate the given TOTP code against that secret
-                if verify_totp_code(totp_secret=__item["secret"], totp_code=totp_code):
+                if verify_totp_code(
+                    totp_secret=__item["secret"], totp_code=totp_code, ttl_interval=_ttl
+                ):
                     # We found a match for the callsign (note that the input callsign
                     # and our new one may differ for those cases our target callsign
                     # is ssid-less!
@@ -911,29 +930,29 @@ def identify_target_callsign_and_command_string(
                                     __command_string = __item["commands"][command][
                                         "command_string"
                                     ]
-                                    __launch_as_subprocess = __item["commands"][
-                                        command
-                                    ]["launch_as_subprocess"]
+                                    __detached_launch = __item["commands"][command][
+                                        "detached_launch"
+                                    ]
                                     __success = True
                                 except KeyError:
-                                    __command_string = __launch_as_subprocess = None
+                                    __command_string = __detached_launch = None
                                 break
                     # no full check requested; return ok but set command_string and
-                    # launch_as_subprocess to None as we don't retrieve this data
+                    # detached_launch to None as we don't retrieve this data
                     else:
                         __success = True
-                        __command_string = __launch_as_subprocess = None
+                        __command_string = __detached_launch = None
                     break
     return (
         __success,
         __target_callsign,
         __command_string,
-        __launch_as_subprocess,
+        __detached_launch,
         __secret,
     )
 
 
-def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
+def add_user(configfile: str, callsign: str, ttl_interval: int, show_secret: bool):
     """
     Adds a user to the config file.
 
@@ -943,15 +962,15 @@ def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
         Name of the external YAML config file
     callsign: str
         User's callsign
-    ttl: int
+    ttl_interval: int
         desired time-to-live time span for the user callsign's secret
     show_secret: bool
-        whether or not to show the secret or not (debug purposes only)
+        whether to show the secret or not (debug purposes only)
 
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
     __success = False
 
@@ -960,13 +979,15 @@ def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
         logger.info(f"Creating new configuration file {configfile}")
     logger.info("Adding new user account")
 
-    logger.info(f"Generating TOTP credentials for user '{callsign}' with TTL '{ttl}'")
+    logger.info(
+        f"Generating TOTP credentials for user '{callsign}' with TTL '{ttl_interval}'"
+    )
 
     # generate the TOTP secret
     secret = pyotp.random_base32()
 
     # generate the TOTP object
-    totp = pyotp.TOTP(secret, interval=ttl)
+    totp = pyotp.TOTP(secret, interval=ttl_interval)
 
     # Provision the URI for the QR code
     uri = totp.provisioning_uri(
@@ -1013,14 +1034,19 @@ def add_user(configfile: str, callsign: str, ttl: int, show_secret: bool):
             __success = False
             return __success
         else:
-            if not verify_totp_code(totp_secret=secret, totp_code=content):
+            if not verify_totp_code(
+                totp_secret=secret, totp_code=content, ttl_interval=ttl_interval
+            ):
                 print("This TOTP code is invalid")
                 content = ""
                 continue
             else:
                 # write to YAML file
                 __success = add_user_to_yaml_config(
-                    configfile=configfile, callsign=callsign, secret=secret
+                    configfile=configfile,
+                    callsign=callsign,
+                    secret=secret,
+                    ttl_interval=ttl_interval,
                 )
                 print("")
                 if __success:
@@ -1077,7 +1103,7 @@ def add_cmd(
     callsign: str,
     command_code: str,
     command_string: str,
-    launch_as_subprocess: bool,
+    detached_launch: bool,
 ):
     """
     Adds a command-code/command-string entry for a user to the config file.
@@ -1092,13 +1118,13 @@ def add_cmd(
         APRS command code
     command_string: str
         the actual code that we are going to execute
-    launch_as_subprocess: bool
-        Determines whether or not to launch as a subprocess
+    detached_launch: bool
+        Determines whether to launch as a detached subprocess
 
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
     __success = False
     if not does_file_exist(configfile):
@@ -1112,7 +1138,7 @@ def add_cmd(
             callsign=callsign,
             command_code=command_code,
             command_string=command_string,
-            launch_as_subprocess=launch_as_subprocess,
+            detached_launch=detached_launch,
         )
         if __success:
             logger.info(
@@ -1294,7 +1320,7 @@ if __name__ == "__main__":
         sabb_command_string,
         sabb_test_totp_code,
         sabb_show_secret,
-        sabb_launch_as_subprocess,
+        sabb_detached_launch,
         sabb_test_command_code,
         sabb_execute_command_code,
         sabb_aprs_test_arguments,
@@ -1304,7 +1330,7 @@ if __name__ == "__main__":
         add_user(
             configfile=sabb_configfile,
             callsign=sabb_callsign,
-            ttl=sabb_ttl,
+            ttl_interval=sabb_ttl,
             show_secret=sabb_show_secret,
         )
         sys.exit(0)
@@ -1319,7 +1345,7 @@ if __name__ == "__main__":
             callsign=sabb_callsign,
             command_code=sabb_command_code,
             command_string=sabb_command_string,
-            launch_as_subprocess=sabb_launch_as_subprocess,
+            detached_launch=sabb_detached_launch,
         )
         sys.exit(0)
 
@@ -1342,7 +1368,7 @@ if __name__ == "__main__":
                 success,
                 target_callsign,
                 command_string,
-                launch_as_subprocess,
+                detached_launch,
                 secret,
             ) = identify_target_callsign_and_command_string(
                 configfile=sabb_configfile,
@@ -1367,16 +1393,13 @@ if __name__ == "__main__":
                 "Please run this program with option --add-user for an initial config file setup."
             )
         else:
-            (
-                success,
-                target_callsign,
-                command_string,
-                launch_as_subprocess,
-            ) = identify_target_callsign_and_command_string(
-                configfile=sabb_configfile,
-                callsign=sabb_callsign,
-                totp_code=sabb_totp_code,
-                command_code=sabb_command_code,
+            (success, target_callsign, command_string, detached_launch, secret) = (
+                identify_target_callsign_and_command_string(
+                    configfile=sabb_configfile,
+                    callsign=sabb_callsign,
+                    totp_code=sabb_totp_code,
+                    command_code=sabb_command_code,
+                )
             )
             if not success:
                 logger.info(

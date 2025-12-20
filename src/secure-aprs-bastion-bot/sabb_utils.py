@@ -131,7 +131,7 @@ def identify_target_callsign_and_command_string_from_memory(
     command_string: str
         Command string for the callsign/command_code combination (or None if no matching callsign was found)
         Always None if no command_code was provided
-    launch_as_subprocess: bool
+    detached_launch: bool
         True if the program is to be launched as a subprocess, False otherwise
         Always False if no command_code was provided
     secret: str
@@ -142,7 +142,7 @@ def identify_target_callsign_and_command_string_from_memory(
     __target_callsign = None
     __command_string = None
     __secret = None
-    __launch_as_subprocess = False
+    __detached_launch = False
 
     # Determine if we are only supposed to check the TOTP code and skip the command_code validation
     perform_full_check = (
@@ -161,8 +161,11 @@ def identify_target_callsign_and_command_string_from_memory(
             # We have found a match, let's retrieve the secret
             if "secret" in __item:
                 __secret = __item["secret"]
+                _ttl = __item["ttl"]
                 # Validate the given TOTP code against that secret
-                if verify_totp_code(totp_secret=__item["secret"], totp_code=totp_code):
+                if verify_totp_code(
+                    totp_secret=__item["secret"], totp_code=totp_code, ttl_interval=_ttl
+                ):
                     # We found a match for the callsign (note that the input callsign
                     # and our new one may differ for those cases our target callsign
                     # is ssid-less!)
@@ -180,29 +183,29 @@ def identify_target_callsign_and_command_string_from_memory(
                                     __command_string = __item["commands"][command][
                                         "command_string"
                                     ]
-                                    __launch_as_subprocess = __item["commands"][
-                                        command
-                                    ]["launch_as_subprocess"]
+                                    __detached_launch = __item["commands"][command][
+                                        "detached_launch"
+                                    ]
                                     __success = True
                                 except KeyError:
-                                    __command_string = __launch_as_subprocess = None
+                                    __command_string = __detached_launch = None
                                 break
                     # no full check requested; return ok but set command_string and
                     # launch_as_subprocess to None as we don't retrieve this data
                     else:
                         __success = True
-                        __command_string = __launch_as_subprocess = None
+                        __command_string = __detached_launch = None
                     break
     return (
         __success,
         __target_callsign,
         __command_string,
-        __launch_as_subprocess,
+        __detached_launch,
         __secret,
     )
 
 
-def verify_totp_code(totp_secret: str, totp_code: str):
+def verify_totp_code(totp_secret: str, totp_code: str, ttl_interval: int = 30):
     """
     Verifies a given TOTP code against the given secret.
 
@@ -212,13 +215,15 @@ def verify_totp_code(totp_secret: str, totp_code: str):
         user's TOTP secret
     totp_code: str
         user's TOTP code
+    ttl_interval: int
+        TOTP's TTL interval
 
     Returns
     =======
     status: bool
-        True / False, depending on whether the code matches
+        True / False, depending on whether or not the code matches
     """
-    totp = pyotp.TOTP(totp_secret)
+    totp = pyotp.TOTP(totp_secret, interval=ttl_interval)
     return totp.verify(otp=totp_code)
 
 

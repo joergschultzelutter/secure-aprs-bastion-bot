@@ -138,20 +138,12 @@ def parse_input_message(
 
     # Check if the TOTP code is already present in our expiringdict object
 
-
-
-
-
-
-
-
-
     # enrich the command_params list with the callsign
     # Replace the callsign. Add the call sign to the top of the list
     command_params.insert(0, from_callsign)
 
     # Attempt to locate the execution parameters
-    success, target_callsign, command_string, launch_as_subprocess = (
+    success, target_callsign, command_string, detached_launch, secret = (
         identify_target_callsign_and_command_string_from_memory(
             data=sabb_shared.config_data,
             callsign=from_callsign,
@@ -172,7 +164,7 @@ def parse_input_message(
 
     # Debug information
     logger.debug(
-        msg=f"Command Code: '{command_code}', Command String: '{command_string}', LaunchAsSubProcess: '{launch_as_subprocess}'"
+        msg=f"Command Code: '{command_code}', Command String: '{command_string}', detached_launch: '{detached_launch}'"
     )
 
     # and now start iterating through the list and replace our content
@@ -195,7 +187,7 @@ def parse_input_message(
         "from_callsign": from_callsign,
         "totp_code": totp_code,
         "command_string": command_string,
-        "launch_as_subprocess": launch_as_subprocess,
+        "detached_launch": detached_launch,
     }
 
     # set the return code
@@ -203,11 +195,6 @@ def parse_input_message(
 
     # Add call sign/totp code to our expiringdict object
     # or forward it to the next steps?
-
-
-
-
-
 
     return return_code, input_parser_error_message, input_parser_response_object
 
