@@ -23,7 +23,7 @@ options:
  Ideally, run the program via `nohup python secure-aprs-bastion-bot.py >nohup.out &`.
 
 ## Configuration file
-The bpt's configuration file establishes a link between the bot's configuration file `secure_aprs_bastion_bot.cfg` and the additional configuration file `sabb_command_config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `--command-code`s, and `--command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure_aprs_bastion_bot.cfg` configuration file.
+The bot's configuration file establishes a link between the bot's configuration file `secure_aprs_bastion_bot.cfg` and the additional configuration file `sabb_command_config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `--command-code`s, and `--command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure_aprs_bastion_bot.cfg` configuration file.
 
 ![Overview](/img/sabb_config_files.svg)
 
