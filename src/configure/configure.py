@@ -45,7 +45,7 @@ else:
     import tty
 
 # Default name of the to-be-generated output configuration file
-CONFIG_FILE_NAME = "sabb_command_config.yaml"
+CONFIG_FILE_NAME = "sabb_command_config.yml"
 
 # Set up the global logger variable
 logging.basicConfig(
@@ -121,7 +121,7 @@ def get_command_line_params_config():
         default=CONFIG_FILE_NAME,
         dest="config_file",
         type=str,
-        help="Program config file name (default: sabb_command_config.yaml) ",
+        help="Program config file name (default: sabb_command_config.yml) ",
     )
 
     parser.add_argument(
