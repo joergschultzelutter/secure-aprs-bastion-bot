@@ -1403,31 +1403,42 @@ if __name__ == "__main__":
             )
             if not success:
                 logger.info(
-                    f"Unable to identify matching call sign and/or command_code in configuration file '{sabb_configfile}'; exiting"
+                    f"Unable to identify matching call sign and/or command_code for given TOTP code in configuration file '{sabb_configfile}'; exiting"
                 )
             else:
                 logger.info(
-                    msg=f"Command '{sabb_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}'"
-                )
-                logger.info(
-                    msg="Replacing potential APRS parameters in the command string."
+                    msg=f"Command '{sabb_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}' with detached_launch='{detached_launch}'"
                 )
 
-                # Replace the callsign. Add the call sign to the top of the list
-                sabb_aprs_test_arguments.insert(0, sabb_callsign)
-
-                # and now start iterating through the list and replace our content
-                for count, item in enumerate(sabb_aprs_test_arguments, start=0):
-                    command_string = command_string.replace(f"${count}", item)
-                logger.info(f"final command_string: '{command_string}'")
-
-                # Check if we have received fewer user-specified parameters than expected
-                # if that is the case, our string still contains placeholders
+                # Check if there is something that we need to replace
                 regex_string = r"\$[0-9]"
                 matches = re.search(pattern=regex_string, string=command_string)
                 if matches:
-                    logger.error(msg="510 not extended")
-                    sys.exit(0)
+                    logger.info(
+                        msg="Replacing potential APRS parameters in the command string."
+                    )
+
+                    # Replace the callsign. Add the call sign to the top of the list
+                    sabb_aprs_test_arguments.insert(0, sabb_callsign)
+
+                    # and now start iterating through the list and replace our content
+                    for count, item in enumerate(sabb_aprs_test_arguments, start=0):
+                        command_string = command_string.replace(f"${count}", item)
+                    logger.info(
+                        f"Command_string after replacement process: '{command_string}'"
+                    )
+
+                    # Check if we have received fewer user-specified parameters than expected
+                    # if that is the case, our string still contains placeholders
+                    regex_string = r"\$[0-9]"
+                    matches = re.search(pattern=regex_string, string=command_string)
+                    if matches:
+                        logger.error(msg="510 not extended")
+                        logger.error(
+                            msg="Your final command string still contains placeholders; did you specify all parameters?"
+                        )
+                        logger.error(msg=f"Final command string: '{command_string}'")
+                        sys.exit(0)
 
                 if sabb_execute_command_code:
                     pass

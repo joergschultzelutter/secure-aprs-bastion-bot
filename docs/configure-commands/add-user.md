@@ -82,4 +82,5 @@ users:
 - callsign: DF1JSL-1
   commands: {}
   secret: HFV5Z3DBATOSZW24N5QZPHGGSCNRZ7EV
+  ttl: 30
 ```
