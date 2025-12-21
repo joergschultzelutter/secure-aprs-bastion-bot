@@ -88,7 +88,7 @@ users:
 > [!NOTE]
 > `--detached-launch` determines if the bot will wait for the program execution or not
 
-- `detached-launch`==`false` (aka not set) : The `secure-aprs-bastion-bot` will execute the code provided via [`--command string`](add-command.md#--command-string). After its completion, an outgoing APRS message to the sender will be generated. This is the bot's default behavior and is good for situations where a simple task is to be executed.
+- `detached-launch`==`false` (aka flag is not set) : The `secure-aprs-bastion-bot` will execute the code provided via [`--command string`](add-command.md#--command-string). After its completion, an outgoing APRS message to the sender will be generated. This is the bot's default behavior and is good for situations where a simple task is to be executed.
 - `detached-launch`==`true`: First, `secure-aprs-bastion-bot` will send a confirmation message to the sender. Then, it will launch the execution of the [`--command string`](add-command.md#--command-string) code. This is useful for those cases where e.g. you want to reboot the server which hosts the `secure-aprs-bastion-bot` 
 
 Once you have run both [`--add-user`](add-user.md) and `--add-command` commands, you can now use [`--test-command-code`](test-command-code.md) and [`--execute-command-code`](execute-command-code.md) for testing of your configuration file.
