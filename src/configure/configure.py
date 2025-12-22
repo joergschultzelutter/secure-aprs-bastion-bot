@@ -813,7 +813,7 @@ def del_cmd_from_yaml_config(configfile: str, callsign: str, command_code: str):
 
 
 def identify_target_callsign_and_command_string(
-    configfile: str, callsign: str, totp_code: str, command_code: str | None
+    data: dict, callsign: str, totp_code: str, command_code: str | None
 ):
     """
     Retrieves the callsign/totp_code match and identifies the command_string for the given command_code.
@@ -853,8 +853,8 @@ def identify_target_callsign_and_command_string(
 
     Parameters
     ==========
-    configfile: str
-        Name of the external YAML configuration file
+    data: dict
+        Content from the external YAML file
     callsign: str
         Callsign code of the user
     totp_code: str
@@ -878,12 +878,6 @@ def identify_target_callsign_and_command_string(
     secret: str
         Secret associated with this callsign
     """
-
-    # Read the file from disk
-    __success, data = read_config_file_from_disk(filename=configfile)
-
-    if not __success:
-        return False, None, None, None
 
     __success = False
     __target_callsign = None
@@ -1187,7 +1181,9 @@ def del_cmd(configfile: str, callsign: str, command_code: str):
     return __success
 
 
-def execute_program(command: str | list, wait_for_completion: bool = True):
+def execute_program(
+    command: str | list, detached_launch: bool = False, detached_delay: float = 0.0
+):
     """
     Executes an external program
 
@@ -1195,10 +1191,13 @@ def execute_program(command: str | list, wait_for_completion: bool = True):
     ==========
     command: str or list
         Single command or a command with arguments.
-    wait_for_completion: bool
-        True  = Wait until external program completes its execution (default).
-        False = Start external program as background job
-                after 20 seconds delay and return immediately.
+    detached_launch: bool
+        False  = Wait until external program completes its execution (default).
+        True = Start external program as background job
+                after 'detached_delay' seconds delay and return immediately.
+    detached_delay: float
+        If detached_launch mode: number of seconds to wait aber launch command
+        has been initiated
 
     Returns
     =======
@@ -1221,13 +1220,13 @@ def execute_program(command: str | list, wait_for_completion: bool = True):
             logger.debug(f"Error while starting process: {e}")
 
     try:
-        if wait_for_completion:
+        if not detached_launch:
             process = _start_process(command)
             if process is not None:
                 return process.wait()
             return None
         else:
-            timer = threading.Timer(20.0, _start_process, args=(command,))
+            timer = threading.Timer(detached_delay, _start_process, args=(command,))
             timer.daemon = True
             timer.start()
             return None
@@ -1364,25 +1363,33 @@ if __name__ == "__main__":
                 "Please run this program with option --add-user for an initial config file setup."
             )
         else:
-            (
-                success,
-                target_callsign,
-                command_string,
-                detached_launch,
-                secret,
-            ) = identify_target_callsign_and_command_string(
-                configfile=sabb_configfile,
-                callsign=sabb_callsign,
-                totp_code=sabb_totp_code,
-                command_code=None,
-            )
-            if not success:
-                logger.info(
-                    f"Unable to identify matching call sign and/or totp/secret match in '{sabb_configfile}'; exiting"
+            # Read the file from disk
+            success, cfg_data = read_config_file_from_disk(filename=sabb_configfile)
+
+            if success:
+                (
+                    success,
+                    target_callsign,
+                    command_string,
+                    detached_launch,
+                    secret,
+                ) = identify_target_callsign_and_command_string(
+                    data=cfg_data,
+                    callsign=sabb_callsign,
+                    totp_code=sabb_totp_code,
+                    command_code=None,
                 )
+                if not success:
+                    logger.info(
+                        f"Unable to identify matching call sign and/or totp/secret match in '{sabb_configfile}'; exiting"
+                    )
+                else:
+                    logger.info(
+                        msg=f"Token '{sabb_totp_code}' matches with target call sign '{target_callsign}'"
+                    )
             else:
-                logger.info(
-                    msg=f"Token '{sabb_totp_code}' matches with target call sign '{target_callsign}'"
+                logger.error(
+                    msg=f"Unable to read configuration file '{sabb_configfile}'"
                 )
         sys.exit(0)
 
@@ -1393,22 +1400,28 @@ if __name__ == "__main__":
                 "Please run this program with option --add-user for an initial config file setup."
             )
         else:
-            (success, target_callsign, command_string, detached_launch, secret) = (
-                identify_target_callsign_and_command_string(
-                    configfile=sabb_configfile,
-                    callsign=sabb_callsign,
-                    totp_code=sabb_totp_code,
-                    command_code=sabb_command_code,
+            # Read the file from disk
+            success, cfg_data = read_config_file_from_disk(filename=sabb_configfile)
+
+            if success:
+
+                (success, target_callsign, command_string, detached_launch, secret) = (
+                    identify_target_callsign_and_command_string(
+                        data=cfg_data,
+                        callsign=sabb_callsign,
+                        totp_code=sabb_totp_code,
+                        command_code=sabb_command_code,
+                    )
                 )
-            )
-            if not success:
-                logger.info(
-                    f"Unable to identify matching call sign and/or command_code for given TOTP code in configuration file '{sabb_configfile}'; exiting"
-                )
-            else:
-                logger.info(
-                    msg=f"Command '{sabb_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}' with detached_launch='{detached_launch}'"
-                )
+                if not success:
+                    logger.info(
+                        f"Unable to identify matching call sign and/or command_code for given TOTP code in configuration file '{sabb_configfile}'; exiting"
+                    )
+                    sys.exit(0)
+                else:
+                    logger.info(
+                        msg=f"Command '{sabb_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}' with detached_launch='{detached_launch}'"
+                    )
 
                 # Check if there is something that we need to replace
                 regex_string = r"\$[0-9]"
@@ -1441,5 +1454,22 @@ if __name__ == "__main__":
                         sys.exit(0)
 
                 if sabb_execute_command_code:
-                    pass
+                    logger.info(
+                        msg=f"Executing command '{sabb_execute_command_code}' in 10 seconds; press any key to abort..."
+                    )
+                    # Note: this will not work properly when called from an IDE
+                    aborted = wait_or_keypress(10)
+                    if aborted:
+                        logger.info("aborting")
+                    else:
+                        logger.info("not aborted")
+                        execute_program(
+                            command=command_string,
+                            detached_launch=detached_launch,
+                            detached_delay=0.0,
+                        )
+            else:
+                logger.error(
+                    msg=f"Unable to read configuration file '{sabb_configfile}'"
+                )
         sys.exit(0)

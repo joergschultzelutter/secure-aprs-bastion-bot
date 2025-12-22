@@ -1,9 +1,44 @@
+#!/opt/local/bin/python
+#
+# secure-aprs-bastion-bot: utility functions
+# Author: Joerg Schultze-Lutter, 2025
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Shorten and abbreviate the original input text which - unfortunately - is
+# usually provided by the BBK site in epic proportions. We try to shorten the
+# text as much as possible, thus rendering the output text to a format that is
+# more compatible with e.g. SMS devices.
+#
 import os
 from sabb_logger import logger
 import sabb_shared
 import yaml
 import pyotp
 from datetime import datetime, timezone
+
+import platform
+import subprocess
+import threading
+
+if platform.system() == "Windows":
+    import msvcrt
+else:
+    import select
+    import termios
+    import tty
 
 
 def get_modification_time(filename: str):
@@ -71,7 +106,7 @@ def read_config_file_from_disk(filename: str):
     return __success, data
 
 
-def identify_target_callsign_and_command_string_from_memory(
+def identify_target_callsign_and_command_string(
     data: dict, callsign: str, totp_code: str, command_code: str | None
 ):
     """
@@ -132,7 +167,7 @@ def identify_target_callsign_and_command_string_from_memory(
         Command string for the callsign/command_code combination (or None if no matching callsign was found)
         Always None if no command_code was provided
     detached_launch: bool
-        True if the program is to be launched as a subprocess, False otherwise
+        True if the program is to be launched as a detached subprocess, False otherwise
         Always False if no command_code was provided
     secret: str
         Secret associated with this callsign
@@ -168,7 +203,7 @@ def identify_target_callsign_and_command_string_from_memory(
                 ):
                     # We found a match for the callsign (note that the input callsign
                     # and our new one may differ for those cases our target callsign
-                    # is ssid-less!)
+                    # is ssid-less!
                     __target_callsign = __item["callsign"]
                     # We might be required to skip the next step for those cases
                     # where
@@ -191,7 +226,7 @@ def identify_target_callsign_and_command_string_from_memory(
                                     __command_string = __detached_launch = None
                                 break
                     # no full check requested; return ok but set command_string and
-                    # launch_as_subprocess to None as we don't retrieve this data
+                    # detached_launch to None as we don't retrieve this data
                     else:
                         __success = True
                         __command_string = __detached_launch = None
@@ -273,6 +308,60 @@ def set_totp_expiringdict_key(callsign: str, totp_code: str):
     key = tuple(key)
     sabb_shared.totp_message_cache[key] = datetime.now(timezone.utc)
     return sabb_shared.totp_message_cache
+
+
+def execute_program(
+    command: str | list, detached_launch: bool = False, detached_delay: float = 0.0
+):
+    """
+    Executes an external program
+
+    Parameters
+    ==========
+    command: str or list
+        Single command or a command with arguments.
+    detached_launch: bool
+        False  = Wait until external program completes its execution (default).
+        True = Start external program as background job
+                after 'detached_delay' seconds delay and return immediately.
+    detached_delay: float
+        If detached_launch mode: number of seconds to wait aber launch command
+        has been initiated
+
+    Returns
+    =======
+        int   if wait_for_completion == True: program's return code
+        None  if wait_for_completion == False or in case of error
+    """
+
+    def _start_process(cmd):
+        try:
+            if platform.system() == "Windows":
+                subprocess.Popen(cmd, shell=True)
+            else:
+                if isinstance(cmd, str):
+                    subprocess.Popen(cmd.split())
+                elif isinstance(cmd, list):
+                    subprocess.Popen(cmd)
+                else:
+                    raise ValueError("Command must be of type 'str' or 'list'")
+        except Exception as e:
+            logger.debug(f"Error while starting process: {e}")
+
+    try:
+        if not detached_launch:
+            process = _start_process(command)
+            if process is not None:
+                return process.wait()
+            return None
+        else:
+            timer = threading.Timer(detached_delay, _start_process, args=(command,))
+            timer.daemon = True
+            timer.start()
+            return None
+    except Exception as e:
+        logger.debug(f"General error has occurred: {e}")
+        return None
 
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ import re
 from sabb_utils import (
     get_modification_time,
     read_config_file_from_disk,
-    identify_target_callsign_and_command_string_from_memory,
+    identify_target_callsign_and_command_string,
 )
 import copy
 from sabb_logger import logger
@@ -144,7 +144,7 @@ def parse_input_message(
 
     # Attempt to locate the execution parameters
     success, target_callsign, command_string, detached_launch, secret = (
-        identify_target_callsign_and_command_string_from_memory(
+        identify_target_callsign_and_command_string(
             data=sabb_shared.config_data,
             callsign=from_callsign,
             totp_code=totp_code,
