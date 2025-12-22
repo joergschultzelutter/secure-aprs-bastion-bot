@@ -311,49 +311,39 @@ def set_totp_expiringdict_key(callsign: str, totp_code: str):
 
 
 def execute_program(
-    command: str | list, detached_launch: bool = False, detached_delay: float = 0.0
+    command: str | list,
+    detached_launch: bool = False,
+    detached_delay: float = 0.0,
 ):
     """
-    Executes an external program
-
-    Parameters
-    ==========
-    command: str or list
-        Single command or a command with arguments.
-    detached_launch: bool
-        False  = Wait until external program completes its execution (default).
-        True = Start external program as background job
-                after 'detached_delay' seconds delay and return immediately.
-    detached_delay: float
-        If detached_launch mode: number of seconds to wait aber launch command
-        has been initiated
+    Executes a command or script (Windows, Linux, macOS compatible)
 
     Returns
-    =======
-        int   if wait_for_completion == True: program's return code
-        None  if wait_for_completion == False or in case of error
+    -------
+    int   : return code if detached_launch == False
+    None  : if detached_launch == True or in case of error
     """
 
     def _start_process(cmd):
         try:
-            if platform.system() == "Windows":
-                subprocess.Popen(cmd, shell=True)
+            if isinstance(cmd, str):
+                # Works on all platforms (cmd.exe /bin/sh)
+                return subprocess.Popen(cmd, shell=True)
+            elif isinstance(cmd, list):
+                # Direct exec (preferred, secure)
+                return subprocess.Popen(cmd)
             else:
-                if isinstance(cmd, str):
-                    subprocess.Popen(cmd.split())
-                elif isinstance(cmd, list):
-                    subprocess.Popen(cmd)
-                else:
-                    raise ValueError("Command must be of type 'str' or 'list'")
+                raise ValueError("command must be str or list")
         except Exception as e:
             logger.debug(f"Error while starting process: {e}")
+            return None
 
     try:
         if not detached_launch:
             process = _start_process(command)
-            if process is not None:
-                return process.wait()
-            return None
+            if process is None:
+                return None
+            return process.wait()
         else:
             timer = threading.Timer(detached_delay, _start_process, args=(command,))
             timer.daemon = True
@@ -362,7 +352,6 @@ def execute_program(
     except Exception as e:
         logger.debug(f"General error has occurred: {e}")
         return None
-
 
 if __name__ == "__main__":
     pass
