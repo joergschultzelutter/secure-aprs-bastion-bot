@@ -25,6 +25,7 @@ from sabb_utils import (
     get_modification_time,
     read_config_file_from_disk,
     identify_target_callsign_and_command_string,
+    get_totp_expiringdict_key,
 )
 import copy
 from sabb_logger import logger
@@ -136,8 +137,6 @@ def parse_input_message(
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         return return_code, input_parser_error_message, input_parser_response_object
 
-    # Check if the TOTP code is already present in our expiringdict object
-
     # enrich the command_params list with the callsign
     # Replace the callsign. Add the call sign to the top of the list
     command_params.insert(0, from_callsign)
@@ -160,6 +159,18 @@ def parse_input_message(
         input_parser_response_object = {}
         # set the return code
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
+        return return_code, input_parser_error_message, input_parser_response_object
+
+    # Check if the TOTP code is already present in our expiringdict object
+    key = get_totp_expiringdict_key(callsign=target_callsign, totp_code=totp_code)
+
+    # If we were able to retrieve the item, this means that we already used the
+    # callsign / TOTP combination before
+    if key:
+        # generate a common 403 error message. Alternate approach: PARSE_IGNORE return code
+        return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
+        input_parser_error_message = sabb_shared.http_msg_403
+        input_parser_response_object = {}
         return return_code, input_parser_error_message, input_parser_response_object
 
     # Debug information
@@ -185,7 +196,9 @@ def parse_input_message(
     # finally, create the input parser response object
     input_parser_response_object = {
         "from_callsign": from_callsign,
+        "target_callsign": target_callsign,
         "totp_code": totp_code,
+        "command_code": command_code,
         "command_string": command_string,
         "detached_launch": detached_launch,
     }
@@ -193,9 +206,9 @@ def parse_input_message(
     # set the return code
     return_code = CoreAprsClientInputParserStatus.PARSE_OK
 
-    # Add call sign/totp code to our expiringdict object
-    # or forward it to the next steps?
-
+    # Now return everything to the core-aprs-client framework
+    # the next step(s) will be taken care of by the output-generator and/or
+    # post-processor functions
     return return_code, input_parser_error_message, input_parser_response_object
 
 

@@ -307,7 +307,6 @@ def set_totp_expiringdict_key(callsign: str, totp_code: str):
     key = (callsign, totp_code)
     key = tuple(key)
     sabb_shared.totp_message_cache[key] = datetime.now(timezone.utc)
-    return sabb_shared.totp_message_cache
 
 
 def execute_program(
@@ -352,6 +351,7 @@ def execute_program(
     except Exception as e:
         logger.debug(f"General error has occurred: {e}")
         return None
+
 
 if __name__ == "__main__":
     pass
