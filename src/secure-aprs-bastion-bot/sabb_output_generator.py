@@ -30,7 +30,6 @@
 from CoreAprsClient import CoreAprsClient
 from sabb_utils import set_totp_expiringdict_key
 import sabb_shared
-from sabb_logger import logger
 
 
 def generate_output_message(

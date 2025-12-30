@@ -88,6 +88,7 @@ if __name__ == "__main__":
         log_level=logging.DEBUG,
         input_parser=parse_input_message,
         output_generator=generate_output_message,
+        post_processor=post_processing,
     )
 
     # Create the expiring dictionary object for the TOTP records

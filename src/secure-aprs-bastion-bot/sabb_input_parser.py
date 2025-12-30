@@ -27,8 +27,6 @@ from sabb_utils import (
     identify_target_callsign_and_command_string,
     get_totp_expiringdict_key,
 )
-import copy
-from sabb_logger import logger
 
 
 def dismantle_aprs_message(aprs_message: str):
@@ -174,14 +172,14 @@ def parse_input_message(
         return return_code, input_parser_error_message, input_parser_response_object
 
     # Debug information
-    logger.debug(
+    instance.log_debug(
         msg=f"Command Code: '{command_code}', Command String: '{command_string}', detached_launch: '{detached_launch}'"
     )
 
     # and now start iterating through the list and replace our content
     for count, item in enumerate(command_params, start=0):
         command_string = command_string.replace(f"${count}", item)
-    logger.debug(f"final command_string: '{command_string}'")
+    instance.log_debug(f"final command_string: '{command_string}'")
 
     # Check if we have received fewer user-specified parameters than expected
     # if that is the case, our string still contains placeholders
