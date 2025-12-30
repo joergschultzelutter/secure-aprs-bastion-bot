@@ -74,9 +74,13 @@ def generate_output_message(
 
     # If the user has requested a detached launch, simply return http202 response
     # message and pass the input parser response object along to the framework
+    # The post-processing function will then take care of the rest.
     if input_parser_response_object["detached_launch"]:
         success = True
         output_message = sabb_shared.http_msg_202
+        # By using a value different to 'None' as 3rd parameter, we signal to the framework
+        # that we want to invoke the post processor AFTER the APRS response message has
+        # been sent back to the user
         return success, output_message, input_parser_response_object
 
     # Everything else from here is NOT a detached launch, meaning that we have to
@@ -85,6 +89,11 @@ def generate_output_message(
     instance.log_info(
         msg=f"Executing command: '{input_parser_response_object["command_string"]}'"
     )
+
+    # execute the command
+    pass
+
+    # Set the return value content
     success = True
     output_message = sabb_shared.http_msg_200
 
@@ -95,6 +104,8 @@ def generate_output_message(
     )
 
     # and return the status to the framework
+    # By using 'None' as 3rd parameter, we signal to the framework that we do not
+    # want to invoke the post processor
     return success, output_message, None
 
 

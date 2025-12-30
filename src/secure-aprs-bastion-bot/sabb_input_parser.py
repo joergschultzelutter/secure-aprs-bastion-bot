@@ -140,6 +140,8 @@ def parse_input_message(
     command_params.insert(0, from_callsign)
 
     # Attempt to locate the execution parameters
+    # 'target_callsign' might differ from 'from_callsign' for those cases where
+    # we went for the SSID-less callsign
     success, target_callsign, command_string, detached_launch, secret = (
         identify_target_callsign_and_command_string(
             data=sabb_shared.config_data,
@@ -186,12 +188,15 @@ def parse_input_message(
     regex_string = r"\$[0-9]"
     matches = re.search(pattern=regex_string, string=command_string)
     if matches:
+        # Indicate the error to the user and abort further processing of the message
         input_parser_error_message = sabb_shared.http_msg_510
         input_parser_response_object = {}
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         return return_code, input_parser_error_message, input_parser_response_object
 
-    # finally, create the input parser response object
+    # Everything is good her, so let's create the response data from
+    # the input parser which will later on be used by the output generator
+    # and -whereas applicable- by the post processor
     input_parser_response_object = {
         "from_callsign": from_callsign,
         "target_callsign": target_callsign,
@@ -201,12 +206,13 @@ def parse_input_message(
         "detached_launch": detached_launch,
     }
 
-    # set the return code
+    # set the return code to OK. This will tell the framework to continue
+    # with the data processing
     return_code = CoreAprsClientInputParserStatus.PARSE_OK
 
     # Now return everything to the core-aprs-client framework
     # the next step(s) will be taken care of by the output-generator and/or
-    # post-processor functions
+    # post-processor functions (if 'detached_launch' is 'True')
     return return_code, input_parser_error_message, input_parser_response_object
 
 
