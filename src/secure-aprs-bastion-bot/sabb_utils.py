@@ -22,23 +22,19 @@
 # text as much as possible, thus rendering the output text to a format that is
 # more compatible with e.g. SMS devices.
 #
-import os
 from sabb_logger import logger
 import sabb_shared
 import yaml
-import pyotp
 from datetime import datetime, timezone
 
-import platform
+import os
+import shlex
+import signal
 import subprocess
-import threading
-
-if platform.system() == "Windows":
-    import msvcrt
-else:
-    import select
-    import termios
-    import tty
+import time
+from typing import Optional, List
+import pyotp
+import psutil
 
 
 def get_modification_time(filename: str):
@@ -104,6 +100,314 @@ def read_config_file_from_disk(filename: str):
         except:
             logger.warning(f"Cannot read config file '{filename}'")
     return __success, data
+
+
+def get_totp_expiringdict_key(callsign: str, totp_code: str):
+    """
+    Checks for an entry in our TOTP expiring dictionary cache.
+    If we find that entry in our list before that entry has expired,
+    we consider the request as a duplicate and will not process it again
+
+    Parameters
+    ==========
+    callsign: str
+        User's callsign, e.g. DF1JSL-1
+    totp_code: str
+        six-digit numeric TOTP code
+
+    Returns
+    =======
+    key: 'Tuple'
+        Key tuple consisting of 'callsign' and 'totp_code' or
+        value 'None' if we were unable to locate the entry
+    """
+    key = (callsign, totp_code)
+    key = tuple(key)
+    key = key if key in sabb_shared.totp_message_cache else None
+    return key
+
+
+def set_totp_expiringdict_key(callsign: str, totp_code: str):
+    """
+    Adds an entry to our TOTP expiring dictionary cache.
+
+    Parameters
+    ==========
+    callsign: str
+        User's callsign, e.g. DF1JSL-1
+    totp_code: str
+        six-digit numeric TOTP code
+
+    Returns
+    =======
+    totp_message_cache: Expiringdict
+        The updated version of our ExpiringDict object
+    """
+
+    key = (callsign, totp_code)
+    key = tuple(key)
+    sabb_shared.totp_message_cache[key] = datetime.now(timezone.utc)
+
+
+def execute_program(
+    command: str, detached_launch: bool = False, watchdog_timespan: float = 0.0
+) -> Optional[int]:
+    """
+    Runs an external program / Script
+
+    Parameters:
+    ===========
+    command: str
+        The command to be executed. Additional parameters are separated by spaces.
+    detached_launch: bool
+        sets the launch mode
+        'False' = Starts the program and waits until it has finished running.
+        'True' = Starts the program as a detached process
+    watchdog_timespan: float
+        Optional watchdog parameter in seconds. Is only taken into consideration for
+        'detached_launch=False' cases.
+        0.0 = Disable watchdog and wait until the program has finished running.
+        Any other positive value: (try to) terminate the program after x seconds
+
+    Returns
+    =======
+    - Optional[int]:
+        process PID or 'None' in case of an error
+    """
+
+    def out(msg: str) -> None:
+        try:
+            print(msg, flush=True)
+        except Exception:
+            # Selbst print darf das Programm nicht beenden
+            pass
+
+    # Eingaben robust prüfen
+    try:
+        if not isinstance(command, str) or not command.strip():
+            out("execute_program: ERROR: invalid command (empty or non-string).")
+            return None
+        if not isinstance(detached_launch, bool):
+            out("execute_program: ERROR: invalid detached_launch (must be bool).")
+            return None
+        try:
+            watchdog = float(watchdog_timespan)
+        except Exception:
+            out(
+                "execute_program: ERROR: invalid watchdog_timespan (must be float-compatible)."
+            )
+            return None
+        if watchdog < 0.0:
+            out("execute_program: ERROR: invalid watchdog_timespan (must be >= 0.0).")
+            return None
+    except Exception as e:
+        out(f"execute_program: ERROR: unexpected validation failure: {e}")
+        return None
+
+    # Kommando parsen
+    try:
+        argv = shlex.split(command, posix=(os.name != "nt"))
+        if not argv:
+            out("execute_program: ERROR: command parsing produced empty argv.")
+            return None
+    except Exception as e:
+        out(f"execute_program: ERROR: failed to parse command: {e}")
+        return None
+
+    out(f"execute_program: INFO: starting command: {command}")
+
+    def terminate_process_tree(pid: int) -> None:
+        """
+        Best-effort Termination:
+        1) SIGTERM/terminate() process tree (children + root)
+        2) wait_procs
+        3) kill() on remaining items
+        """
+        try:
+            root = psutil.Process(pid)
+        except Exception as e:
+            out(f"execute_program: ERROR: psutil cannot attach to PID={pid}: {e}")
+            return
+
+        try:
+            children: List[psutil.Process] = root.children(recursive=True)
+        except Exception as e:
+            out(f"execute_program: ERROR: cannot enumerate children of PID={pid}: {e}")
+            children = []
+
+        procs = children + [root]
+
+        # Graceful terminate
+        for p in procs:
+            try:
+                if os.name == "nt":
+                    p.terminate()
+                else:
+                    p.send_signal(signal.SIGTERM)
+            except Exception as e:
+                out(
+                    f"execute_program: ERROR: terminate failed for PID={getattr(p, 'pid', '?')}: {e}"
+                )
+
+        try:
+            _, alive = psutil.wait_procs(procs, timeout=3.0)
+        except Exception as e:
+            out(f"execute_program: ERROR: wait_procs error: {e}")
+            alive = procs
+
+        # Hard kill remaining
+        if alive:
+            for p in alive:
+                try:
+                    p.kill()
+                except Exception as e:
+                    out(
+                        f"execute_program: ERROR: kill failed for PID={getattr(p, 'pid', '?')}: {e}"
+                    )
+            try:
+                psutil.wait_procs(alive, timeout=3.0)
+            except Exception as e:
+                out(f"execute_program: ERROR: wait after kill error: {e}")
+
+    # Starten
+    try:
+        if detached_launch:
+            # Detached: neue Prozessgruppe/Sitzung, I/O abgekoppelt
+            try:
+                if os.name == "nt":
+                    creationflags = (
+                        subprocess.CREATE_NEW_PROCESS_GROUP
+                        | subprocess.DETACHED_PROCESS
+                    )
+                    proc = subprocess.Popen(
+                        argv,
+                        stdin=subprocess.DEVNULL,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                        close_fds=True,
+                        creationflags=creationflags,
+                    )
+                else:
+                    proc = subprocess.Popen(
+                        argv,
+                        stdin=subprocess.DEVNULL,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                        close_fds=True,
+                        start_new_session=True,
+                    )
+                pid = proc.pid
+                out(f"execute_program: INFO: detached process started with PID={pid}")
+                return pid
+            except FileNotFoundError:
+                out(f"execute_program: ERROR: command not found: {command}")
+                return None
+            except PermissionError:
+                out(f"execute_program: ERROR: permission denied: {command}")
+                return None
+            except Exception as e:
+                out(
+                    f"execute_program: ERROR: failed to start detached command '{command}': {e}"
+                )
+                return None
+
+        # Non-detached: mit Output-Capture und optionalem Watchdog
+        try:
+            proc = subprocess.Popen(
+                argv,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1,
+            )
+        except FileNotFoundError:
+            out(f"execute_program: ERROR: command not found: {command}")
+            return None
+        except PermissionError:
+            out(f"execute_program: ERROR: permission denied: {command}")
+            return None
+        except Exception as e:
+            out(f"execute_program: ERROR: failed to start command '{command}': {e}")
+            return None
+
+        pid = proc.pid
+        out(f"execute_program: INFO: process started with PID={pid}")
+
+        # Warten / Watchdog
+        try:
+            if watchdog == 0.0:
+                try:
+                    stdout_data, stderr_data = proc.communicate()
+                except Exception as e:
+                    out(f"execute_program: ERROR: communicate failed (PID={pid}): {e}")
+                    stdout_data, stderr_data = "", ""
+
+                try:
+                    rc = proc.returncode
+                except Exception:
+                    rc = None
+
+                if stdout_data:
+                    out(
+                        f"execute_program: INFO: stdout (PID={pid}):\n{stdout_data.rstrip()}"
+                    )
+                if stderr_data:
+                    out(
+                        f"execute_program: WARN: stderr (PID={pid}):\n{stderr_data.rstrip()}"
+                    )
+                out(f"execute_program: INFO: process finished (PID={pid}, rc={rc})")
+                return pid
+
+            deadline = time.time() + watchdog
+            while True:
+                try:
+                    if proc.poll() is not None:
+                        break
+                except Exception as e:
+                    out(f"execute_program: ERROR: poll failed (PID={pid}): {e}")
+                    break
+
+                if time.time() >= deadline:
+                    out(
+                        f"execute_program: WARN: watchdog timeout reached (PID={pid}, {watchdog:.3f}s). Terminating."
+                    )
+                    terminate_process_tree(pid)
+                    break
+
+                time.sleep(0.1)
+
+            # Rest-Output best-effort abholen
+            stdout_data, stderr_data = "", ""
+            try:
+                stdout_data, stderr_data = proc.communicate(timeout=1.0)
+            except Exception:
+                pass
+
+            try:
+                rc = proc.returncode
+            except Exception:
+                rc = None
+
+            if stdout_data:
+                out(
+                    f"execute_program: INFO: stdout (PID={pid}):\n{stdout_data.rstrip()}"
+                )
+            if stderr_data:
+                out(
+                    f"execute_program: WARN: stderr (PID={pid}):\n{stderr_data.rstrip()}"
+                )
+            out(f"execute_program: INFO: process ended (PID={pid}, rc={rc})")
+            return pid
+
+        except Exception as e:
+            out(
+                f"execute_program: ERROR: runtime error while waiting/terminating (PID={pid}): {e}"
+            )
+            return pid
+
+    except Exception as e:
+        out(f"execute_program: ERROR: unexpected failure: {e}")
+        return None
 
 
 def identify_target_callsign_and_command_string(
@@ -240,7 +544,7 @@ def identify_target_callsign_and_command_string(
     )
 
 
-def verify_totp_code(totp_secret: str, totp_code: str, ttl_interval: int = 30):
+def verify_totp_code(totp_secret: str, totp_code: str, ttl_interval: int):
     """
     Verifies a given TOTP code against the given secret.
 
@@ -256,101 +560,10 @@ def verify_totp_code(totp_secret: str, totp_code: str, ttl_interval: int = 30):
     Returns
     =======
     status: bool
-        True / False, depending on whether or not the code matches
+        True / False, depending on whether the code matches
     """
     totp = pyotp.TOTP(totp_secret, interval=ttl_interval)
     return totp.verify(otp=totp_code)
-
-
-def get_totp_expiringdict_key(callsign: str, totp_code: str):
-    """
-    Checks for an entry in our TOTP expiring dictionary cache.
-    If we find that entry in our list before that entry has expired,
-    we consider the request as a duplicate and will not process it again
-
-    Parameters
-    ==========
-    callsign: str
-        User's callsign, e.g. DF1JSL-1
-    totp_code: str
-        six-digit numeric TOTP code
-
-    Returns
-    =======
-    key: 'Tuple'
-        Key tuple consisting of 'callsign' and 'totp_code' or
-        value 'None' if we were unable to locate the entry
-    """
-    key = (callsign, totp_code)
-    key = tuple(key)
-    key = key if key in sabb_shared.totp_message_cache else None
-    return key
-
-
-def set_totp_expiringdict_key(callsign: str, totp_code: str):
-    """
-    Adds an entry to our TOTP expiring dictionary cache.
-
-    Parameters
-    ==========
-    callsign: str
-        User's callsign, e.g. DF1JSL-1
-    totp_code: str
-        six-digit numeric TOTP code
-
-    Returns
-    =======
-    totp_message_cache: Expiringdict
-        The updated version of our ExpiringDict object
-    """
-
-    key = (callsign, totp_code)
-    key = tuple(key)
-    sabb_shared.totp_message_cache[key] = datetime.now(timezone.utc)
-
-
-def execute_program(
-    command: str | list,
-    detached_launch: bool = False,
-    detached_delay: float = 0.0,
-):
-    """
-    Executes a command or script (Windows, Linux, macOS compatible)
-
-    Returns
-    -------
-    int   : return code if detached_launch == False
-    None  : if detached_launch == True or in case of error
-    """
-
-    def _start_process(cmd):
-        try:
-            if isinstance(cmd, str):
-                # Works on all platforms (cmd.exe /bin/sh)
-                return subprocess.Popen(cmd, shell=True)
-            elif isinstance(cmd, list):
-                # Direct exec (preferred, secure)
-                return subprocess.Popen(cmd)
-            else:
-                raise ValueError("command must be str or list")
-        except Exception as e:
-            logger.debug(f"Error while starting process: {e}")
-            return None
-
-    try:
-        if not detached_launch:
-            process = _start_process(command)
-            if process is None:
-                return None
-            return process.wait()
-        else:
-            timer = threading.Timer(detached_delay, _start_process, args=(command,))
-            timer.daemon = True
-            timer.start()
-            return None
-    except Exception as e:
-        logger.debug(f"General error has occurred: {e}")
-        return None
 
 
 if __name__ == "__main__":

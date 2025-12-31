@@ -7,3 +7,4 @@ expiringdict
 unidecode
 apscheduler
 core-aprs-client
+psutil

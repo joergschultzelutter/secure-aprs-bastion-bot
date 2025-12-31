@@ -1,1 +1,6 @@
-secure-aprs-bastion-bot
+pyotp
+qrcode
+pyyaml
+expiringdict
+core-aprs-client
+psutil
