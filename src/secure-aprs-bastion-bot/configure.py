@@ -23,8 +23,6 @@
 # more compatible with e.g. SMS devices.
 #
 import sys
-import pathlib
-
 import pyotp
 import qrcode
 import os.path
@@ -70,20 +68,43 @@ def ttl_check(ttl_value):
 
     Returns
     =======
-    success: bool
-        True / False, depending on whether or not the entry was valid
+    ttl_check: int
+        Checked TTL value
     """
 
     try:
         ttl_value = int(ttl_value)
     except ValueError:
-        logger.error("TTL option needs a numeric value")
-        sys.exit(0)
+        raise argparse.ArgumentTypeError("TTL option needs a numeric value")
     if ttl_value < 30:
         raise argparse.ArgumentTypeError("Minimum TTL value is 30 (seconds)")
     if ttl_value > 300:
         raise argparse.ArgumentTypeError("Maximum TTL value is 300 (seconds)")
     return ttl_value
+
+
+def watchdog_check(watchdog_value):
+    """
+    Helper function for watchdog interval checks
+
+    Parameters
+    ==========
+    watchdog_value: str
+        our watchdog value we want to check
+
+    Returns
+    =======
+    watchdog_value: Float
+        Validated watchdog value
+    """
+
+    try:
+        watchdog_value = float(watchdog_value)
+    except ValueError:
+        raise argparse.ArgumentTypeError("Watchdog option needs a numeric value")
+    if watchdog_value < 0:
+        raise argparse.ArgumentTypeError("Watchdog value needs to be positive")
+    return watchdog_value
 
 
 def totp_check(totp_value):
@@ -242,6 +263,14 @@ def get_command_line_params_config():
     )
 
     parser.add_argument(
+        "--watchdog-timespan",
+        dest="watchdog_timespan",
+        type=watchdog_check,
+        default=0.0,
+        help="Watchdog timespan in seconds (0.0 = disable). Only applicable to --detached-launch configuration settings",
+    )
+
+    parser.add_argument(
         "--aprs-test-arguments",
         nargs="*",
         dest="aprs_test_arguments",
@@ -264,6 +293,7 @@ def get_command_line_params_config():
     __command_code = args.command_code.lower()
     __command_string = args.command_string
     __detached_launch = args.detached_launch
+    __watchdog_timespan = args.watchdog_timespan
     __test_totp_code = args.test_totp_code
     __test_command_code = args.test_command_code
     __execute_command_code = args.execute_command_code
@@ -367,6 +397,11 @@ def get_command_line_params_config():
             logger.error(msg="Invalid command code; must not contain spaces")
             sys.exit(0)
 
+    if __watchdog_timespan > 0.0 and __detached_launch:
+        logger.error(
+            msg="'Watchdog timespan' cannot be set for 'detached launch' configuration"
+        )
+
     return (
         __configfile,
         __add_user,
@@ -384,6 +419,7 @@ def get_command_line_params_config():
         __test_command_code,
         __execute_command_code,
         __aprs_test_arguments,
+        __watchdog_timespan,
     )
 
 
@@ -550,10 +586,13 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
         command string for the user/command_line combination
     detached_launch: bool
         detached_launch flag for the user/command_line combination
+    watchdog_timespan: float
+        watchdog timespan (0.0=disable) for 'detached_launch'='False' setting
     """
 
     __command_string = ""
     __detached_launch = False
+    __watchdog_timespan = 0.0
 
     __success, data = read_config_file_from_disk(filename=configfile)
     if not __success:
@@ -572,6 +611,9 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
                         # We have found our entry. Retrieve all values
                         __command_string = item["commands"][command]["command_string"]
                         __detached_launch = item["commands"][command]["detached_launch"]
+                        __watchdog_timespan = item["commands"][command][
+                            "watchdog_timespan"
+                        ]
                         __success = True
                     except KeyError:
                         pass
@@ -582,6 +624,7 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
         __success,
         __command_string,
         __detached_launch,
+        __watchdog_timespan,
     )
 
 
@@ -694,6 +737,7 @@ def add_cmd_to_yaml_config(
     command_code: str,
     command_string: str,
     detached_launch=False,
+    watchdog_timespan=0.0,
 ):
     """
     Writes a new command for an existing user to the config file.
@@ -710,6 +754,9 @@ def add_cmd_to_yaml_config(
         The command string for our new command
     detached_launch: bool
         Wait or do not wait for the command_string execution
+    watchdog_timespan: float
+        Watchdog timespan for 'detached_launch'='False' configuration
+        settings. A value of 0.0 disables the watchdog
 
     Returns
     =======
@@ -734,6 +781,7 @@ def add_cmd_to_yaml_config(
             user.setdefault("commands", {})[command_code] = {
                 "command_string": command_string,
                 "detached_launch": detached_launch,
+                "watchdog_timespan": watchdog_timespan,
             }
             found_data = True
             break
@@ -947,6 +995,7 @@ def add_cmd(
     command_code: str,
     command_string: str,
     detached_launch: bool,
+    watchdog_timespan: float,
 ):
     """
     Adds a command-code/command-string entry for a user to the config file.
@@ -963,6 +1012,8 @@ def add_cmd(
         the actual code that we are going to execute
     detached_launch: bool
         Determines whether to launch as a detached subprocess
+    watchdog_timespan: float
+        Watchdog timespan value
 
     Returns
     =======
@@ -982,6 +1033,7 @@ def add_cmd(
             command_code=command_code,
             command_string=command_string,
             detached_launch=detached_launch,
+            watchdog_timespan=watchdog_timespan,
         )
         if __success:
             logger.info(
@@ -1118,6 +1170,7 @@ if __name__ == "__main__":
         sabb_test_command_code,
         sabb_execute_command_code,
         sabb_aprs_test_arguments,
+        sabb_watchdog_timespan,
     ) = get_command_line_params_config()
 
     if sabb_add_user:
@@ -1140,6 +1193,7 @@ if __name__ == "__main__":
             command_code=sabb_command_code,
             command_string=sabb_command_string,
             detached_launch=sabb_detached_launch,
+            watchdog_timespan=sabb_watchdog_timespan,
         )
         sys.exit(0)
 
@@ -1168,6 +1222,7 @@ if __name__ == "__main__":
                     command_string,
                     detached_launch,
                     secret,
+                    watchdog_timespan,
                 ) = identify_target_callsign_and_command_string(
                     data=cfg_data,
                     callsign=sabb_callsign,

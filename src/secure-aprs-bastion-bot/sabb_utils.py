@@ -476,6 +476,8 @@ def identify_target_callsign_and_command_string(
         Always False if no command_code was provided
     secret: str
         Secret associated with this callsign
+    watchdog_timespan: float
+        Watchdog timespan in seconds (0.0 = disable). Only applicable to 'detached_launch'='False' settings
     """
 
     __success = False
@@ -483,6 +485,7 @@ def identify_target_callsign_and_command_string(
     __command_string = None
     __secret = None
     __detached_launch = False
+    __watchdog_timespan = 0.0
 
     # Determine if we are only supposed to check the TOTP code and skip the command_code validation
     perform_full_check = (
@@ -526,6 +529,9 @@ def identify_target_callsign_and_command_string(
                                     __detached_launch = __item["commands"][command][
                                         "detached_launch"
                                     ]
+                                    __watchdog_timespan = __item["commands"][command][
+                                        "watchdog_timespan"
+                                    ]
                                     __success = True
                                 except KeyError:
                                     __command_string = __detached_launch = None
@@ -542,6 +548,7 @@ def identify_target_callsign_and_command_string(
         __command_string,
         __detached_launch,
         __secret,
+        __watchdog_timespan,
     )
 
 

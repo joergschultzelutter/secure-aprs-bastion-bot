@@ -142,13 +142,18 @@ def parse_input_message(
     # Attempt to locate the execution parameters
     # 'target_callsign' might differ from 'from_callsign' for those cases where
     # we went for the SSID-less callsign
-    success, target_callsign, command_string, detached_launch, secret = (
-        identify_target_callsign_and_command_string(
-            data=sabb_shared.config_data,
-            callsign=from_callsign,
-            totp_code=totp_code,
-            command_code=command_code,
-        )
+    (
+        success,
+        target_callsign,
+        command_string,
+        detached_launch,
+        secret,
+        watchdog_timespan,
+    ) = identify_target_callsign_and_command_string(
+        data=sabb_shared.config_data,
+        callsign=from_callsign,
+        totp_code=totp_code,
+        command_code=command_code,
     )
 
     # Abort the process if we were unable to find the command OR there was a mismatch with
@@ -175,7 +180,7 @@ def parse_input_message(
 
     # Debug information
     instance.log_debug(
-        msg=f"Command Code: '{command_code}', Command String: '{command_string}', detached_launch: '{detached_launch}'"
+        msg=f"Command Code: '{command_code}', Command String: '{command_string}', detached_launch: '{detached_launch}', watchdog_timespan: '{watchdog_timespan}'"
     )
 
     # and now start iterating through the list and replace our content
@@ -204,6 +209,7 @@ def parse_input_message(
         "command_code": command_code,
         "command_string": command_string,
         "detached_launch": detached_launch,
+        "watchdog_timespan": watchdog_timespan,
     }
 
     # set the return code to OK. This will tell the framework to continue

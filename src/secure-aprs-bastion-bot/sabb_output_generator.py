@@ -83,15 +83,20 @@ def generate_output_message(
         # been sent back to the user
         return success, output_message, input_parser_response_object
 
-    # Everything else from here is NOT a detached launch, meaning that we have to
-    # execute the user's command string and ultimately, add callsign/token to our
-    # expiring dict, thus preventing the framework from re-using it again.
-    instance.log_info(
-        msg=f"Executing command: '{input_parser_response_object["command_string"]}'"
-    )
+    if not instance.config_data["secure_aprs_bastion_bot"]["sabb_dry_run"]:
+        # Everything else from here is NOT a detached launch, meaning that we have to
+        # execute the user's command string and ultimately, add callsign/token to our
+        # expiring dict, thus preventing the framework from re-using it again.
+        instance.log_info(
+            msg=f"Executing command: '{input_parser_response_object["command_string"]}'"
+        )
 
-    # execute the command
-    pass
+        # execute the command
+        pass
+    else:
+        instance.log_info(
+            msg=f"Simulating command execution: '{input_parser_response_object["command_string"]}'"
+        )
 
     # Set the return value content
     success = True
