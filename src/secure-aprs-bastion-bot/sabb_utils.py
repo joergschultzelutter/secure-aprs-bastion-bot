@@ -177,12 +177,11 @@ def execute_program(
 
     def out(msg: str) -> None:
         try:
-            print(msg, flush=True)
+            logger.debug(msg)
         except Exception:
-            # Selbst print darf das Programm nicht beenden
             pass
 
-    # Eingaben robust prüfen
+    # Check our input
     try:
         if not isinstance(command, str) or not command.strip():
             out("execute_program: ERROR: invalid command (empty or non-string).")
@@ -204,7 +203,7 @@ def execute_program(
         out(f"execute_program: ERROR: unexpected validation failure: {e}")
         return None
 
-    # Kommando parsen
+    # parse our command
     try:
         argv = shlex.split(command, posix=(os.name != "nt"))
         if not argv:
@@ -269,10 +268,10 @@ def execute_program(
             except Exception as e:
                 out(f"execute_program: ERROR: wait after kill error: {e}")
 
-    # Starten
+    # launch process
     try:
         if detached_launch:
-            # Detached: neue Prozessgruppe/Sitzung, I/O abgekoppelt
+            # Detached: new process group and detached I/O
             try:
                 if os.name == "nt":
                     creationflags = (
@@ -311,7 +310,7 @@ def execute_program(
                 )
                 return None
 
-        # Non-detached: mit Output-Capture und optionalem Watchdog
+        # Non-detached: with output capture and optional watchdog
         try:
             proc = subprocess.Popen(
                 argv,
@@ -333,7 +332,7 @@ def execute_program(
         pid = proc.pid
         out(f"execute_program: INFO: process started with PID={pid}")
 
-        # Warten / Watchdog
+        # Watchdog
         try:
             if watchdog == 0.0:
                 try:
@@ -376,7 +375,7 @@ def execute_program(
 
                 time.sleep(0.1)
 
-            # Rest-Output best-effort abholen
+            # get remaining output (best-effort approach)
             stdout_data, stderr_data = "", ""
             try:
                 stdout_data, stderr_data = proc.communicate(timeout=1.0)
@@ -388,6 +387,7 @@ def execute_program(
             except Exception:
                 rc = None
 
+            """
             if stdout_data:
                 out(
                     f"execute_program: INFO: stdout (PID={pid}):\n{stdout_data.rstrip()}"
@@ -396,6 +396,7 @@ def execute_program(
                 out(
                     f"execute_program: WARN: stderr (PID={pid}):\n{stderr_data.rstrip()}"
                 )
+            """
             out(f"execute_program: INFO: process ended (PID={pid}, rc={rc})")
             return pid
 
