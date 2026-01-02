@@ -419,7 +419,7 @@ def identify_target_callsign_and_command_string(
 
     A user entry in the config file can be with or without trailing SSID. Each entry has its very own secret and therefore its very own TOTP code.
 
-    User accounts with_OUT_ trailing SSID can act as a 'wildcard' entry. If a user callsign WITH trailing SSID has access to the user account's secret withOUT SSID (and therefore can generate its associated TOTP code), the user account WITH trailing SSID will be granted access to the entries associated with the callsign withOUT SSID .
+    User accounts with_OUT_ trailing SSID can act as a 'wildcard' entry. If a user callsign WITH trailing SSID has access to the user account's secret withOUT SSID (and therefore can generate its associated TOTP code), the user account WITH trailing SSID will be granted access to the entries associated with the callsign withOUT SSID.
 
     Let's have a look at a scenario where we assume that the TOTP code never expires and that both call signs `DF1JSL` and `DF1JSL-1` are present
     in the external YAML config file. `DF1JSL-15` will NOT have a configuration entry in that file.
@@ -511,7 +511,7 @@ def identify_target_callsign_and_command_string(
                 ):
                     # We found a match for the callsign (note that the input callsign
                     # and our new one may differ for those cases our target callsign
-                    # is ssid-less!
+                    # is ssid-less!)
                     __target_callsign = __item["callsign"]
                     # We might be required to skip the next step for those cases
                     # where
