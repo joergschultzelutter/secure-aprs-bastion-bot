@@ -25,7 +25,7 @@ Tests a user's TOTP code against the user's secret and returns a simple "valid" 
 
 Failed attempt
 ```
-python configure.py --test-command-code --callsign=df1jsl-1 --totp=502506 
+python configure.py --test-totp-code --callsign=df1jsl-1 --totp=502506 
 2025-08-03 16:56:05,828 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
 2025-08-03 16:56:05,828 configure -INFO- Unable to identify matching call sign and/or command_code in configuration file 'sabb_command_config.yaml'; exiting
 ```  

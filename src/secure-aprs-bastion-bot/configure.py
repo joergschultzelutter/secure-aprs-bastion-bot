@@ -191,11 +191,11 @@ def get_command_line_params_config():
     )
 
     parser.add_argument(
-        "--test-command-code",
-        dest="test_command_code",
+        "--dry-run",
+        dest="dry_run",
         action="store_true",
         default=False,
-        help="Looks up the call sign / command code combination in the YAML file and returns the command line",
+        help="In combination with --execute-command-code, causes the execution of the script to be simulated only",
     )
 
     parser.add_argument(
@@ -275,7 +275,7 @@ def get_command_line_params_config():
         nargs="*",
         dest="aprs_test_arguments",
         type=str,
-        help="For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --test-command-code/--execute-command-code",
+        help="For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --execute-command-code",
     )
 
     args = parser.parse_args()
@@ -295,7 +295,7 @@ def get_command_line_params_config():
     __detached_launch = args.detached_launch
     __watchdog_timespan = args.watchdog_timespan
     __test_totp_code = args.test_totp_code
-    __test_command_code = args.test_command_code
+    __dry_run = args.dry_run
     __execute_command_code = args.execute_command_code
     __show_secret = args.show_secret if add_user else False
     __aprs_test_arguments = args.aprs_test_arguments or []
@@ -320,14 +320,13 @@ def get_command_line_params_config():
         or __add_command
         or __del_command
         or __test_totp_code
-        or __test_command_code
         or __execute_command_code
     ):
         if len(__callsign) < 1:
             logger.error(msg="Call sign is required")
             sys.exit(0)
 
-    if __test_command_code or __execute_command_code:
+    if __execute_command_code:
         if (
             __add_command
             or __del_command
@@ -360,7 +359,7 @@ def get_command_line_params_config():
             sys.exit(0)
         if __execute_command_code:
             logger.error(
-                msg="--test-command-code and --execute-command-code cannot be run at the same time"
+                msg="--test-totp-code and --execute-command-code cannot be run at the same time"
             )
             sys.exit(0)
 
@@ -373,15 +372,9 @@ def get_command_line_params_config():
         if len(__totp_code) < 1:
             logger.error("TOTP code is required")
             sys.exit(0)
-        if __test_command_code:
-            logger.error(
-                msg="--test-command-code and --execute-command-code cannot be run at the same time"
-            )
-            sys.exit(0)
 
     if (
         not __test_totp_code
-        and not __test_command_code
         and not __execute_command_code
         and not __add_command
         and not __del_command
@@ -416,7 +409,7 @@ def get_command_line_params_config():
         __test_totp_code,
         __show_secret,
         __detached_launch,
-        __test_command_code,
+        __dry_run,
         __execute_command_code,
         __aprs_test_arguments,
         __watchdog_timespan,
@@ -609,9 +602,11 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
                 if command == command_code:
                     try:
                         # We have found our entry. Retrieve all values
-                        __command_string = item["commands"][command]["command_string"]
-                        __detached_launch = item["commands"][command]["detached_launch"]
-                        __watchdog_timespan = item["commands"][command][
+                        __command_string = __item["commands"][command]["command_string"]
+                        __detached_launch = __item["commands"][command][
+                            "detached_launch"
+                        ]
+                        __watchdog_timespan = __item["commands"][command][
                             "watchdog_timespan"
                         ]
                         __success = True
@@ -980,7 +975,7 @@ def del_user(configfile: str, callsign: str):
             configfile=configfile,
             callsign=callsign,
         )
-        if success:
+        if __success:
             logger.info(f"Have successfully deleted the user account '{callsign}'")
         else:
             logger.info(
@@ -1152,7 +1147,7 @@ def wait_or_keypress(timeout_seconds: float) -> bool:
     return key_pressed.is_set()
 
 
-if __name__ == "__main__":
+def main():
     (
         sabb_configfile,
         sabb_add_user,
@@ -1167,7 +1162,7 @@ if __name__ == "__main__":
         sabb_test_totp_code,
         sabb_show_secret,
         sabb_detached_launch,
-        sabb_test_command_code,
+        sabb_dry_run,
         sabb_execute_command_code,
         sabb_aprs_test_arguments,
         sabb_watchdog_timespan,
@@ -1243,7 +1238,7 @@ if __name__ == "__main__":
                 )
         sys.exit(0)
 
-    if sabb_test_command_code or sabb_execute_command_code:
+    if sabb_execute_command_code:
         if not does_file_exist(sabb_configfile):
             logger.info(f"Given configuration file '{sabb_configfile}' does not exist.")
             logger.info(
@@ -1303,7 +1298,7 @@ if __name__ == "__main__":
                         logger.error(msg=f"Final command string: '{command_string}'")
                         sys.exit(0)
 
-                if sabb_execute_command_code:
+                if not sabb_dry_run:
                     logger.info(
                         msg=f"Executing command '{sabb_execute_command_code}' in 10 seconds; press any key to abort..."
                     )
@@ -1316,9 +1311,16 @@ if __name__ == "__main__":
                         pass
                         logger.info("Executing code ....")
                         pass
-
+                else:
+                    logger.info(
+                        msg=f"SIMULATION: Execute command '{sabb_execute_command_code}'"
+                    )
             else:
                 logger.error(
                     msg=f"Unable to read configuration file '{sabb_configfile}'"
                 )
         sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
