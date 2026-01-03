@@ -32,7 +32,7 @@ Changes to the user/command configuration file specified at the `sabb_command_co
 ### Configuration file - excerpt 
 The respective section from `core-aprs-client`'s config file for `[secure_aprs_bastion_bot]` lists as follows:
 
-```
+```yaml
 [secure_aprs_bastion_bot]
 #
 # This is the external configuration file which contains the user 
@@ -70,7 +70,7 @@ This section displays the complete [preconfigured template file](/src/secure-apr
 >[!NOTE]
 > As mentioned earlier, the `secure-aprs-bastion-bot`'s configuration is stored in the config file's `[secure_aprs_bastion_bot]` section. Everything else in this config file relates to the configuration of the core APRS bot. See [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md) for further details.
 
-```
+```yaml
 # Core APRS Client (COAC) configuration file
 # Refer to the program documentation at
 # https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md

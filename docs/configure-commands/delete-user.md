@@ -15,6 +15,7 @@ This command deletes a user (along with **all** of his settings, including [`--c
 | `--delete-user` | Deletes a user from the configuration file | `--callsign`                                            | n/a                                                    |
 
 ## Example
-```
+
+``` python
 python configure.py --delete-user --callsign=DF1JSL-1
 ```

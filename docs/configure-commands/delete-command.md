@@ -13,6 +13,7 @@ Deletes a single [`--command-code`](add-command.md#--command-code) / [`--command
 | `--delete-command` | Deletes a command code for a user from the configuration file | `--callsign`,`--command-code`                           | n/a                                                    |
 
 ## Example
-```
+
+```python
 python configure.py --delete-command --callsign=DF1JSL-1 --command-code=sayhello
 ```

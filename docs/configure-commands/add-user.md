@@ -28,59 +28,59 @@ Creates _or updates_ a configuration for a callsign with a TOTP TTL of 30 second
 | `--add-user` | Adds (or updates) a user to the configuration file | `--callsign`                                            | `-ttl`,`--show-secret`                                 |
 
 ## Example
-```
+```python
 python configure.py --add-user --callsign=DF1JSL-1 
-2025-07-27 18:52:43,446 configure -INFO- Creating new configuration file sabb_command_config.yaml
-2025-07-27 18:52:43,446 configure -INFO- Adding new user account
-2025-07-27 18:52:43,446 configure -INFO- Generating TOTP credentials for user 'DF1JSL-1' with TTL '30'
-                                                     
-                                                     
-    █▀▀▀▀▀█  █▀ █▄▀█▀▄ ▀▄ ██▄▄█▀█ ▀▄▄▀ ▄▀ █▀▀▀▀▀█    
-    █ ███ █ ▄█▀█▄█▄█ █▄▀ █▀█    ▀ ▄    █▄ █ ███ █    
-    █ ▀▀▀ █ ▀▄   ▄█  ▄▄▀█▀▀▀█▄█▀█▀███ ▀▀▀ █ ▀▀▀ █    
-    ▀▀▀▀▀▀▀ ▀▄█▄▀ █ █ ▀▄█ ▀ █▄▀ █▄▀ █▄▀ ▀ ▀▀▀▀▀▀▀    
-    ██   █▀▀    ▄▀██ ▄ ▀█████▄▄  ███ ▄▄█▄▄▄ █▀▄      
-     ▀  █▀▀▀█ ▀█ ▀▀███▄▀█▄▀  ▀███▄    █▀▄ ▀  █▄▀     
-     █  ██▀█▄██▀▀▄██ ▀▀▄ ▀ ▀▀ ▀█  ▀ ▀ █▄   █▀▀▄██    
-    ▄▄ ▀▀█▀▀█▀▄▄ ▄▄ █ █▄█▀ ▄▀█▄█▀▄▀   ▄█▀▄ █ ███     
-     ▄█ ██▀▄▄▀▄▄ ▄ ▀ ▄ ▄█ ██ ▄ ▀ ███ █▀▄▄█▀▄▄█▄██    
-    ▀ ▄█▄█▀ ▄██ █ ▀▀▀▄  ▄▄▀██▄▄▄█▀ ▄▄▀ ▄█▄▄ ▄▄█ ▀    
-     █▄██▀▀▀█▀ ▄ █ ██▀▀▀█▀▀▀█ ▀██▀ █▄▄ ▀█▀▀▀█▄▄█     
-     ▄  █ ▀ ██  ▀▀█ ▀█▀ █ ▀ █▀▀██▀█ ██  █ ▀ ███ ▄    
-    ▄ ▀▄██▀█▀█  █  ▀▀█▀█▀██▀▀█▀▄█▄███ ▀██▀▀▀▀ ▄██    
-    ▀▄▀█  ▀▀█ ▄▀█ ▀▀▀  ▄▄▀█ ▄▀▀▄▀▄▄▄▄▀██▀ ▀▄ █▄█     
-    ▀ █▄██▀ ▄█▄█▄▀▄▄▀▀▀▄▀█▄▀█▀▄▀▀ ▀█▀██▄▄▀ ▀▀█▄██    
-     ▀▀█▄█▀▄▀▀████▀▄ ▀▀▄█ ▀     ██ ██▄▄██▄█▄▄██▄▀    
-    ▀▀███▄▀▄ █▀▄▀▄▄ ▀▄█▄     ▀█  ▄▄▀ ▄▄ ▄█▀ █ ▄▀     
-     ▄▄▄█ ▀█▄▄ ▄ █ ▄▀█  ██▀▄█ ▀█▄  ▄▄█▀█ ▄ █ ▄▄█▄    
-    ▀  ▀▀ ▀ ██ ▄▄ ██  ▀██▀▀▀█▀▄██▀▄▀▄▀▀██▀▀▀█▀  █    
-    █▀▀▀▀▀█ █████▀▀▀█▀▀ █ ▀ ███▀ ▄██  ▄██ ▀ █ █▀▄    
-    █ ███ █  █ ▀█▀▀ ▀▄ █▀▀▀█▀▀ ▄  █▀ ▄ ▀▀▀▀▀██▄█     
-    █ ▀▀▀ █ ▄▀█ █   ▀▄██▄ ▄█▀  ▄ █ █▀  ▀▄▀▀▀█▄█ ▀    
-    ▀▀▀▀▀▀▀ ▀▀▀▀ ▀  ▀▀▀▀ ▀   ▀ ▀▀▀  ▀▀    ▀▀▀▀ ▀     
-                                                     
-                                                     
+/Users/jsl/git/secure-aprs-bastion-bot/.venv/bin/python /Users/jsl/git/secure-aprs-bastion-bot/src/secure-aprs-bastion-bot/configure.py --add-user --callsign df1jsl-1 
+2026-01-03 19:03:38,046 - configure -INFO - Creating new configuration file sabb_command_config.yml
+2026-01-03 19:03:38,046 - configure -INFO - Adding new user account
+2026-01-03 19:03:38,046 - configure -INFO - Generating TOTP credentials for user 'DF1JSL-1' with TTL '30'
+                                                     
+                                                     
+    █▀▀▀▀▀█ ▀▄ ▄▀ ██▀▄ ▀▄ ██▄ ▀▀█▄▀▄█▀ ▄▀ █▀▀▀▀▀█    
+    █ ███ █  ▄█▄▀▄▄█▀█▄▀▀█ █ ▀   ██ ▄  █▄ █ ███ █    
+    █ ▀▀▀ █  ▀▀ ▀▄▄ ▄█ ▀█▀▀▀█▄▄▀▀▄▄ █▄▀▀▀ █ ▀▀▀ █    
+    ▀▀▀▀▀▀▀ █▄▀ █▄▀ █ ▀ █ ▀ █ █ █ █▄▀▄▀ █ ▀▀▀▀▀▀▀    
+    ██ ▀▀ ▀   ▀▄▄ ██▀▄▀ ██████▄ ▀█▄  ▄██▄▄█ ▄ ▄ ▀    
+    ▄▄▀█▄ ▀▄█▀ █ ▀ █▀ ▄▀▄▄██ ▀▄█▀  ▄▀ ▀▄▄   ▄ ▄▀▀    
+    ▄▄█▀█ ▀  █▄▄  ▀█ ▀▀██▀ ▀▀▄██  █ ▄ ▀▀ ▀ █▀▀▄▀▀    
+    ▄█▄ ▀ ▀██▀▀█▄█▄ ▄▀███▀▀▄▀▄▄█ ▄█ ▀ █▀██▀█▀██▄     
+     ██ ██▀▄█▀█▀▀▄▀▀▄▀ ▄▄ ▀  ▄▀▀▄▀██▀██▀▄█ ▄  ▄█▄    
+    ▀▄▀▀█ ▀███▀▀▄▄█▀▀▄ ▄▄▄▀██  ▄█▀ ▄ ▀ ▄█▄▄ ▄▄█▄█    
+     ▀ ██▀▀▀█▄  █▄ █▄▀▀ █▀▀▀█▀▀█▄▀▄ █▄█▄█▀▀▀█▄▄▄     
+    ▄▀ ██ ▀ █▄█  ▀▄ █ ▀ █ ▀ █▀ █▀█▀ ██▄ █ ▀ █ █ █    
+      ████▀██ ▄ █▄▄▀▀█ ▀███▀▀▀█▄█▄█▀▀ ▀ █▀▀▀▀ ▄▀▀    
+    ▀▄ ██▀▀ █▀ ▀█▀▀▀   █▄▀▄ ▄ ▀▄ ▄▄▀▄█▄▄▀ █▄▀█▄▄     
+    █ ▀█▄ ▀     ▄▀█▄█▄▀▄ █ ▄█▀█▀█▀▄▄▀██▀▄▀▀▀█ ▄█▄    
+    ███▄ █▀█ ▄███▀█▄ ▄▀ ▀ ▀  ▄▄ █▄▀ ▀▄▄█  ▀▄▄██ █    
+    █ █ ▀█▀▄▀█▀▄▀█▄  ▄██  ▀   █ ▀█▄  ▄█▀ █  ▄ ▄      
+     ▄▄▄█ ▀▄█▀ ▀ █▀▄█   ▄██▀█  █ █  ▀▀▀▀ █▀█▄▀▄██    
+    ▀  ▀▀ ▀▀█▀▀▄▄▄▀█  ▀▀█▀▀▀██ ██▀▄▄█▀▄██▀▀▀█▀ ▄▀    
+    █▀▀▀▀▀█  ▀▀██ ▀▀▄▀▀▀█ ▀ █▄█▀▀▄▀▄▀ ███ ▀ █ █ ▄    
+    █ ███ █ █ █▄█▀  █▀ █▀▀█▀▀▀▀▄▄█▄▀▀▄▄▄█▀▀▀▀ ▄█▀    
+    █ ▀▀▀ █ ▄▀▀ █▄▄ ▀▄█▀  ▄█▀▄▄▄ █ ██  ▄███▀█▄█▄█    
+    ▀▀▀▀▀▀▀ ▀▀▀▀     ▀▀  ▀▀    ▀ ▀   ▀▀ ▀▀▀▀ ▀       
+                                                     
+                                                     
 Scan this QR code with your authenticator app. When done,
 enter CONTINUE for code verification
 or enter QUIT for exiting the program.
 
 Enter CONTINUE or QUIT: CONTINUE
-Enter the 6-digit TOTP code or enter QUIT to exit:494186
+Enter the 6-digit TOTP code or enter QUIT to exit:093351
 
-2025-07-27 18:53:46,982 configure -WARNING- Configuration file 'sabb_command_config.yaml' does not exist, will create a new one
-2025-07-27 18:53:46,984 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully written
-User 'DF1JSL-1' was successfully added to config YAML file
-Amend config file as per program documentation, then use the --test-totp-token option for a config test
-
-Process finished with exit code 0
+2026-01-03 19:04:41,373 - configure -WARNING - Configuration file 'sabb_command_config.yml' does not exist, will create a new one
+2026-01-03 19:04:41,374 - configure -INFO - Configuration file 'sabb_command_config.yml' was successfully written
+2026-01-03 19:04:41,374 - configure -INFO - User 'DF1JSL-1' was successfully added to config YAML file
+2026-01-03 19:04:41,375 - configure -INFO - Now use --add-command and add some command codes for that user
 ```
+
 ## Config file 
 This example shows the config file after adding the user. As you can see, there are no commands associated with this user. We'll do this in the [next step](add-command.md).
 
-```
+```yaml
 users:
 - callsign: DF1JSL-1
   commands: {}
-  secret: HFV5Z3DBATOSZW24N5QZPHGGSCNRZ7EV
+  secret: GJYWOPM5YW22OD4REQDP75APVEGMNX4N
   ttl: 30
 ```

@@ -15,7 +15,7 @@ blah
 
 ## Parameter Options - Overview
 
-```
+```bash
 usage: configure.py     [-h] 
                         [--configfile CONFIG_FILE] 
                         [--add-user] [--delete-user] 

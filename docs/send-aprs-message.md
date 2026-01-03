@@ -9,7 +9,7 @@ For notification targets other than APRS (e.g. Telegram messenger), I recommend 
 
 ## Usage
 
-```
+```bash
 python send-aprs-message.py --help
 
 Usage: send-aprs-message.py     [-h]
@@ -50,7 +50,7 @@ options:
 
 
 ### Regular APRS messaging (67 usable characters)
-```
+```python
 python send-aprs-message.py --from-callsign=DF1JSL-1 --to-callsign=DF1JSL-2 --passcode=xxxxx --simulate-send --aprs-message=Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum 
 2025-08-07 12:07:02,733 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do'
 2025-08-07 12:07:12,738 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim'
@@ -63,7 +63,7 @@ python send-aprs-message.py --from-callsign=DF1JSL-1 --to-callsign=DF1JSL-2 --pa
 
 ### APRS messaging with active `--numeric-message-pagination` (59 usable characters per message)
 
-```
+```python
 python send-aprs-message.py --from-callsign=DF1JSL-1 --to-callsign=DF1JSL-2 --passcode=xxxxx --simulate-send --aprs-message=Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum --numeric-message-pagination 
 2025-08-07 12:02:49,689 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :Lorem ipsum dolor sit amet, consectetur adipiscing elit,    (01/08)'
 2025-08-07 12:02:59,694 - send-aprs-message -DEBUG - Simulating APRS message 'DF1JSL-1>APMPAD::DF1JSL-2 :sed do eiusmod tempor incididunt ut labore et dolore magna  (02/08)'

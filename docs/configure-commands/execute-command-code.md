@@ -14,13 +14,17 @@ After this period has elapsed, the script starts. If it has been configured as a
 
 ## Parameters
 
-| Command                  | Description                                                                                                                                                                                                                                                                                                                                             | [Parameters](/docs/configure.md#parameters) (mandatory) | [Parameters](/docs/configure.md#parameters) (optional)     |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|------------------------------------------------------------|
-| `--execute-command-code` | Uses a `--callsign` / [`--command-code`](/docs/configure-commands/add-command.md#--command-code) combination,returns the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) (whereas present) and executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting | `--callsign`,`--totp-code`, `--command-code`            | `--aprs-test-arguments`, `--watchdog-timespan`,`--dry-run` |
+| Command                  | Description                                                                                                                                                                                                                                                                                                                                             | [Parameters](/docs/configure.md#parameters) (mandatory) | [Parameters](/docs/configure.md#parameters) (optional) |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|
+| `--execute-command-code` | Uses a `--callsign` / [`--command-code`](/docs/configure-commands/add-command.md#--command-code) combination,returns the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) (whereas present) and executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting | `--callsign`,`--totp-code`, `--command-code`            | `--aprs-test-arguments`, `--dry-run`                   |
 
 
 ## Example
 
-`python configure.py --execute-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506`  
+```python
+python configure.py --execute-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506
+```
 
-`python configure.py --execute-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3`  
+```python
+python configure.py --execute-command-code --callsign=df1jsl-1 --command-code=helloworld --totp=502506 --aprs-test-arguments argument_1 argument_2 argument_3
+```
