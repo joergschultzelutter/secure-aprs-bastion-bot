@@ -6,7 +6,7 @@ Manage your IT infrastructure via APRS messaging (to a certain extent).
 
 I recently went on a multi-day hiking trip and discovered that a program on one of my home servers had crashed due to an error. I had my cell phone with me and was able to access the computer via ssh and restart the program, but there are still areas in my country where there is _zero_ cell phone reception (kudos to the German government). 
 
-So what to do in such a case? In most of these cases where I am stuck in the wilderness without no cell phone reception, there would still be an APRS-enabled repeater nearby, and so the idea was born to create an APRS-enabled bastion host that would give me access to my internal IT infrastructure in the event of cell phone network unavailability. `secure-aprs-bastion-bot` aims to support this use case.
+So what to do in such a case? In most of these cases where I am stuck in the wilderness without no cell phone reception, there would still be an APRS-enabled repeater nearby, and so the idea was born to create an APRS-enabled bastion host that would give me secured access to my internal IT infrastructure in the event of cell phone network unavailability. `secure-aprs-bastion-bot` aims to support this use case.
 
 ## Features
 
@@ -16,34 +16,53 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
   - Executable programs are assigned locally per call sign; i.e., `--command-code`s assigned to the call sign `DF1ABC` cannot be accessed by `DF1XYZ` (and vice versa). Commands can either be assigned specifically to an individual callsign with SSID; alternatively, commands can also be assigned to the main callsign without SSID, in which case all sub-callsigns with SSID can then use these commands. The latter approach reduces setup effort and allows use across multiple transceivers, provided they are assigned the same call sign. 
   - `secure-aprs-bastion-bot` requires one-time passwords (TOTP) which are individual to each authenticated / configured call sign. The secrets for these tokens are defined when setting up the call sign configuration and can be configured with a validity of 30 seconds to 5 minutes. In addition to the duplicate check of the actual APRS message, an additional TOTP/call sign duplicate check is performed. This check prevents one-time passwords from being used multiple times during their validity period, effectively preventing hi-jacking and misuse of the token in question as best as possible over an unsecured plain-text APRS connection.
 - Call sign and command setup:
-  - The configuration data is set up and tested using a configuration program provided (`configure.py`).
+  - The configuration data is set up and tested using a configuration program provided ([`configure.py`](/docs/configure.md).
   - User accounts are configured on a call sign level.
   - The user account configuration can be done at the call sign plus SSID level _or_ exclusively at the call sign level without SSID (base call sign). In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit the base call sign's TOTP token for authorization and authentication.
   - When configuring the base call sign, it is also not necessary to configure all other call signs with SSID individually. The prerequisite for using this configuration is, of course, the use of the TOTP token of the base call sign. Further details can be found in the [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md) program documentation.
-- Program execution ([`--launch-as-subprocess`](/docs/configure.md#parameters) switch):
-  - The programs to be executed can be started either synchronously or as a detached process.
-    - Synchronous execution first executes the desired script and waits until it has finished. After script termination,  `secure-aprs-bastion-bot` sends an APRS confirmation to the user. **This is the configuration program's default behavior setting**. Ideally, only use this option for short runs. Confirmation of processing via APRS is only sent to the caller <u>after</u> the script has been completed.
+- Program execution ([`--detached-launch`](/docs/configure.md#parameters) switch):
+  - The programs to be executed can be started either synchronously (→ program default) or as a detached/asynchronous process.
+    - Synchronous execution first executes the desired script and waits until it has finished. After script termination,  `secure-aprs-bastion-bot` sends an APRS confirmation to the user. **This is the configuration program's default behavior setting**. Ideally, only use this option for short runs. Confirmation of processing via APRS is only sent to the caller <u>after</u> the script has been completed. An optional watchdog function also allows the process to be terminated after a freely definable period of time.
     - Asynchronous processing first sends the APRS confirmation to the user and starts the desired program _as a separate process_.  When [`--launch-as-subprocess`](/docs/configure.md#parameters) gets applied to a configuration setting, `secure-aprs-bastion-bot` will _not_ wait for the program to finish executing. Such processing may be necessary, for example, when restarting the server on which `secure-aprs-bastion-bot` is installed. The processing of the script is initiated as a background process and can therefore also take place over a longer period of time.
     - A watchdog process that terminates a synchronous job after a certain period of time is not provided. It is therefore up to the user to select the correct processing option.
-  - After completion of such a program sequence, regardless of its execution type (synchronous or asynchronous), an optional APRS message can be sent back to the caller as part of the user script and a supporting Python script ([`send-aprs-message.py`](/docs/send-aprs-message.md)). Alternatively, other recommended tools such as [Apprise](https://github.com/caronc/apprise) can be used.
+  - After completion of such a program sequence, regardless of its execution type (synchronous or asynchronous), an optional APRS message can be sent back to the caller as part of the user script and a supporting Python script ([`send-aprs-message.py`](/docs/send-aprs-message.md)). Alternatively, other messaging tools such as [Apprise](https://github.com/caronc/apprise) can be used.
 
 # Program-specific documentation
 
-- [secure-aprs-bastion-bot.py](docs/secure-aprs-bastion-bot.md) - the actual APRS bot. Relies on two config files: one file controls the bot itself and the second one (generated by [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md)) contains the bot's callsign/command configuration.
+- [secure-aprs-bastion-bot.py](docs/secure-aprs-bastion-bot.md) - the actual APRS bot. Relies on two config files: one file [controls the bot itself](/docs/secure-aprs-bastion-bot.md#configuration-file) and the second one (generated by [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md)) contains the bot's callsign/command configuration.
 - [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md) - creates the bot's callsign/command configuration file and provides testing functionality.
-- [send-aprs-message.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/send-aprs-message.md) - optional; allows the bot to forward detailed APRS responses back to the user
+- [send-aprs-message.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/send-aprs-message.md) - purely optional; allows the bot to forward detailed APRS responses back to the user
 
-## First steps in a nutshell
+## Local installation instructions
 
+### Initial steps
 - Clone this repository
-- `pip install -r requirements.txt` (or use the `requirements.txt` file from the respective project's sub directories in case you just want to install a single program)
+- `pip install -r requirements.txt` (or use the `requirements.txt` file from the respective project's subdirectories in case you just want to install a single program)
+
+### Create the callsign/command-code file
 - Configure the bot`s configuration file:
-  - run [configure.py](docs/configure.md) and create at least one user account (`--add-user`), based on a call sign with or without SSID.
+  - run [configure.py](docs/configure.md) and create at least one user account ([`--add-user`](/docs/configure-commands/add-user.md), based on a call sign with or without SSID. This configuration can then be tested with the program's [`--test-totp-switch`](/docs/configure-commands/test-totp-code.md) command.
   - run [configure.py](docs/configure.md) again and add at least one `--command-code` / `--command-string` relationship entry (`--add-command`) to that user account.
-  - Finally, use [configure.py](docs/configure.md) for local configuration file testing
-  - The configuration file generated by `configure.py` is then copied to the installation directory of `secure-aprs-bastion-bot` and processed by the bot.
-- Amend the bot's configuration file. The bot is based on my `core-aprs-client` framework ([repository link](https://github.com/joergschultzelutter/core-aprs-client)). You might want to [disable e.g. beaconing and/or bulletin messages](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md).
+  - Finally, use [configure.py](docs/configure.md) for local configuration file testing with the [`--execute-command-code`](/docs/configure-commands/execute-command-code.md) command.
+  - The configuration file generated by `configure.py` is later on used by `secure-aprs-bastion-bot`.
+
+### secure-aprs-bastion-bot configuration file
+- Amend the bot's [configuration file](/docs/secure-aprs-bastion-bot.md#configuration-file). The bot is based on my `core-aprs-client` framework ([repository link](https://github.com/joergschultzelutter/core-aprs-client)). You might want to [disable e.g. beaconing and/or bulletin messages](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md).
+- Set the [crash handler's config file name](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration_subsections/config_crash_handler.md) to `NOT_CONFIGURED` if you want to disable Apprise messaging. In any other case, configure the Apprise config file as shown in the next paragraph.
+
+### Apprise config file 
+ 
+- rename the [`apprise.yml.TEMPLATE`](/src/secure-aprs-bastion-bot/apprise.yml.TEMPLATE) and remove the .TEMPLATE extension
+- Configure the file as illustrated in Apprise's [YAML Configuration Documentation](https://github.com/caronc/apprise/wiki/config_yaml)
+
+### Starting the bot
+
 - Start the bot and send APRS commands (`--command-code`) to it.
+
+```python
+nohup python secure-aprs-bastion-bot.py >nohup.out &
+```
+
 
 ## Anatomy of an APRS message to `secure-aprs-bastion-bot`
 
