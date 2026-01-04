@@ -70,7 +70,7 @@ Every message to `secure-aprs-bastion-bot` always starts with a 6-digit TOTP cod
 
 The command to be executed (`--command-code`) follows immediately after the TOTP code - read: no separator. The actual content of this command (`--command-string`) is defined as part of the configuration setup. For example, the user transmits the command `reboot` via APRS, and secure-aprs-bastion-bot then executes the command sequence `source ./scripts/server-reboot.sh` locally on the computer of the secure-aprs-bastion-bot after successful authorization and authentication.
 
-Additional (optional) user-submissable parameters are separated by spaces. The first parameter after `--command-code` corresponds to `$1`, the second parameter to `$2`, and so on (`$1` .. `$9`). Before the command stored in the `--command-string` is executed, the placeholders for these parameters are replaced by these optional parameters, which were transmitted as part of the APRS message.
+Additional (optional) user-submittable parameters are separated by spaces. The first parameter after `--command-code` corresponds to `$1`, the second parameter to `$2`, and so on (`$1` .. `$9`). Before the command stored in the `--command-string` is executed, the placeholders for these parameters are replaced by these optional parameters, which were transmitted as part of the APRS message.
 
 The additional parameter `$0`, on the other hand, _always_ contains the call sign of the user who sent the message to `secure-aprs-bastion-bot` (e.g., `DF1JSL-1`). `$0` is therefore always present, regardless of whether the APRS user has transmitted additional parameters or not.
 
