@@ -16,78 +16,80 @@ blah
 ## Parameter Options - Overview
 
 ```bash
-usage: configure.py     [-h] 
-                        [--configfile CONFIG_FILE] 
-                        [--add-user] [--delete-user] 
-                        [--add-command] 
-                        [--delete-command] 
-                        [--test-totp-code] 
-                        [--dry-run] 
-                        [--execute-command-code] 
-                        [--show-secret] 
-                        [--callsign CALLSIGN] 
-                        [--totp-code TOTP_CODE] 
-                        [--command-code COMMAND_CODE]
-                        [--command-string COMMAND_STRING] 
-                        [--launch-as-subprocess] 
-                        [--ttl TTL] 
-                        [--aprs-test-arguments [APRS_TEST_ARGUMENTS ...]]
+python configure.py --help
+usage: configure.py [-h] 
+                    [--configfile CONFIG_FILE] 
+                    [--add-user] 
+                    [--delete-user] 
+                    [--add-command] 
+                    [--delete-command] 
+                    [--test-totp-code] 
+                    [--dry-run] 
+                    [--execute-command-code] 
+                    [--show-secret] 
+                    [--callsign CALLSIGN] 
+                    [--totp-code TOTP_CODE] 
+                    [--command-code COMMAND_CODE] 
+                    [--command-string COMMAND_STRING]
+                    [--detached-launch] 
+                    [--ttl TTL] 
+                    [--watchdog-timespan WATCHDOG_TIMESPAN] 
+                    [--aprs-test-arguments [APRS_TEST_ARGUMENTS ...]]
 
 options:
-  -h, --help            show this help message and exit
-  --configfile          CONFIG_FILE
-                        Program config file name (default: sabb_command_config.yaml)
-  --add-user            Add a new call sign plus secret to the configuration file
-  --delete-user         Remove a user with all data from the configuration file
-  --add-command         Add a new command for an existing user to the configuration file
-  --delete-command      Remove a command from a user's configuration in the configuration file
-  --test-totp-code      Validates the provided TOTP code against the user's secret
-  --dry-run             In combination with --execute-command-code, causes the execution of the script to be simulated only
-  --execute-command-code
-                        Looks up the call sign / command code combination in the YAML file and executes it
-  --show-secret         Shows the user's secret during the -add-user configuration process (default: disabled)
-  --callsign            CALLSIGN
-                        Callsign (must follow call sign format standards)
-  --totp-code           TOTP_CODE
-                        6 digit TOTP code - submitted for configuration testing only
-  --command-code        COMMAND_CODE
-                        Command code which will be sent to the APRS bot for future execution
-  --command-string      COMMAND_STRING
-                        Command string that is associated with the user's command code
-  --launch-as-subprocess
-                        If specified: launch the command as a subprocess and do not wait for its completion
-  --ttl                 TTL         
-                        TTL value in seconds (default: 30; range: 30-300)
-  --aprs-test-arguments [APRS_TEST_ARGUMENTS ...]
-                        For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --execute-command-code
+  -h, --help                      show this help message and exit
+  --configfile                    CONFIG_FILE
+                                  Program config file name (default: sabb_command_config.yml)
+  --add-user                      Add a new call sign plus secret to the configuration file
+  --delete-user                   Remove a user with all data from the configuration file
+  --add-command                   Add a new command for an existing user to the configuration file
+  --delete-command                Remove a command from a user's configuration in the configuration file
+  --test-totp-code                Validates the provided TOTP code against the user's secret
+  --dry-run                       In combination with --execute-command-code, causes the execution of the script to be simulated only
+  --execute-command-code          Looks up the call sign / command code combination in the YAML file and executes it
+  --show-secret                   Shows the user's secret during the -add-user configuration process (default: disabled)
+  --callsign CALLSIGN             Callsign (must follow call sign format standards)
+  --totp-code TOTP_CODE           6 digit TOTP code - submitted for configuration testing only
+  --command-code COMMAND_CODE     Command code which will be sent to the APRS bot for future execution
+  --command-string COMMAND_STRING Command string that is associated with the user's command code
+  --detached-launch               If specified: launch the command as a detached subprocess and do not wait for its completion
+  --ttl TTL                       TTL value in seconds (default: 30; range: 30-300)
+  --watchdog-timespan             WATCHDOG_TIMESPAN
+                                  Watchdog timespan in seconds (0.0 = disable). Only applicable to --detached-launch configuration settings
+  --aprs-test-arguments           [APRS_TEST_ARGUMENTS ...]
+                                  For testing purposes only; list of 0 to 9 APRS arguments, Used in conjunction with --execute-command-code
 ```
 
 ## Parameters
 
-| Parameter                                           | Description                                                                                                                                                                                                                                                                                                                                  | Type          | Default                   |
-|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|---------------------------|
-| `--configfile`                                      | External config file. `configure.py` will create this file if it does not exist.                                                                                                                                                                                                                                                             | `str`         | `sabb_command_config.yml` |
-| `--callsign`                                        | User's call sign, with or without SSID                                                                                                                                                                                                                                                                                                       | `str`         | `<none>`                  |
-| `--totp-code`                                       | Six-digit TOTP code                                                                                                                                                                                                                                                                                                                          | `str`         | `<none>`                  |
-| [`--command-code`](configure.md#--command-code)     | Command code alias. This is the code that the user will send in his APRS message. Associated with [`--command-string`](/docs/configure-commands/add-command.md#--command-string)                                                                                                                                                             | `str`         | `<none>`                  |
-| [`--command-string`](configure.md#--command-string) | Associated with [`--command-code`](/docs/configure-commands/add-command.md#--command-code). This is a representation of the actual command that is going to get executed.                                                                                                                                                                    | `str`         | `<none>`                  |
-| `--launch-as-subprocess`                            | When specified, the bot will NOT wait for the [`--command-string`](/docs/configure-commands/add-command.md#--command-string)'s program execution. In addition, the APRS confirmation will be sent to the user _prior_ to the program's execution.                                                                                            | `bool`        | `False`                   |
-| `--ttl`                                             | TOTP TTL value in seconds (`30`..`300`). Default: 30 (seconds)                                                                                                                                                                                                                                                                               | `int`         | `30`                      |
-| `--dry-run`                                         | When used in combination with `-execute-command-code`, the execution of the associated `--command-script` will only be simulated                                                                                                                                                                                                             | `bool`        | `False`                   |
-| `--aprs-test-arguments`                             | Used in combination with [`--execute-command-code`](configure.md#--execute-command-code---executes-a---callsign--commannd-code-combination). Simulates the parameter input `$1`..`$9` from an incoming APRS message. 0..9 parameters are supported. Parameter separator = space. Input Parameter `$0` _always_ contains the user's callsign. | list of `str` | `[]` (empty list)         |
+>[!TIP]
+> Details on the parameter settings con be found on the [`--add-user`](/docs/configure-commands/add-user.md) and [`--add-command`](/docs/configure-commands/add-command.md) subsections.
+
+| Parameter                                            | Description                                                                                                                                                                                                                                                                                                                                                          | Type          | Default                   |
+|------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|---------------------------|
+| `--configfile`                                       | External config file. `configure.py` will create this file if it does not exist.                                                                                                                                                                                                                                                                                     | `str`         | `sabb_command_config.yml` |
+| `--callsign`                                         | User's call sign, with or without SSID                                                                                                                                                                                                                                                                                                                               | `str`         | `<none>`                  |
+| `--totp-code`                                        | Six-digit TOTP code                                                                                                                                                                                                                                                                                                                                                  | `str`         | `<none>`                  |
+| [`--command-code`](configure.md#--command-code)      | Command code alias. This is the code that the user will send in his APRS message. Associated with [`--command-string`](/docs/configure-commands/add-command.md#--command-string)                                                                                                                                                                                     | `str`         | `<none>`                  |
+| [`--command-string`](configure.md#--command-string)  | Associated with [`--command-code`](/docs/configure-commands/add-command.md#--command-code). This is a representation of the actual command that is going to get executed.                                                                                                                                                                                            | `str`         | `<none>`                  |
+| `--detached-launch`                                  | When specified (read:`detached-launch`=`True`), the bot will NOT wait for the [`--command-string`](/docs/configure-commands/add-command.md#--command-string)'s program execution. In addition, the APRS confirmation will be sent to the user _prior_ to the program's execution. Default setting: `False` --> Bot _will_ wait for the end of the program execution. | `bool`        | `False`                   |
+| `--ttl`                                              | TOTP TTL value in seconds (`30`..`300`). Default: 30 (seconds)                                                                                                                                                                                                                                                                                                       | `int`         | `30`                      |
+| `--dry-run`                                          | When used in combination with `-execute-command-code`, the execution of the associated `--command-script` will only be simulated                                                                                                                                                                                                                                     | `bool`        | `False`                   |
+| `--watchdog-timespan`                                | Only applicable for `detached-launch`=`False` configurations. A value of `0.0` (default) will disable the watchdog. Any other positive value will _try_ to abort the previously started process after the given timespan has passed.                                                                                                                                 | `bool`        | `False`                   |
+| `--aprs-test-arguments`                              | Used in combination with [`--execute-command-code`](configure.md#--execute-command-code---executes-a---callsign--commannd-code-combination). Simulates the parameter input `$1`..`$9` from an incoming APRS message. 0..9 parameters are supported. Parameter separator = space. Input Parameter `$0` _always_ contains the user's callsign.                         | list of `str` | `[]` (empty list)         |
 
 ## Commands
 
 All commands are described in the linked documentation files.
 
-| Command                                                                  | Description                                                                                                                                                                                                                                                                                                                                              | Associated parameter(s)                                                   |
-|--------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| [`--add-user`](configure-commands/add-user.md)                           | Adds (or updates) a user to the configuration file                                                                                                                                                                                                                                                                                                       | `--callsign`,`-ttl`,`--show-secret`                                       |
-| [`--delete-user`](configure-commands/delete-user.md)                     | Deletes a user from the configuration file                                                                                                                                                                                                                                                                                                               | `--callsign`                                                              |
-| [`--add-command`](configure-commands/add-command.md)                     | Adds (or updates) a command code/command string for a user to the configuration file                                                                                                                                                                                                                                                                     | `--callsign`,`--launch-as-subprocess`,`--command-code`,`--command-string` |
-| [`--delete-command`](configure-commands/delete-command.md)               | Deletes a command code for a user from the configuration file                                                                                                                                                                                                                                                                                            | `--callsign`,`--command-code`                                             |
-| [`--test-totp-code`](configure-commands/test-totp-code.md)               | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                                                                                                                                                                                                                                                              | `--callsign`,`--totp-code`                                                |
-| [`--execute-command-code`](configure-commands/execute-command-code.md)   | Uses a `--callsign` / [`--command-code`](/docs/configure-commands/add-command.md#--command-code) combination, returns the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) (whereas present) and executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`     |
+| Command                                                                  | Description                                                                                                                                                                                                                                                                                                                                              | Associated parameter(s)                                                                     |
+|--------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| [`--add-user`](configure-commands/add-user.md)                           | Adds (or updates) a user to the configuration file                                                                                                                                                                                                                                                                                                       | `--callsign`,`-ttl`,`--show-secret`                                                         |
+| [`--delete-user`](configure-commands/delete-user.md)                     | Deletes a user from the configuration file                                                                                                                                                                                                                                                                                                               | `--callsign`                                                                                |
+| [`--add-command`](configure-commands/add-command.md)                     | Adds (or updates) a command code/command string for a user to the configuration file                                                                                                                                                                                                                                                                     | `--callsign`,`--detached-launch`,`--command-code`,`--command-string`, `--watchdog-timespan` |
+| [`--delete-command`](configure-commands/delete-command.md)               | Deletes a command code for a user from the configuration file                                                                                                                                                                                                                                                                                            | `--callsign`,`--command-code`                                                               |
+| [`--test-totp-code`](configure-commands/test-totp-code.md)               | Tests a given 6-digit TOTP code for validity against the user's TOTP secret                                                                                                                                                                                                                                                                              | `--callsign`,`--totp-code`                                                                  |
+| [`--execute-command-code`](configure-commands/execute-command-code.md)   | Uses a `--callsign` / [`--command-code`](/docs/configure-commands/add-command.md#--command-code) combination, returns the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) (whereas present) and executes the associated [`--command-string`](/docs/configure-commands/add-command.md#--command-string) setting | `--callsign`,`--totp-code`, `--command-code`, `--aprs-test-arguments`, `--dry-run`          |
 
 ## Usage
 

@@ -10,7 +10,7 @@ This is an extended version of [`--test-totp-code`](test-totp-code.md). In addit
 
 To give the user the opportunity to cancel the execution of the script, a ten-second countdown is started between the determination of the script and its execution, during which the execution of the script can be terminated at any time by pressing a key. 
 
-After this period has elapsed, the script starts. If it has been configured as a standalone process (`--launch-as-subprocess`), it starts as a background process. In all other cases, the system waits for the script to finish unless an optional `--watchdog-timespan` has been set. You can simulate the entire execution process with the optional parameter `--dry-run`.
+After this period has elapsed, the script starts. If it has been configured as a standalone process (`--detached-launch`), it starts as a background process. In all other cases, the system waits for the script to finish unless an optional `--watchdog-timespan` has been set. You can simulate the entire execution process with the optional parameter `--dry-run`.
 
 ## Parameters
 
