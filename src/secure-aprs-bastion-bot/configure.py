@@ -50,6 +50,10 @@ else:
 # Default name of the to-be-generated output configuration file
 CONFIG_FILE_NAME = "sabb_command_config.yml"
 
+# Timespan for --execute-command-code; allowing the user to abort
+# the pending execution of the retrieved command within x seconds
+EXECUTE_COMMAND_CODE_ABORT_TIMESPAN = 10
+
 # Set up the global logger variable
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s %(module)s -%(levelname)s- %(message)s"
@@ -1096,9 +1100,15 @@ def wait_or_keypress(timeout_seconds: float) -> bool:
     # Detect our environment
     system = platform.system()
     has_tty = sys.stdin.isatty()
+
+    # If run from within an IDE, only RETURN/ENTER will be recognized
     if not has_tty:
-        logger.warning(
-            msg="IDE/Piped-mode detected; you need to press any key *AND* confirm this setting with Enter"
+        logger.info(
+            msg=f"Press RETURN / ENTER within {timeout_seconds} secs to abort command execution ...."
+        )
+    else:
+        logger.info(
+            msg=f"Press any key within {timeout_seconds} secs to abort command execution ..."
         )
 
     def key_listener():
@@ -1250,13 +1260,18 @@ def main():
 
             if success:
 
-                (success, target_callsign, command_string, detached_launch, secret) = (
-                    identify_target_callsign_and_command_string(
-                        data=cfg_data,
-                        callsign=sabb_callsign,
-                        totp_code=sabb_totp_code,
-                        command_code=sabb_command_code,
-                    )
+                (
+                    success,
+                    target_callsign,
+                    command_string,
+                    detached_launch,
+                    secret,
+                    watchdog_timespan,
+                ) = identify_target_callsign_and_command_string(
+                    data=cfg_data,
+                    callsign=sabb_callsign,
+                    totp_code=sabb_totp_code,
+                    command_code=sabb_command_code,
                 )
                 if not success:
                     logger.info(
@@ -1264,8 +1279,12 @@ def main():
                     )
                     sys.exit(0)
                 else:
+                    if sabb_watchdog_timespan == 0.0:
+                        __wdstr = "watchdog='disabled'"
+                    else:
+                        __wdstr = f"watchdog timespan='{sabb_watchdog_timespan}' secs"
                     logger.info(
-                        msg=f"Command '{sabb_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}' with detached_launch='{detached_launch}'"
+                        msg=f"Command '{sabb_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}' with detached_launch='{detached_launch}' and {__wdstr}"
                     )
 
                 # Check if there is something that we need to replace
@@ -1300,21 +1319,24 @@ def main():
 
                 if not sabb_dry_run:
                     logger.info(
-                        msg=f"Executing command '{sabb_execute_command_code}' in 10 seconds; press any key to abort..."
+                        msg=f"Executing command '{command_string}' in {EXECUTE_COMMAND_CODE_ABORT_TIMESPAN} seconds"
                     )
                     # Note: this will not work properly when called from an IDE
-                    aborted = wait_or_keypress(10)
+                    aborted = wait_or_keypress(EXECUTE_COMMAND_CODE_ABORT_TIMESPAN)
                     if aborted:
-                        logger.info("aborting")
+                        logger.info("User has cancelled command execution")
                     else:
-                        logger.info("not aborted")
-                        pass
                         logger.info("Executing code ....")
-                        pass
+                        execute_program(
+                            command=command_string,
+                            detached_launch=sabb_detached_launch,
+                            watchdog_timespan=sabb_watchdog_timespan,
+                        )
                 else:
                     logger.info(
-                        msg=f"SIMULATION: Execute command '{sabb_execute_command_code}'"
+                        msg="User has requested dry-run execution of command string; simulating execution"
                     )
+                    logger.info(msg=f"SIMULATION: Execute command '{command_string}'")
             else:
                 logger.error(
                     msg=f"Unable to read configuration file '{sabb_configfile}'"
