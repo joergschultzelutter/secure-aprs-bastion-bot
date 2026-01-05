@@ -38,7 +38,7 @@ Detailed installation instructions [can be found here.](/docs/installation-instr
 
 ## Message anatomy
 
-[This documentation section](/docs/message-anatomy.md) provides detailed information on the message format used by `secure-aprs-bastion-bot`. Additional deep-dive information can also be found in the `configure.py` [documentation](/docs/configure.md#deep-dive-understand-how-user-authorization--authentication-works) pages.
+[This documentation section](/docs/message-anatomy.md) provides detailed information on the message format used by `secure-aprs-bastion-bot`. Additional deep-dive information can also be found in the `configure.py` [documentation](/docs/configure.md#deep-dive-understand-how-user-authorization--authentication-works).
 
 ## Program return codes
 
