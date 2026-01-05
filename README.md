@@ -72,7 +72,7 @@ Detailed installation instructions [can be found here.](/docs/installation-instr
 
 ## Technical details
 
-`secure-aprs-bastion-bot` uses my [`core-aprs-client`](https://www.github.com/joergschultzelutter/core-aprs-client) framework.
+`secure-aprs-bastion-bot` relies on my [`core-aprs-client`](https://www.github.com/joergschultzelutter/core-aprs-client) APRS messaging framework. 
 
 ## The fine print
 
