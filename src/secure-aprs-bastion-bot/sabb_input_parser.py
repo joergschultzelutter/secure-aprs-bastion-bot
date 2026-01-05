@@ -129,19 +129,20 @@ def parse_input_message(
         aprs_message=aprs_message
     )
     if not success:
+        # use the default return code 403 as response
         input_parser_error_message = sabb_shared.http_msg_403
         input_parser_response_object = {}
-        # set the return code
+        # set the return code to ERROR status
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         return return_code, input_parser_error_message, input_parser_response_object
 
-    # enrich the command_params list with the callsign
-    # Replace the callsign. Add the call sign to the top of the list
+    # enrich the command_params list with the callsign and
+    # add the callsign to the top of the list ($0 parameter)
     command_params.insert(0, from_callsign)
 
     # Attempt to locate the execution parameters
     # 'target_callsign' might differ from 'from_callsign' for those cases where
-    # we went for the SSID-less callsign
+    # we went for the SSID-less callsign instead of the original 'from_callsign'
     (
         success,
         target_callsign,
@@ -162,11 +163,11 @@ def parse_input_message(
         # provide generic APRS response to the user
         input_parser_error_message = sabb_shared.http_msg_403
         input_parser_response_object = {}
-        # set the return code
+        # set the return code to ERROR
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         return return_code, input_parser_error_message, input_parser_response_object
 
-    # Check if the TOTP code is already present in our expiringdict object
+    # Check if the callsign/TOTP combination is already present in our expiringdict object
     key = get_totp_expiringdict_key(callsign=target_callsign, totp_code=totp_code)
 
     # If we were able to retrieve the item, this means that we already used the
@@ -184,12 +185,16 @@ def parse_input_message(
     )
 
     # and now start iterating through the list and replace our content
+    # This will replace all $0..$9 placeholders in the command_string with the
+    # additional parameters conveyed through the user's original APRS message
     for count, item in enumerate(command_params, start=0):
         command_string = command_string.replace(f"${count}", item)
     instance.log_debug(f"final command_string: '{command_string}'")
 
     # Check if we have received fewer user-specified parameters than expected
-    # if that is the case, our string still contains placeholders
+    # if that is the case, our string still contains placeholders such as e.g. $0
+    # This is an end user error, indicating that we did not receive all the required
+    # parameters through the user's APRS message.
     regex_string = r"\$[0-9]"
     matches = re.search(pattern=regex_string, string=command_string)
     if matches:
@@ -213,7 +218,9 @@ def parse_input_message(
     }
 
     # set the return code to OK. This will tell the framework to continue
-    # with the data processing
+    # with the data processing. Dependent on the "detached_launch" parameter's
+    # value, the actual execution of the command_string will either happen in the
+    # output generator code or the post processor code.
     return_code = CoreAprsClientInputParserStatus.PARSE_OK
 
     # Now return everything to the core-aprs-client framework

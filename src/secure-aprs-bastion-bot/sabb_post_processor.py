@@ -28,7 +28,7 @@
 #
 
 from CoreAprsClient import CoreAprsClient
-from sabb_utils import set_totp_expiringdict_key
+from sabb_utils import set_totp_expiringdict_key, execute_program
 
 
 def post_processing(
@@ -47,11 +47,6 @@ def post_processing(
         triggered, a) the post-processor code function needs to be supplied
         to the instantiated class object AND b) postprocessor_input_object
         must not be 'None'
-        For the framework examples, this stub deliberately uses a simple
-        dictionary for passing data from the output generator to the post
-        processor. One could use a more complex dict object (just like the one used
-        by input processor and output generator) - or a simple string. Again, what
-        you want to use is up to you, the developer.
     **kwargs: dict
         Optional keyword arguments
 
@@ -72,11 +67,15 @@ def post_processing(
                 msg=f"Executing command: '{postprocessor_input_object["command_string"]}'"
             )
 
-            # execute the command
-            pass
+            # run the user's requested command sequence
+            execute_program(
+                command=postprocessor_input_object["command_string"],
+                detached_launch=postprocessor_input_object["detached_launch"],
+                watchdog_timespan=postprocessor_input_object["watchdog_timespan"],
+            )
         else:
             instance.log_info(
-                msg=f"Simulating command execution: '{postprocessor_input_object["command_string"]}'"
+                msg=f"Simulating command execution: '{postprocessor_input_object["command_string"]}' with detached launch '{postprocessor_input_object['detached_launch']}' and watchdog_timespan '{postprocessor_input_object['watchdog_timespan']}'"
             )
 
         # Finally, add the target callsign and the TOTP token to our expiring cache

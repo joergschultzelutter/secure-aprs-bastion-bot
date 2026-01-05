@@ -28,7 +28,7 @@
 #
 
 from CoreAprsClient import CoreAprsClient
-from sabb_utils import set_totp_expiringdict_key
+from sabb_utils import set_totp_expiringdict_key, execute_program
 import sabb_shared
 
 
@@ -46,11 +46,6 @@ def generate_output_message(
         dictionary object, containing data from input_parser.py
         Literally speaking, you will use the content from this
         dictionary in order to generate an APRS output message.
-        You can (and should!) customize this dict object but ensure that
-        both input_parser and output_processor use the same structure
-        Note that you can also return other objects such as classes. Just ensure that
-        both input_parser and output_generator share the very same
-        structure for this variable.
     **kwargs: dict
         Optional keyword arguments
 
@@ -72,7 +67,7 @@ def generate_output_message(
         must not be 'None'
     """
 
-    # If the user has requested a detached launch, simply return http202 response
+    # If the user has requested a detached launch, simply return http 202 response
     # message and pass the input parser response object along to the framework
     # The post-processing function will then take care of the rest.
     if input_parser_response_object["detached_launch"]:
@@ -91,11 +86,15 @@ def generate_output_message(
             msg=f"Executing command: '{input_parser_response_object["command_string"]}'"
         )
 
-        # execute the command
-        pass
+        # run the user's requested command sequence
+        execute_program(
+            command=input_parser_response_object["command_string"],
+            detached_launch=input_parser_response_object["detached_launch"],
+            watchdog_timespan=input_parser_response_object["watchdog_timespan"],
+        )
     else:
         instance.log_info(
-            msg=f"Simulating command execution: '{input_parser_response_object["command_string"]}'"
+            msg=f"Simulating command execution: '{input_parser_response_object["command_string"]}' with detached_launch: '{input_parser_response_object["detached_launch"]}' and watchdog_timespan: '{input_parser_response_object["watchdog_timespan"]}'"
         )
 
     # Set the return value content

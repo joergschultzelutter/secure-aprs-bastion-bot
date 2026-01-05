@@ -125,7 +125,9 @@ if __name__ == "__main__":
         )
         sys.exit(0)
 
-    # remember the file's initial config file timestamp
+    # remember the file's initial config file timestamp, thus allowing us to
+    # detect any changes to the file during runtime (and re-read the file
+    # into memory, if necessary)
     sabb_shared.config_initial_timestamp = get_modification_time(
         filename=sabb_shared.command_config_filename
     )

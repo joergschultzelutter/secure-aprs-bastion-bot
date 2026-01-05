@@ -175,45 +175,53 @@ def execute_program(
         process PID or 'None' in case of an error
     """
 
-    def out(msg: str) -> None:
+    def out_debug(message: str) -> None:
         try:
-            logger.debug(msg)
+            logger.debug(msg=message)
+        except Exception:
+            pass
+
+    def out_info(message: str) -> None:
+        try:
+            logger.info(msg=message)
         except Exception:
             pass
 
     # Check our input
     try:
         if not isinstance(command, str) or not command.strip():
-            out("execute_program: ERROR: invalid command (empty or non-string).")
+            out_info("execute_program: ERROR: invalid command (empty or non-string).")
             return None
         if not isinstance(detached_launch, bool):
-            out("execute_program: ERROR: invalid detached_launch (must be bool).")
+            out_info("execute_program: ERROR: invalid detached_launch (must be bool).")
             return None
         try:
             watchdog = float(watchdog_timespan)
         except Exception:
-            out(
+            out_info(
                 "execute_program: ERROR: invalid watchdog_timespan (must be float-compatible)."
             )
             return None
         if watchdog < 0.0:
-            out("execute_program: ERROR: invalid watchdog_timespan (must be >= 0.0).")
+            out_info(
+                "execute_program: ERROR: invalid watchdog_timespan (must be >= 0.0)."
+            )
             return None
     except Exception as e:
-        out(f"execute_program: ERROR: unexpected validation failure: {e}")
+        out_info(f"execute_program: ERROR: unexpected validation failure: {e}")
         return None
 
     # parse our command
     try:
         argv = shlex.split(command, posix=(os.name != "nt"))
         if not argv:
-            out("execute_program: ERROR: command parsing produced empty argv.")
+            out_info("execute_program: ERROR: command parsing produced empty argv.")
             return None
     except Exception as e:
-        out(f"execute_program: ERROR: failed to parse command: {e}")
+        out_info(f"execute_program: ERROR: failed to parse command: '{e}'")
         return None
 
-    out(f"execute_program: INFO: starting command: {command}")
+    out_debug(f"execute_program: starting command: {command}")
 
     def terminate_process_tree(pid: int) -> None:
         """
@@ -225,13 +233,15 @@ def execute_program(
         try:
             root = psutil.Process(pid)
         except Exception as e:
-            out(f"execute_program: ERROR: psutil cannot attach to PID={pid}: {e}")
+            out_debug(f"execute_program: ERROR: psutil cannot attach to PID={pid}: {e}")
             return
 
         try:
             children: List[psutil.Process] = root.children(recursive=True)
         except Exception as e:
-            out(f"execute_program: ERROR: cannot enumerate children of PID={pid}: {e}")
+            out_debug(
+                f"execute_program: ERROR: cannot enumerate children of PID={pid}: {e}"
+            )
             children = []
 
         procs = children + [root]
@@ -244,14 +254,14 @@ def execute_program(
                 else:
                     p.send_signal(signal.SIGTERM)
             except Exception as e:
-                out(
+                out_debug(
                     f"execute_program: ERROR: terminate failed for PID={getattr(p, 'pid', '?')}: {e}"
                 )
 
         try:
             _, alive = psutil.wait_procs(procs, timeout=3.0)
         except Exception as e:
-            out(f"execute_program: ERROR: wait_procs error: {e}")
+            out_debug(f"execute_program: ERROR: wait_procs error: {e}")
             alive = procs
 
         # Hard kill remaining
@@ -260,13 +270,13 @@ def execute_program(
                 try:
                     p.kill()
                 except Exception as e:
-                    out(
+                    out_debug(
                         f"execute_program: ERROR: kill failed for PID={getattr(p, 'pid', '?')}: {e}"
                     )
             try:
                 psutil.wait_procs(alive, timeout=3.0)
             except Exception as e:
-                out(f"execute_program: ERROR: wait after kill error: {e}")
+                out_debug(f"execute_program: ERROR: wait after kill error: {e}")
 
     # launch process
     try:
@@ -296,18 +306,16 @@ def execute_program(
                         start_new_session=True,
                     )
                 pid = proc.pid
-                out(f"execute_program: INFO: detached process started with PID={pid}")
+                out_info(f"Detached process started with PID={pid}")
                 return pid
             except FileNotFoundError:
-                out(f"execute_program: ERROR: command not found: {command}")
+                out_info(f"Command not found: '{command}'")
                 return None
             except PermissionError:
-                out(f"execute_program: ERROR: permission denied: {command}")
+                out_info(f"Permission denied: '{command}'")
                 return None
             except Exception as e:
-                out(
-                    f"execute_program: ERROR: failed to start detached command '{command}': {e}"
-                )
+                out_info(f"Failed to start detached command '{command}': {e}")
                 return None
 
         # Non-detached: with output capture and optional watchdog
@@ -320,17 +328,17 @@ def execute_program(
                 bufsize=1,
             )
         except FileNotFoundError:
-            out(f"execute_program: ERROR: command not found: {command}")
+            out_info(f"Command not found: '{command}'")
             return None
         except PermissionError:
-            out(f"execute_program: ERROR: permission denied: {command}")
+            out_info(f"Permission denied: '{command}'")
             return None
         except Exception as e:
-            out(f"execute_program: ERROR: failed to start command '{command}': {e}")
+            out_info(f"ailed to start command '{command}': {e}")
             return None
 
         pid = proc.pid
-        out(f"execute_program: INFO: process started with PID={pid}")
+        out_info(f"Process started with PID={pid}")
 
         # Watchdog
         try:
@@ -338,7 +346,7 @@ def execute_program(
                 try:
                     stdout_data, stderr_data = proc.communicate()
                 except Exception as e:
-                    out(f"execute_program: ERROR: communicate failed (PID={pid}): {e}")
+                    out_debug(f"Communicate with process failed (PID={pid}): {e}")
                     stdout_data, stderr_data = "", ""
 
                 try:
@@ -347,14 +355,10 @@ def execute_program(
                     rc = None
 
                 if stdout_data:
-                    out(
-                        f"execute_program: INFO: stdout (PID={pid}):\n{stdout_data.rstrip()}"
-                    )
+                    out_debug(f"stdout (PID={pid}):\n{stdout_data.rstrip()}")
                 if stderr_data:
-                    out(
-                        f"execute_program: WARN: stderr (PID={pid}):\n{stderr_data.rstrip()}"
-                    )
-                out(f"execute_program: INFO: process finished (PID={pid}, rc={rc})")
+                    out_debug(f"stderr (PID={pid}):\n{stderr_data.rstrip()}")
+                out_debug(f"Process finished (PID={pid}, rc={rc})")
                 return pid
 
             deadline = time.time() + watchdog
@@ -363,12 +367,12 @@ def execute_program(
                     if proc.poll() is not None:
                         break
                 except Exception as e:
-                    out(f"execute_program: ERROR: poll failed (PID={pid}): {e}")
+                    out_debug(f"poll failed (PID={pid}): {e}")
                     break
 
                 if time.time() >= deadline:
-                    out(
-                        f"execute_program: WARN: watchdog timeout reached (PID={pid}, {watchdog:.3f}s). Terminating."
+                    out_debug(
+                        f"Watchdog timeout reached (PID={pid}, {watchdog:.3f}s). Terminating."
                     )
                     terminate_process_tree(pid)
                     break
@@ -387,27 +391,25 @@ def execute_program(
             except Exception:
                 rc = None
 
-            """
             if stdout_data:
-                out(
+                out_debug(
                     f"execute_program: INFO: stdout (PID={pid}):\n{stdout_data.rstrip()}"
                 )
             if stderr_data:
-                out(
+                out_debug(
                     f"execute_program: WARN: stderr (PID={pid}):\n{stderr_data.rstrip()}"
                 )
-            """
-            out(f"execute_program: INFO: process ended (PID={pid}, rc={rc})")
+            out_debug(f"execute_program: INFO: process ended (PID={pid}, rc={rc})")
             return pid
 
         except Exception as e:
-            out(
+            out_debug(
                 f"execute_program: ERROR: runtime error while waiting/terminating (PID={pid}): {e}"
             )
             return pid
 
     except Exception as e:
-        out(f"execute_program: ERROR: unexpected failure: {e}")
+        out_debug(f"execute_program: ERROR: unexpected failure: {e}")
         return None
 
 
