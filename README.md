@@ -36,10 +36,9 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 
 Detailed installation instructions [can be found here.](/docs/installation-instructions.md)
 
-##
+## Message anatomy
 
 [This documentation section](/docs/message-anatomy.md) provides detailed information on the message format used by `secure-aprs-bastion-bot`. Additional `deep-dive` information can also be found in the `configure.py` [documentation](/docs/configure.md#deep-dive-understand-how-user-authorization--authentication-works).
-
 
 ## Return Codes
 `secure-aprs-bastion-bot` was deliberately designed so that no output from the called programs is sent back to the requester. If necessary, such a return transmission can be implemented individually via the `--command-code` script using the supplied `send-aprs-message.py` script or other options such as [Apprise](https://www.github.com/caronc/apprise). The following return values are possible:
