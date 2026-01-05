@@ -1,10 +1,10 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram id="8axcP4ZNck7DCLJ19Xn6" name="Page-1">
-    <mxGraphModel dx="1099" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1099" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="QQCWTj5-bRNXvzXqbGkn-2" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;i&gt;secure-aprs-bastion-bot&lt;/i&gt; configuration files&lt;/h1&gt;&lt;div&gt;- &lt;b&gt;&lt;i&gt;secure_aprs_bastion_bot.cfg&lt;/i&gt;&lt;/b&gt; contains the configuration data for the APRS core server (callsign, passcode, beaconing, ...)&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- &lt;b&gt;&lt;i&gt;sabb_command_config.yml&lt;/i&gt;&lt;/b&gt; contains the callsign/command-code/command-string configuration data.&amp;nbsp;&lt;/div&gt;&lt;div&gt;&amp;nbsp; If modified during runtime, the contents from &lt;u&gt;this&lt;/u&gt; file will be re-read by &lt;b&gt;&lt;i&gt;secure-aprs-bastion-bot&lt;/i&gt;&lt;/b&gt;.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+        <mxCell id="QQCWTj5-bRNXvzXqbGkn-2" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;i&gt;secure-aprs-bastion-bot&lt;/i&gt; configuration files&lt;/h1&gt;&lt;div&gt;- &lt;b&gt;&lt;i&gt;secure_aprs_bastion_bot.cfg&lt;/i&gt;&lt;/b&gt; contains the configuration data for the APRS core server (callsign, passcode, beaconing, ...)&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- &lt;b&gt;&lt;i&gt;sabb_command_config.yml&lt;/i&gt;&lt;/b&gt; contains the callsign/command-code/command-string configuration data.&amp;nbsp;&lt;/div&gt;&lt;div&gt;&amp;nbsp; If modified during runtime, the contents from &lt;u&gt;this&lt;/u&gt; file will be re-read by &lt;b&gt;&lt;i&gt;secure_aprs_bastion_bot&lt;/i&gt;&lt;/b&gt;.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="10" y="20" width="690" height="120" as="geometry" />
         </mxCell>
         <mxCell id="QQCWTj5-bRNXvzXqbGkn-10" value="" style="group" parent="1" connectable="0" vertex="1">
@@ -33,7 +33,7 @@
             <mxPoint x="6" y="-7" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="vxVAZPjP0VQbgBFue19X-1" value="&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;CONFIGURATION DATA&lt;/font&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#000000;" vertex="1" parent="QQCWTj5-bRNXvzXqbGkn-10">
+        <mxCell id="vxVAZPjP0VQbgBFue19X-1" value="&lt;font style=&quot;color: rgb(0, 0, 0);&quot;&gt;CONFIGURATION DATA&lt;/font&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#000000;" parent="QQCWTj5-bRNXvzXqbGkn-10" vertex="1">
           <mxGeometry x="200" width="270" height="30" as="geometry" />
         </mxCell>
       </root>

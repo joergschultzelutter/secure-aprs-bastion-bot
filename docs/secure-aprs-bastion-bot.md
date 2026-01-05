@@ -1,8 +1,8 @@
-# `secure-aprs-bastion-bot.py`
+# `secure_aprs_bastion_bot.py`
 
 ## Introduction
 
-`secure-aprs-bastion-bot.py` uses my [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client) framework and stores its APRS-bot-specific content in the configuration file `secure_aprs_bastion_bot.cfg`.
+`secure_aprs_bastion_bot.py` uses my [`core-aprs-client`](https://github.com/joergschultzelutter/core-aprs-client) framework and stores its APRS-bot-specific content in the configuration file `secure_aprs_bastion_bot.cfg`.
 
 - You can find a [preconfigured template file](/src/secure-aprs-bastion-bot/secure-aprs-bastion-bot.cfg.TEMPLATE) in `secure-aprs-bastion-bot`'s source folder.
 - All generic parts of the configuration file, such as the configuration of beacons and bulletins, are described in detail in the accompanying [configuration file documentation](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md).
@@ -14,20 +14,20 @@
 ## Running the program
 
 ```python
-usage: secure-aprs-bastion-bot.py [-h] [--configfile CONFIGFILE]
+usage: secure_aprs_bastion_bot.py [-h] [--configfile CONFIGFILE]
 
 options:
   -h, --help                show this help message and exit
   --configfile CONFIGFILE   Program config file name (default is 'secure_aprs_bastion_bot.cfg')
 ```
- Ideally, run the program via `nohup python secure-aprs-bastion-bot.py >nohup.out &`.
+ Ideally, run the program via `nohup python secure_aprs_bastion_bot.py >nohup.out &`.
 
 ## Configuration file
 The bot's configuration file establishes a link between the bot's configuration file `secure_aprs_bastion_bot.cfg` and the additional configuration file `sabb_command_config.yml` (created via [configure](/docs/configure.md)) which holds information on the configured users (aka callsigns) along with their TOTP secrets, `--command-code`s, and `--command-string`s. Among additional parameters, the name of the user/command config file is stored in a dedicated section (`[secure_aprs_bastion_bot]`) of the `secure_aprs_bastion_bot.cfg` configuration file.
 
 ![Overview](/img/sabb_config_files.svg)
 
-Changes to the user/command configuration file specified at the `sabb_command_config_file` config file section are detected by `secure-aprs-bastion-bot.py` and result in the configuration parameters being re-read; it is therefore _not_ necessary to restart `secure-aprs-bastion-bot.py` when the `sabb_command_config` configuration file is changed.
+Changes to the user/command configuration file specified at the `sabb_command_config_file` config file section are detected by `secure_aprs_bastion_bot.py` and result in the configuration parameters being re-read; it is therefore _not_ necessary to restart `secure_aprs_bastion_bot.py` when the `sabb_command_config` configuration file is changed.
 
 ### Configuration file - excerpt 
 The respective section from `core-aprs-client`'s config file for `[secure_aprs_bastion_bot]` lists as follows:

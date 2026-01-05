@@ -11,12 +11,12 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 ## Features
 
 - Control of programs using predefined keywords (`--command-code`) and scripts (`--command-string`) associated with these keywords. The user sends a `--command-code` message to `secure-aprs-bastion-bot`, which then executes the local script `--command-string` that is associated to the `--command-code`. **The user is responsible for creating these individual scripts.**
-- In addition to the call sign of the incoming message, up to 9 optional parameters can be passed to the `--command-string` as part of the APRS message for control purposes.
+- In addition to the call sign of the incoming message, up to 9 optional parameters `$1`..`$9` can be passed to the `--command-string` as part of the APRS message for control purposes.
 - Authorization, authentication, and security:
   - Executable programs are assigned locally per call sign; i.e., `--command-code`s assigned to the call sign `DF1ABC` cannot be accessed by `DF1XYZ` (and vice versa). Commands can either be assigned specifically to an individual callsign with SSID; alternatively, commands can also be assigned to the main callsign without SSID, in which case all sub-callsigns with SSID can then use these commands. The latter approach reduces setup effort and allows use across multiple transceivers, provided they are assigned the same call sign. 
   - `secure-aprs-bastion-bot` requires one-time passwords (TOTP) which are individual to each authenticated / configured call sign. The secrets for these tokens are defined when setting up the call sign configuration and can be configured with a validity of 30 seconds to 5 minutes. In addition to the duplicate check of the actual APRS message, an additional TOTP/call sign duplicate check is performed. This check prevents one-time passwords from being used multiple times during their validity period, effectively preventing hi-jacking and misuse of the token in question as best as possible over an unsecured plain-text APRS connection.
 - Call sign and command setup:
-  - The configuration data is set up and tested using a configuration program provided ([`configure.py`](/docs/configure.md).
+  - The configuration data is set up and tested using a configuration program provided ([`configure.py`](/docs/configure.md)).
   - User accounts are configured on a call sign level.
   - The user account configuration can be done at the call sign plus SSID level _or_ exclusively at the call sign level without SSID (base call sign). In the latter case, all call signs of the user _with_ SSID can use the configuration of the call sign _without_ SSID - provided they transmit the base call sign's TOTP token for authorization and authentication.
   - When configuring the base call sign, it is also not necessary to configure all other call signs with SSID individually. The prerequisite for using this configuration is, of course, the use of the TOTP token of the base call sign. Further details can be found in the [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md) program documentation.
@@ -24,106 +24,22 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
   - The programs to be executed can be started either synchronously (→ program default) or as a detached/asynchronous process.
     - Synchronous execution first executes the desired script and waits until it has finished. After script termination,  `secure-aprs-bastion-bot` sends an APRS confirmation to the user. **This is the configuration program's default behavior setting**. Ideally, only use this option for short runs. Confirmation of processing via APRS is only sent to the caller <u>after</u> the script has been completed. An optional watchdog function also allows the process to be terminated after a freely definable period of time.
     - Asynchronous processing first sends the APRS confirmation to the user and starts the desired program _as a separate process_.  When [`--detached-launch`](/docs/configure.md#parameters) gets applied to a configuration setting, `secure-aprs-bastion-bot` will _not_ wait for the program to finish executing. Such processing may be necessary, for example, when restarting the server on which `secure-aprs-bastion-bot` is installed. The processing of the script is initiated as a background process and can therefore also take place over a longer period of time.
-    - A watchdog process that terminates a synchronous job after a certain period of time is not provided. It is therefore up to the user to select the correct processing option.
   - After completion of such a program sequence, regardless of its execution type (synchronous or asynchronous), an optional APRS message can be sent back to the caller as part of the user script and a supporting Python script ([`send-aprs-message.py`](/docs/send-aprs-message.md)). Alternatively, other messaging tools such as [Apprise](https://github.com/caronc/apprise) can be used.
 
-# Program-specific documentation
+## Program-specific documentation
 
 - [secure-aprs-bastion-bot.py](docs/secure-aprs-bastion-bot.md) - the actual APRS bot. Relies on two config files: one file [controls the bot itself](/docs/secure-aprs-bastion-bot.md#configuration-file) and the second one (generated by [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md)) contains the bot's callsign/command configuration.
 - [configure.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/configure.md) - creates the bot's callsign/command configuration file and provides testing functionality.
 - [send-aprs-message.py](https://github.com/joergschultzelutter/secure-aprs-bastion-bot/blob/master/docs/send-aprs-message.md) - purely optional; allows the bot to forward detailed APRS responses back to the user
 
-## Local installation instructions
+## Installation instructions
 
-### Initial steps
-- Clone this repository
-- `pip install -r requirements.txt` (or use the `requirements.txt` file from the respective project's subdirectories in case you just want to install a single program)
+Detailed installation instructions [can be found here.](/docs/installation-instructions.md)
 
-### Create the callsign/command-code file
-- Configure the bot's callsign/command/code configuration file:
-  - run [configure.py](docs/configure.md) and create at least one user account ([`--add-user`](/docs/configure-commands/add-user.md)), based on a call sign with or without SSID. This configuration can then be tested with the program's [`--test-totp-switch`](/docs/configure-commands/test-totp-code.md) command.
-  - run [configure.py](docs/configure.md) again and add at least one `--command-code` / `--command-string` relationship entry ([`--add-command`](/docs/configure-commands/add-command.md)) to that user account.
-  - Finally, use [configure.py](docs/configure.md) for local configuration file testing with the [`--execute-command-code`](/docs/configure-commands/execute-command-code.md) command. 
-  - The callsign/command configuration file just generated by `configure.py` will be the foundation for `secure-aprs-bastion-bot`.
+##
 
-### secure-aprs-bastion-bot configuration file
-- Configure the bot's core configuration file. This file contains configuration info on the bot's callsign and other config info such as beaconing and broadcasting. 
-  - Amend the bot's [configuration file](/docs/secure-aprs-bastion-bot.md#configuration-file). The bot is based on my `core-aprs-client` framework ([repository link](https://github.com/joergschultzelutter/core-aprs-client)). You might want to [disable e.g. beaconing and/or bulletin messages](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration.md).
-  - Set the [crash handler's config file name](https://github.com/joergschultzelutter/core-aprs-client/blob/master/docs/configuration_subsections/config_crash_handler.md) to `NOT_CONFIGURED` if you want to disable Apprise messaging. In any other case, configure the Apprise config file as shown in the next paragraph.
+[This documentation section](/docs/message-anatomy.md) provides detailed information on the message format used by `secure-aprs-bastion-bot`. Additional `deep-dive` information can also be found in the `configure.py` [documentation](/docs/configure.md#deep-dive-understand-how-user-authorization--authentication-works).
 
-### Apprise config file 
-- Configure the bot's Apprise messaging configuration file. If you want to disable the crash handler's Apprise messaging: see previous paragraph. 
-  - rename the provided [`apprise.yml.TEMPLATE`](/src/secure-aprs-bastion-bot/apprise.yml.TEMPLATE) and remove the .TEMPLATE extension. `apprise.yml` is the file's default filename.
-  - Configure the file as illustrated in Apprise's [YAML Configuration Documentation](https://github.com/caronc/apprise/wiki/config_yaml)
-
-### Starting the bot
-
-- Start the bot and send your recently configured APRS commands (`--command-code`) to it.
-
-```python
-nohup python secure-aprs-bastion-bot.py >nohup.out &
-```
-
-
-## Anatomy of an APRS message to `secure-aprs-bastion-bot`
-
-Every message to `secure-aprs-bastion-bot` always starts with a 6-digit TOTP code. This comes either from the sending call sign with SSID or from its generic call sign without SSID, if its configuration is to be used.
-
-The command to be executed (`--command-code`) follows immediately after the TOTP code - read: no separator. The actual content of this command (`--command-string`) is defined as part of the configuration setup. For example, the user transmits the command `reboot` via APRS, and secure-aprs-bastion-bot then executes the command sequence `source ./scripts/server-reboot.sh` locally on the computer of the secure-aprs-bastion-bot after successful authorization and authentication.
-
-Additional (optional) user-submittable parameters are separated by spaces. The first parameter after `--command-code` corresponds to `$1`, the second parameter to `$2`, and so on (`$1` .. `$9`). Before the command stored in the `--command-string` is executed, the placeholders for these parameters are replaced by these optional parameters, which were transmitted as part of the APRS message.
-
-The additional parameter `$0`, on the other hand, _always_ contains the call sign of the user who sent the message to `secure-aprs-bastion-bot` (e.g., `DF1JSL-1`). `$0` is therefore always present, regardless of whether the APRS user has transmitted additional parameters or not.
-
-Example 1 - `--command-code` without optional parameters
-
-| APRS message             | `TOTP code` | `--command-code` | `$0`        | `$1`  | `$2` | `$3` | .... | `$9` |
-| ------------------------ | ----------- |------------------| ----------- | ------| ---- | ---- | ---- | ---- |
-| `123456reboot`           | `123456`    | `reboot`         | `DF1JSL-1`  | n/a   | n/a  | n/a  | n/a  | n/a  |
-
-
-Example 1 - `command-code` with optional parameters
-
-| APRS message             | `TOTP code` | `--command-code` | `$0`        | `$1`       | `$2` | `$3` | .... | `$9` |
-| ------------------------ | ----------- |------------------| ----------- | ---------- | ---- | ---- | ---- | ---- |
-| `123456reboot debmu41 5` | `123456`    | `reboot`         | `DF1JSL-1`  | `debmu41`  | `5`  | n/a  |      | n/a  |
-
-> [!TIP]
-> tl;dr: A user always sends the `--command-code` as an APRS message to the `secure-aprs-bastion-bot`. The bot determines the `--command-code` and any optional parameters from the message, identifies the corresponding `--command-string`, replaces potential placeholders for the optional parameters, and then executes the modified `--command-string`.
-
-To define placeholders for the optional parameters in the `--command-string`, the following conventions apply:
-- `$0` ALWAYS corresponds to the call sign that sent the initial message to `secure-aprs-bastion-bot`. This parameter is ALWAYS present.
-- `$1` .. `$9` correspond to the additional parameters that (may) have been extracted from the APRS message. Since these are optional, these parameters are not necessarily filled
-
-Assuming the previous example `reboot debmu41 5` (sent by `DF1JSL-1`), the following optional parameters are available:
-- `$0` = `DF1JSL-1`
-- `$1` = `debmu41`
-- `$2` = `5`
-  
-These parameters can be stored in the corresponding `command-string` when setting up the `command-code` keyword. Assuming that the `command-code` `reboot` accepts three parameters for its corresponding `command-string`:
-- a wait time until reboot
-- a server name
-- and the call sign of the original message
-
-The setup for `--command-code`and `--command-string` in the program`s configuration file could then look as follows:
-
-| `--command-code` | `--command-string` (as stored in the config file) |
-|------------------|---------------------------------------------------|
-| `reboot`         | `source ./scripts/server-reboot.sh $2 $1 $0`      |
-
-First, `secure-aprs-bastion-bot` replaces the placeholders in the string with their actual values:
-
-| `--command-code` | `--command-string` (after modification)                |
-|------------------|--------------------------------------------------------|
-| `reboot`         | `source ./scripts/server-reboot.sh 5 debmu41 DF1JSL-1` |
-
-The command of the edited `--command-string` is then executed by `secure-aprs-bastion-bot`.
-
-> [!NOTE]
-> If the user transmits _more_ optional parameters than there are placeholders in the `--command-string` user script, the additional parameters are ignored by `core-aprs-client`. However, if _fewer_ parameters than required by the `--command-string`user script are transmitted to `core-aprs-client`, this results in a `510 not extended` error - see [this chapter](/README.md#return-codes)
-
-> [!CAUTION]
-> You should always create a dedicated script for each keyword, which serves a _single predefined purpose_. Creating a free text keyword, in which the _entire_ command line sequence to be executed is transmitted via APRS message, is technically possible, but is not recommended.
 
 ## Return Codes
 `secure-aprs-bastion-bot` was deliberately designed so that no output from the called programs is sent back to the requester. If necessary, such a return transmission can be implemented individually via the `--command-code` script using the supplied `send-aprs-message.py` script or other options such as [Apprise](https://www.github.com/caronc/apprise). The following return values are possible:
@@ -136,7 +52,7 @@ The command of the edited `--command-string` is then executed by `secure-aprs-ba
 | `510 not extended` | The identified `--command-string` still contains placeholders after `core-aprs-client` [replaced the placeholders with the user's additional parameters](/README.md#anatomy-of-an-aprs-message-to-secure-aprs-bastion-bot). Usually, this means that you created a user script with placeholders - but the APRS user did submit an insufficient/lower number of additional parameters to `core-aprs-client`. | 
 
 > [!TIP]
-> If you receive a `510 not extended` error, check the number of user-submittable parameter placeholders in your  `--command-string` (`$1`..`$9`) against the number of parameters in your APRS message; the latter must be at least equal to the number of user-transmittable parameter placeholders in your user script. If you transmit more user parameters in your APRS message than are available in your `--command-string`, no error will be triggered; these additional parameters will simply be ignored.
+> If you receive a `510 not extended` error, check the number of user-submittable parameter placeholders in your  `--command-string` (`$1`..`$9`) against the number of parameters in your APRS message; the latter must be at least equal to the number of user-transmittable parameter placeholders in your user script. If you transmit _more_ user parameters in your APRS message than are available in your `--command-string`, no error will be triggered; these additional parameters will simply be ignored.
 
 ## FAQ
 
