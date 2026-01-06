@@ -338,7 +338,7 @@ def execute_program(
             out_info(f"Permission denied: '{command}'")
             return None
         except Exception as e:
-            out_info(f"ailed to start command '{command}': {e}")
+            out_info(f"Failed to start command '{command}': {e}")
             return None
 
         pid = proc.pid

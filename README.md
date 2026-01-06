@@ -61,6 +61,9 @@ The program return codes are sent as APRS responses to the original user. [Here 
 - Q: _Can I use this program even if I am not a licensed radio amateur?_
 - A: Since `secure-aprs-bastion-bot` transmits messages to the APRS network, it cannot be used without an amateur radio license. 
 
+- Q: _When I try to run my script, I get the error message `OSError: [Errno 8] Exec format error`. How can I fix that?_
+- A: Your script is missing a corresponding [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) at the top of your shell script which is required by Python.
+
 ## Technical details
 
 `secure-aprs-bastion-bot` relies on my [`core-aprs-client`](https://www.github.com/joergschultzelutter/core-aprs-client) APRS messaging framework. 
