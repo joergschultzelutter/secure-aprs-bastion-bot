@@ -36,9 +36,6 @@ def dismantle_aprs_message(aprs_message: str):
     params = None
     command_code = None
 
-    # Convert our APRS message string to lowercase
-    aprs_message = aprs_message.lower()
-
     # try to determine our target pattern. Our message has to start with
     # a six-digit TOTP code, following 1..10 separate words (separator: space)
     pattern = re.compile(
@@ -57,7 +54,8 @@ def dismantle_aprs_message(aprs_message: str):
         # get the 1..10 words and convert them to a list item
         params = list(matches.group("params").strip().split())
         # remove the very first item from that list; this is our command code
-        command_code = params.pop(0)
+        # Our command code is ALWAYS in lowercase format, so let's convert it
+        command_code = params.pop(0).lower()
         _success = True
     return _success, totp, command_code, params
 
