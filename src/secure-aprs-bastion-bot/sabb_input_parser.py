@@ -52,7 +52,7 @@ def dismantle_aprs_message(aprs_message: str):
     matches = pattern.match(aprs_message)
     if matches:
         # get the totp code
-        totp = matches.group("code")
+        totp = matches.group("totp")
         # get the 1..10 words and convert them to a list item
         params = list(matches.group("params").strip().split())
         # remove the very first item from that list; this is our command code

@@ -93,6 +93,7 @@ if __name__ == "__main__":
     )
 
     # Create the expiring dictionary object for the TOTP records
+    logger.debug(msg="Initializing TOTP Expiration Dictionary")
     sabb_shared.totp_message_cache = create_totp_expiringdict(
         max_len=client.config_data["secure_aprs_bastion_bot"][
             "sabb_totp_cache_max_len"

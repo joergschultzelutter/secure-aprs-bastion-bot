@@ -121,9 +121,12 @@ def get_totp_expiringdict_key(callsign: str, totp_code: str):
         Key tuple consisting of 'callsign' and 'totp_code' or
         value 'None' if we were unable to locate the entry
     """
+
+    logger.debug(msg=f"Getting TOTP expiring key for {callsign} and {totp_code}")
     key = (callsign, totp_code)
     key = tuple(key)
     key = key if key in sabb_shared.totp_message_cache else None
+    logger.debug(msg=f"TOTP expiring key retrieval resulted in {key}")
     return key
 
 
@@ -144,6 +147,7 @@ def set_totp_expiringdict_key(callsign: str, totp_code: str):
         The updated version of our ExpiringDict object
     """
 
+    logger.debug(msg=f"Setting TOTP expiring key for {callsign} and {totp_code}")
     key = (callsign, totp_code)
     key = tuple(key)
     sabb_shared.totp_message_cache[key] = datetime.now(timezone.utc)
