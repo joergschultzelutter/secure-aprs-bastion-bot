@@ -9,10 +9,6 @@ This program is used for the creation of [secure-aprs-bastion-bot](secure-aprs-b
 
 [secure-aprs-bastion-bot](secure-aprs-bastion-bot.md) will use the resulting configuration file. Note that `configure.py` acts as both configuration tool and gatekeeper / validator; `secure-aprs-bastion-bot` itself assumed that the configuration file structure is valid and hardly performs any validation checks. You can apply manual changes to most sections of the configuration file - but if it breaks, you get to keep both pieces.
 
-## Table of contents
-
-blah
-
 ## Parameter Options - Overview
 
 ```bash
@@ -95,42 +91,6 @@ All commands are described in the linked documentation files.
 
 - First, run [`--add-user`](configure-commands/add-user.md) and create 1...n user accounts in the configuration file. Use [`--test-totp-code`](configure-commands/test-totp-code.md) and check if your user account's secret validates against the TOTP code on your mobile device.
 - Then, run [`--add-command`](configure-commands/add-command.md) for each of these user accounts and create 1...n [`--command-code`](/docs/configure-commands/add-command.md#--command-code)/[`--command-string`](/docs/configure-commands/add-command.md#--command-string) entries (you can also use an editor for this step). Use [`--execute-command-code`](configure-commands/execute-command-code.md) for testing.
-
-## Deep-Dive: Understand how user authorization / authentication works
-
-A user entry in the config file can be with or without trailing SSID. Each entry has its very own secret and therefore its very own TOTP code.
-
-User accounts with_OUT_ trailing SSID can act as a 'wildcard' entry. If a user callsign WITH trailing SSID has access to the user account's secret withOUT SSID (and therefore can generate its associated TOTP code), the user account WITH trailing SSID will be granted access to the entries associated with the callsign withOUT SSID .
-
-> [!NOTE]
-> Instead of creating the same configuration redundantly for all SSIDs of the callsign, for example, it can be configured only once for the main callsign (_without_ SSID) and used by all associated callsigns _with_ SSID, provided that they then provide the token of the main call sign for authentication and authorization.
-
-Let's have a look at a scenario where we assume that the given TOTP code never expires and that both call signs `DF1JSL` and `DF1JSL-1` are present
-in the external YAML configuration file. Additionally, `DF1JSL-15` will NOT have a configuration entry in that configuration file.
-
-- Callsign 1: `DF1JSL-1`, TOTP : `123456` (based on `DF1JSL-1`'s secret)
-- Callsign 2: `DF1JSL`, TOTP : `471123` (based on `DF1JSL`'s secret)
-- Callsign 3: `DF1JSL-15`. This call sign is __NOT__ present in the YAML configuration file and therefore has not been assigned its own TOTP secret.
-
-| Call sign in APRS message   | TOTP in APRS message | Access permitted   | Configuration data will be taken from                                                                                                                                 |
-|-----------------------------|----------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `DF1JSL-1`                  | `123456`             | :white_check_mark: | `DF1JSL-1`                                                                                                                                                            |
-| `DF1JSL-1`                  | `471123`             | :white_check_mark: | `DF1JSL`                                                                                                                                                              |
-| `DF1JSL-1`                  | `483574`             | :x:                | TOTP/Secret mismatch                                                                                                                                                  |
-| `DF1JSL`                    | `123456`             | :x:                | SSID-less callsign (base callsign) cannot access callsign with SSID                                                                                                   |
-| `DF1JSL`                    | `471123`             | :white_check_mark: | `DF1JSL`                                                                                                                                                              |
-| `DF1JSL`                    | `999999`             | :x:                | TOTP/Secret mismatch                                                                                                                                                  |
-| `DF1JSL-15`                 | `555577`             | :x:                | TOTP/Secret mismatch                                                                                                                                                  |
-| `DF1JSL-15`                 | `123456`             | :x:                | TOTP/Secret mismatch. It is not possible to access one call sign with SSID from another call sign with SSID, even if both call signs share the same base call sign.   |
-| `DF1JSL-15`                 | `471123`             | :white_check_mark: | `DF1JSL`                                                                                                                                                              |
-
-So instead of adding the very same configuration to each one of your multiple call signs WITH SSID, you _can_ add these to the SSID-less base sign's entry. For accessing these settings from your call sign WITH SSID, you will need to specify the TOTP token for the base call sign withOUT SSID. Note also that the base callsign withOUT SSID will NOT be able to access the configuration entries for those call signs WITH SSID.
-
-As indicated, `DF1JSL-15` is NOT part of the YAML configuration file. Yet, it still can access `DF1JSL`'s config entries
-because the user knows `DF1JSL`'s secret and was able to generate a valid token (`4771123`) that was based on that secret.
-
-> [!WARNING]
-> With great power comes great responsibility. If you want to be on the safe side, do not use the SSID-less callsign option but rather use a single dedicated callsign instead.
 
 ### Manual edits to the YAML configuration file
 
