@@ -34,7 +34,7 @@ So what to do in such a case? In most of these cases where I am stuck in the wil
 
 ## Installation instructions
 
-Detailed installation instructions [can be found here.](/docs/installation-instructions.md)
+The installation instructions [can be found here.](/docs/installation-instructions.md)
 
 ## Message anatomy
 
