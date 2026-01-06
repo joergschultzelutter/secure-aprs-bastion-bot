@@ -27,6 +27,7 @@ from sabb_utils import (
     identify_target_callsign_and_command_string,
     get_totp_expiringdict_key,
 )
+import copy
 
 
 def dismantle_aprs_message(aprs_message: str):
@@ -121,7 +122,7 @@ def parse_input_message(
             filename=sabb_shared.command_config_filename
         )
         if __success:
-            sabb_shared.config_data = __data.deepcopy()
+            sabb_shared.config_data = copy.deepcopy(__data)
             sabb_shared.config_initial_timestamp = config_updated_timestamp
 
     # Dismantle the incoming APRS message

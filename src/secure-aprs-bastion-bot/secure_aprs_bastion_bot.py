@@ -29,7 +29,6 @@ from sabb_post_processor import post_processing
 import argparse
 import os
 import sys
-import pathlib
 import logging
 import sabb_shared
 
@@ -72,7 +71,7 @@ def get_command_line_params():
 
 if __name__ == "__main__":
 
-    logger.debug(msg="Starting APRS bastion bot")
+    logger.debug(msg="Starting Secure APRS Bastion Bot")
 
     # Get the configuration file name
     configfile = get_command_line_params()
