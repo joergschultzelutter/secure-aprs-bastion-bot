@@ -19,6 +19,7 @@
 #
 
 from CoreAprsClient import CoreAprsClientInputParserStatus, CoreAprsClient
+import sabb_http_codes
 import sabb_shared
 import re
 from sabb_utils import (
@@ -129,7 +130,7 @@ def parse_input_message(
     )
     if not success:
         # use the default return code 403 as response
-        input_parser_error_message = sabb_shared.http_msg_403
+        input_parser_error_message = sabb_http_codes.http_msg_403
         input_parser_response_object = {}
         # set the return code to ERROR status
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
@@ -160,7 +161,7 @@ def parse_input_message(
     # the given TOTP code. Do not disclose the origin of the error to the user
     if not success:
         # provide generic APRS response to the user
-        input_parser_error_message = sabb_shared.http_msg_403
+        input_parser_error_message = sabb_http_codes.http_msg_403
         input_parser_response_object = {}
         # set the return code to ERROR
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
@@ -174,7 +175,7 @@ def parse_input_message(
     if key:
         # generate a common 403 error message. Alternate approach: PARSE_IGNORE return code
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
-        input_parser_error_message = sabb_shared.http_msg_403
+        input_parser_error_message = sabb_http_codes.http_msg_403
         input_parser_response_object = {}
         return return_code, input_parser_error_message, input_parser_response_object
 
@@ -184,21 +185,21 @@ def parse_input_message(
     )
 
     # and now start iterating through the list and replace our content
-    # This will replace all $0..$9 placeholders in the command_string with the
+    # This will replace all @0..@9 placeholders in the command_string with the
     # additional parameters conveyed through the user's original APRS message
     for count, item in enumerate(command_params, start=0):
-        command_string = command_string.replace(f"${count}", item)
+        command_string = command_string.replace(f"@{count}", item)
     instance.log_debug(f"final command_string: '{command_string}'")
 
     # Check if we have received fewer user-specified parameters than expected
-    # if that is the case, our string still contains placeholders such as e.g. $0
+    # if that is the case, our string still contains placeholders such as e.g. @0
     # This is an end user error, indicating that we did not receive all the required
     # parameters through the user's APRS message.
-    regex_string = r"\$[0-9]"
+    regex_string = r"\@[0-9]"
     matches = re.search(pattern=regex_string, string=command_string)
     if matches:
         # Indicate the error to the user and abort further processing of the message
-        input_parser_error_message = sabb_shared.http_msg_510
+        input_parser_error_message = sabb_http_codes.http_msg_510
         input_parser_response_object = {}
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         return return_code, input_parser_error_message, input_parser_response_object

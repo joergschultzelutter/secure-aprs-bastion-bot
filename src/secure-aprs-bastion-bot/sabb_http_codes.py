@@ -1,7 +1,7 @@
 #
 # Core APRS Client
-# Shared variables for input parser, output generator and post processor
-# Author: Joerg Schultze-Lutter, 2025
+# Shared http return codes
+# Author: Joerg Schultze-Lutter, 2026
 #
 # aprslib does not allow us to pass additional parameters to its
 # callback function. Therefore, this module acts as a pseudo object in
@@ -22,12 +22,11 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-# shared variables
-totp_message_cache = None
-config_initial_timestamp = None
-config_data = None
-command_config_filename = None
-
+# our response code messages
+http_msg_200 = "200 ok"
+http_msg_202 = "200 accepted"
+http_msg_403 = "403 forbidden"
+http_msg_510 = "510 not extended"
 
 if __name__ == "__main__":
     pass

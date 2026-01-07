@@ -29,7 +29,7 @@
 
 from CoreAprsClient import CoreAprsClient
 from sabb_utils import set_totp_expiringdict_key, execute_program
-import sabb_shared
+import sabb_http_codes
 
 
 def generate_output_message(
@@ -72,7 +72,7 @@ def generate_output_message(
     # The post-processing function will then take care of the rest.
     if input_parser_response_object["detached_launch"]:
         success = True
-        output_message = sabb_shared.http_msg_202
+        output_message = sabb_http_codes.http_msg_202
         # By using a value different to 'None' as 3rd parameter, we signal to the framework
         # that we want to invoke the post processor AFTER the APRS response message has
         # been sent back to the user
@@ -99,7 +99,7 @@ def generate_output_message(
 
     # Set the return value content
     success = True
-    output_message = sabb_shared.http_msg_200
+    output_message = sabb_http_codes.http_msg_200
 
     # Finally, add the target callsign and the TOTP token to our expiring cache
     set_totp_expiringdict_key(

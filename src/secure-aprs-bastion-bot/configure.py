@@ -38,6 +38,7 @@ from sabb_utils import (
     execute_program,
     identify_target_callsign_and_command_string,
 )
+import sabb_shared
 
 # Platform-specific content for 'wait_or_keypress' function
 if platform.system() == "Windows":
@@ -1300,21 +1301,21 @@ def main():
 
                     # and now start iterating through the list and replace our content
                     for count, item in enumerate(sabb_aprs_test_arguments, start=0):
-                        command_string = command_string.replace(f"${count}", item)
+                        command_string = command_string.replace(f"@{count}", item)
                     logger.info(
                         f"Command_string after replacement process: '{command_string}'"
                     )
 
                     # Check if we have received fewer user-specified parameters than expected
                     # if that is the case, our string still contains placeholders
-                    regex_string = r"\$[0-9]"
+                    regex_string = r"\@[0-9]"
                     matches = re.search(pattern=regex_string, string=command_string)
                     if matches:
-                        logger.error(msg="510 not extended")
+                        logger.error(msg=sabb_shared.http_msg_510)
                         logger.error(
-                            msg="Your final command string still contains placeholders; did you specify all parameters?"
+                            msg="Your final command string still contains placeholders; did you specify all necessary parameters?"
                         )
-                        logger.error(msg=f"Final command string: '{command_string}'")
+                        logger.error(msg=f"Final (erroneous) command string: '{command_string}'")
                         sys.exit(0)
 
                 if not sabb_dry_run:
