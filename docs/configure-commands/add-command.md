@@ -35,20 +35,20 @@ The `command-string` supports up to 10 parameters which you can pass along with 
 
 Supported placeholders:
 
-- `$0` - always represents the call sign from which the APRS message originated. Example: `DF1JSL-1`
-- `$1`..`$9` are optional free-text parameters which may have been passed along with the incoming APRS message
+- `@0` - always represents the call sign from which the APRS message originated. Example: `DF1JSL-1`
+- `@1`..`@9` are optional free-text parameters which may have been passed along with the incoming APRS message
 
 ### Practical example:
 
 You have designed a [`--command code`](add-command.md#--command-code) keyword `reboot` whose purpose is to reboot a specific server. Instead of hardcoding the server name, you want to pass it along as part of your APRS message. Additionally, you want to send back a message to the APRS callsign once the reboot has completed. To achieve this, you will do the following:
 
 - create a keyword [`--command code`](add-command.md#--command-code) named `reboot`. Its associated [`--command string`](add-command.md#--command-string) script will be responsible for rebooting the server and will accept two parameters:
-    - the server name (represented by `$1`)
-    - the originating callsign (represented by `$0`)
+    - the server name (represented by `@1`)
+    - the originating callsign (represented by `@0`)
 
 | `--command-code` | `--command-string`                         |
 |------------------|--------------------------------------------|
-| `reboot`         | `source ./reboot.sh server=$1 callsign=$0` |
+| `reboot`         | `source ./reboot.sh server=@1 callsign=@0` |
 
 The parameter placeholders defined by the user will later on be replaced by `secure-aprs-bastion-bot` with the values from the APRS message. Note that the order of the parameters is not fixed and can be freely defined by the user. For this example, we assume that the `reboot.sh` script accepts two parameters: parameter 1 is the user's call sign and parameter 2 is the name of the server that we have to reboot. All reboot logic is handled by `reboot.sh` itself. Note that the user is responsible for designing (and locally securing) this script.
 
@@ -60,8 +60,8 @@ Not that we have prepared `secure-aprs-bastion-bot`, let's send the message:
     - spaces separate additional keywords. We want to reboot a specific machine, e.g. `debmu417`
     - Complete APRS message now looks like this: `123456reboot debmu417`
 - Example APRS message: `123456reboot debmu417` results to
-    - `$0` translating to value `DF1JSL-9` (remember that this parameter is always present, regardless of whether you have provided addional parameters or not.
-    - `$1` translating to value `debmu417`
+    - `@0` translating to value `DF1JSL-9` (remember that this parameter is always present, regardless of whether you have provided addional parameters or not.
+    - `@1` translating to value `debmu417`
 - `secure-aprs-bastion-bot` will pass along these parameters to the `reboot.sh` script and replace them in the given [`--command string`](add-command.md#--command-string) value, effectively executing `source ./reboot.sh DF1JSL-9 debmu417`. 
 - `reboot.sh` is then to restart the `debmu417` server. When completed, it is supposed to send an APRS message back to `DF1JSL-9`, indicating that the reboot has completed.
 
