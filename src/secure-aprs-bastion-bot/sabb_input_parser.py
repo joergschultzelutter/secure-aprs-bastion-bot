@@ -164,6 +164,7 @@ def parse_input_message(
     # Abort the process if we were unable to find the command OR there was a mismatch with
     # the given TOTP code. Do not disclose the origin of the error to the user
     if not success:
+        instance.log_debug(msg="Unable to locate callsign/totp code combo in our config file")
         # provide generic APRS response to the user
         input_parser_error_message = sabb_http_codes.http_msg_403
         input_parser_response_object = {}
@@ -177,6 +178,7 @@ def parse_input_message(
     # If we were able to retrieve the item, this means that we already used the
     # callsign / TOTP combination before
     if key:
+        instance.log_debug(msg=f"Ignoring valid command sequence as given combo callsign '{target_callsign}'/TOTP key '{totp_code}' is still in our expiring cache")
         # generate a common 403 error message. Alternate approach: PARSE_IGNORE return code
         return_code = CoreAprsClientInputParserStatus.PARSE_ERROR
         input_parser_error_message = sabb_http_codes.http_msg_403
@@ -202,6 +204,9 @@ def parse_input_message(
     regex_string = r"\@[0-9]"
     matches = re.search(pattern=regex_string, string=command_string)
     if matches:
+        instance.log_debug(msg="We still have placeholders in our command string. This is very likely a user error, read: the")
+        instance.log_debug(msg="user has provided less parameters via his APRS message than required.")
+        instance.log_debug(msg=f"Command String: '{command_string}'")
         # Indicate the error to the user and abort further processing of the message
         input_parser_error_message = sabb_http_codes.http_msg_510
         input_parser_response_object = {}
