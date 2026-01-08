@@ -52,7 +52,7 @@ The `command-string` supports up to 10 parameters which you can pass along with 
 
 Supported placeholders:
 
-- `@0` - <u>always</u> represents the callsign from which the APRS message originated. Example: `DF1JSL-1`
+- `@0` - ALWAYS represents the callsign from which the APRS message originated. Example: `DF1JSL-1`
 - `@1`..`@9` are optional free-text parameters which may have been passed along with the incoming APRS message
 
 ## Examples

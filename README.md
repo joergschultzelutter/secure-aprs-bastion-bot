@@ -2,11 +2,24 @@
 
 Manage your IT infrastructure via APRS messaging (to a certain extent).
 
+## Table of Contents
+<!--ts-->
+* [Introduction](#introduction)
+* [Features](#features)
+* [Program-specific documentation](#program-specific-documentation)
+* [Installation instructions](#installation-instructions)
+* [Message anatomy](#message-anatomy)
+* [Program return codes](#program-return-codes)
+* [FAQ](#faq)
+* [Technical details](#technical-details)
+* [The fine print](#the-fine-print)
+<!--te-->
+
 ## Introduction
 
 I recently went on a multi-day hiking trip and discovered that a program on one of my home servers had crashed due to an error. I had my cell phone with me and was able to access the computer via ssh and restart the program, but there are still areas in my country where there is _zero_ cell phone reception (kudos to the German government). 
 
-So what to do in such a case? In most of these cases where I am stuck in the wilderness without no cell phone reception, there would still be an APRS-enabled repeater nearby, and so the idea was born to create an APRS-enabled bastion host that would give me secure access to my internal IT infrastructure in the event of cell phone network unavailability. `secure-aprs-bastion-bot` aims to support this use case.
+So what to do in such a case? In most of these cases where I am stuck in the wilderness without no cell phone reception, there would still be an APRS-enabled repeater nearby, and so the idea was born to create an APRS-enabled bastion host that would give me <ins>secure</ins> access to my internal IT infrastructure in the event of cell phone network unavailability. `secure-aprs-bastion-bot` aims to support this use case.
 
 ## Features
 
@@ -62,7 +75,7 @@ The program return codes are sent as APRS responses to the original user. [Here 
 - A: Since `secure-aprs-bastion-bot` transmits messages to the APRS network, it cannot be used without an amateur radio license. 
 
 - Q: _When I try to run my script, I get the error message `OSError: [Errno 8] Exec format error`. How can I fix that?_
-- A: Your script is missing a corresponding [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) at the top of your shell script which is required by Python.
+- A: Your script is missing a corresponding [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) at the top of your shell script (e.g. `#!/bin/bash`) which is required by Python.
 
 ## Technical details
 
