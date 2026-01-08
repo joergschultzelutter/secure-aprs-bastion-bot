@@ -45,15 +45,15 @@ options:
   -h, --help                      show this help message and exit
   --configfile                    CONFIG_FILE
                                   Program config file name (default: sabb_command_config.yml)
-  --add-user                      Add a new call sign plus secret to the configuration file
+  --add-user                      Add a new callsign plus secret to the configuration file
   --delete-user                   Remove a user with all data from the configuration file
   --add-command                   Add a new command for an existing user to the configuration file
   --delete-command                Remove a command from a user's configuration in the configuration file
   --test-totp-code                Validates the provided TOTP code against the user's secret
   --dry-run                       In combination with --execute-command-code, causes the execution of the script to be simulated only
-  --execute-command-code          Looks up the call sign / command code combination in the YAML file and executes it
+  --execute-command-code          Looks up the callsign / command code combination in the YAML file and executes it
   --show-secret                   Shows the user's secret during the -add-user configuration process (default: disabled)
-  --callsign CALLSIGN             Callsign (must follow call sign format standards)
+  --callsign CALLSIGN             Callsign (must follow callsign format standards)
   --totp-code TOTP_CODE           6 digit TOTP code - submitted for configuration testing only
   --command-code COMMAND_CODE     Command code which will be sent to the APRS bot for future execution
   --command-string COMMAND_STRING Command string that is associated with the user's command code
@@ -73,7 +73,7 @@ options:
 | Parameter                                            | Description                                                                                                                                                                                                                                                                                                                                                          | Type          | Default                   |
 |------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|---------------------------|
 | `--configfile`                                       | External config file. `configure.py` will create this file if it does not exist.                                                                                                                                                                                                                                                                                     | `str`         | `sabb_command_config.yml` |
-| `--callsign`                                         | User's call sign, with or without SSID                                                                                                                                                                                                                                                                                                                               | `str`         | `<none>`                  |
+| `--callsign`                                         | User's callsign, with or without SSID                                                                                                                                                                                                                                                                                                                               | `str`         | `<none>`                  |
 | `--totp-code`                                        | Six-digit TOTP code                                                                                                                                                                                                                                                                                                                                                  | `str`         | `<none>`                  |
 | [`--command-code`](configure.md#--command-code)      | Command code alias. This is the code that the user will send in his APRS message. Associated with [`--command-string`](/docs/configure-commands/add-command.md#--command-string)                                                                                                                                                                                     | `str`         | `<none>`                  |
 | [`--command-string`](configure.md#--command-string)  | Associated with [`--command-code`](/docs/configure-commands/add-command.md#--command-code). This is a representation of the actual command that is going to get executed.                                                                                                                                                                                            | `str`         | `<none>`                  |

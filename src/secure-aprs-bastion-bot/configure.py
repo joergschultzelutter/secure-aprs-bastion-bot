@@ -161,7 +161,7 @@ def get_command_line_params_config():
         dest="add_user",
         action="store_true",
         default=False,
-        help="Add a new call sign plus secret to the configuration file",
+        help="Add a new callsign plus secret to the configuration file",
     )
 
     parser.add_argument(
@@ -209,7 +209,7 @@ def get_command_line_params_config():
         dest="execute_command_code",
         action="store_true",
         default=False,
-        help="Looks up the call sign / command code combination in the YAML file and executes it",
+        help="Looks up the callsign / command code combination in the YAML file and executes it",
     )
 
     parser.add_argument(
@@ -225,7 +225,7 @@ def get_command_line_params_config():
         dest="callsign",
         type=str,
         default="",
-        help="Callsign (must follow call sign format standards)",
+        help="Callsign (must follow callsign format standards)",
     )
 
     parser.add_argument(
@@ -291,7 +291,7 @@ def get_command_line_params_config():
     __add_command = args.add_command
     __del_user = args.del_user
     __del_command = args.del_command
-    # Call sign is always in upper case characters
+    # Callsign is always in upper case characters
     __callsign = args.callsign.upper()
     __ttl = args.ttl
     __totp_code = args.totp_code
@@ -313,11 +313,11 @@ def get_command_line_params_config():
         sys.exit(0)
 
     if len(__callsign) > 0:
-        # Check whether we have a call sign with or without SSID
+        # Check whether we have a callsign with or without SSID
         regex_string = r"\b^([A-Z0-9]{1,3}[0-9][A-Z0-9]{0,3})(-[A-Z0-9]{1,2})?$\b"
         matches = re.search(pattern=regex_string, string=__callsign)
         if not matches:
-            logger.error(msg="Call sign must match a valid call sign format")
+            logger.error(msg="Callsign must match a valid callsign format")
             sys.exit(0)
 
     if (
@@ -329,7 +329,7 @@ def get_command_line_params_config():
         or __execute_command_code
     ):
         if len(__callsign) < 1:
-            logger.error(msg="Call sign is required")
+            logger.error(msg="Callsign is required")
             sys.exit(0)
 
     if __execute_command_code:
@@ -602,7 +602,7 @@ def get_user_command_string(configfile: str, callsign: str, command_code: str):
     # Get the secret for the user (if present)
     for __item in data["users"]:
         if "callsign" in __item and __item["callsign"] == callsign:
-            # we have found our call sign. Now start
+            # we have found our callsign. Now start
             # looking for the command code
             for command in __item["commands"]:
                 if command == command_code:
@@ -774,7 +774,7 @@ def add_cmd_to_yaml_config(
     __success = False
     found_data = False
 
-    # Iterate through the list of call sign
+    # Iterate through the list of callsigns
     for user in data["users"]:
         if user["callsign"] == callsign:
             # We have found our user
@@ -787,10 +787,10 @@ def add_cmd_to_yaml_config(
             found_data = True
             break
 
-    # Check if we were able to locate our call sign
+    # Check if we were able to locate our callsign
     if not found_data:
         logger.warning(
-            f"Call sign '{callsign}' doesn't exist in config file '{configfile}', aborting ..."
+            f"Callsign '{callsign}' doesn't exist in config file '{configfile}', aborting ..."
         )
     else:
         # Write the config file back to disk
@@ -835,7 +835,7 @@ def del_cmd_from_yaml_config(configfile: str, callsign: str, command_code: str):
 
     if not found_data:
         logger.warning(
-            f"Call sign '{callsign}' doesn't exist in config file '{configfile}', aborting ..."
+            f"Callsign '{callsign}' doesn't exist in config file '{configfile}', aborting ..."
         )
     else:
         # Write the config file back to disk
@@ -1238,11 +1238,11 @@ def main():
                 )
                 if not success:
                     logger.info(
-                        f"Unable to identify matching call sign and/or totp/secret match in '{sabb_configfile}'; exiting"
+                        f"Unable to identify matching callsign and/or totp/secret match in '{sabb_configfile}'; exiting"
                     )
                 else:
                     logger.info(
-                        msg=f"Token '{sabb_totp_code}' matches with target call sign '{target_callsign}'"
+                        msg=f"Token '{sabb_totp_code}' matches with target callsign '{target_callsign}'"
                     )
             else:
                 logger.error(
@@ -1277,7 +1277,7 @@ def main():
                 )
                 if not success:
                     logger.info(
-                        f"Unable to identify matching call sign and/or command_code for given TOTP code in configuration file '{sabb_configfile}'; exiting"
+                        f"Unable to identify matching callsign and/or command_code for given TOTP code in configuration file '{sabb_configfile}'; exiting"
                     )
                     sys.exit(0)
                 else:
@@ -1286,7 +1286,7 @@ def main():
                     else:
                         __wdstr = f"watchdog timespan='{sabb_watchdog_timespan}' secs"
                     logger.info(
-                        msg=f"Command '{sabb_command_code}' translates to target call sign '{target_callsign}' and command_string '{command_string}' with detached_launch='{detached_launch}' and {__wdstr}"
+                        msg=f"Command '{sabb_command_code}' translates to target callsign '{target_callsign}' and command_string '{command_string}' with detached_launch='{detached_launch}' and {__wdstr}"
                     )
 
                 # Check if there is something that we need to replace
@@ -1297,7 +1297,7 @@ def main():
                         msg="Replacing potential APRS parameters in the command string."
                     )
 
-                    # Replace the callsign. Add the call sign to the top of the list
+                    # Replace the callsign. Add the callsign to the top of the list
                     sabb_aprs_test_arguments.insert(0, sabb_callsign)
 
                     # and now start iterating through the list and replace our content

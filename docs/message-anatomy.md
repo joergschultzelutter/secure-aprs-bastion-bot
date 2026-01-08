@@ -10,13 +10,13 @@
 
 ## Use of external parameters
 
-Every message to `secure-aprs-bastion-bot` always starts with a 6-digit TOTP code. This comes either from the sending call sign with SSID or from its generic call sign without SSID, if its configuration is to be used.
+Every message to `secure-aprs-bastion-bot` always starts with a 6-digit TOTP code. This comes either from the sending callsign with SSID or from its generic callsign without SSID, if its configuration is to be used.
 
 The command to be executed (`--command-code`) follows immediately after the TOTP code - read: no separator. The actual content of this command (`--command-string`) is defined as part of the configuration setup. For example, the user transmits the command `reboot` via APRS, and secure-aprs-bastion-bot then executes the command sequence `source ./scripts/server-reboot.sh` locally on the computer of the secure-aprs-bastion-bot after successful authorization and authentication.
 
 Additional (optional) user-submittable parameters are separated by 1...n spaces. The first parameter after `--command-code` corresponds to `@1`, the second parameter to `@2`, and so on (`@1` .. `@9`). Before the command stored in the `--command-string` is executed, the placeholders for these parameters are replaced by these optional parameters, which were transmitted as part of the APRS message.
 
-The additional parameter `@0`, on the other hand, _always_ contains the call sign of the user who sent the message to `secure-aprs-bastion-bot` (e.g., `DF1JSL-1`); for `configure.py`, this corresponds to the parameter `--callsign`. `@0` is therefore always present, regardless of whether the APRS user has transmitted additional parameters or not. 
+The additional parameter `@0`, on the other hand, _always_ contains the callsign of the user who sent the message to `secure-aprs-bastion-bot` (e.g., `DF1JSL-1`); for `configure.py`, this corresponds to the parameter `--callsign`. `@0` is therefore always present, regardless of whether the APRS user has transmitted additional parameters or not. 
 
 ### Message examples
 
@@ -39,7 +39,7 @@ Example 1 - `command-code` with optional parameters
 ### Placeholders HOWTO
 
 To define placeholders for the optional parameters in the `--command-string`, the following conventions apply:
-- `@0` ALWAYS corresponds to the call sign that sent the initial message to `secure-aprs-bastion-bot`. This parameter is ALWAYS present.
+- `@0` <u>ALWAYS</u> corresponds to the callsign that sent the initial message to `secure-aprs-bastion-bot`. This parameter is ALWAYS present.
 - `@1` .. `@9` correspond to the additional parameters that (may) have been extracted from the APRS message. Since these are optional, these parameters are not necessarily filled
 
 Assuming the previous example `reboot debmu41 5` (sent by `DF1JSL-1`), the following optional parameters are available:
@@ -50,7 +50,7 @@ Assuming the previous example `reboot debmu41 5` (sent by `DF1JSL-1`), the follo
 These parameters can be stored in the corresponding `command-string` when setting up the `command-code` keyword. Assuming that the `command-code` `reboot` accepts three parameters for its corresponding `command-string`:
 - a wait time until reboot
 - a server name
-- and the call sign of the original message
+- and the callsign of the original message
 
 The setup for `--command-code`and `--command-string` in the program`s configuration file could then look as follows:
 
@@ -85,16 +85,16 @@ A user entry in the config file can be with or without trailing SSID. Each entry
 User accounts with_OUT_ trailing SSID can act as a 'wildcard' entry. If a user callsign WITH trailing SSID has access to the user account's secret withOUT SSID (and therefore can generate its associated TOTP code), the user account WITH trailing SSID will be granted access to the entries associated with the callsign withOUT SSID .
 
 > [!NOTE]
-> Instead of creating the same configuration redundantly for all SSIDs of the callsign, for example, it can be configured only once for the main callsign (_without_ SSID) and used by all associated callsigns _with_ SSID, provided that they then provide the token of the main call sign for authentication and authorization.
+> Instead of creating the same configuration redundantly for all SSIDs of the callsign, for example, it can be configured only once for the main callsign (_without_ SSID) and used by all associated callsigns _with_ SSID, provided that they then provide the token of the main callsign for authentication and authorization.
 
-Let's have a look at a scenario where we assume that the given TOTP code never expires and that both call signs `DF1JSL` and `DF1JSL-1` are present
+Let's have a look at a scenario where we assume that the given TOTP code never expires and that both callsigns `DF1JSL` and `DF1JSL-1` are present
 in the external YAML configuration file. Additionally, `DF1JSL-15` will NOT have a configuration entry in that configuration file.
 
 - Callsign 1: `DF1JSL-1`, TOTP : `123456` (based on `DF1JSL-1`'s secret)
 - Callsign 2: `DF1JSL`, TOTP : `471123` (based on `DF1JSL`'s secret)
-- Callsign 3: `DF1JSL-15`. This call sign is __NOT__ present in the YAML configuration file and therefore has not been assigned its own TOTP secret.
+- Callsign 3: `DF1JSL-15`. This callsign is __NOT__ present in the YAML configuration file and therefore has not been assigned its own TOTP secret.
 
-| Call sign in APRS message   | TOTP in APRS message | Access permitted   | Configuration data will be taken from                                                                                                                                 |
+| Callsign in APRS message   | TOTP in APRS message | Access permitted   | Configuration data will be taken from                                                                                                                                 |
 |-----------------------------|----------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `DF1JSL-1`                  | `123456`             | :white_check_mark: | `DF1JSL-1`                                                                                                                                                            |
 | `DF1JSL-1`                  | `471123`             | :white_check_mark: | `DF1JSL`                                                                                                                                                              |
@@ -103,10 +103,10 @@ in the external YAML configuration file. Additionally, `DF1JSL-15` will NOT have
 | `DF1JSL`                    | `471123`             | :white_check_mark: | `DF1JSL`                                                                                                                                                              |
 | `DF1JSL`                    | `999999`             | :x:                | TOTP/Secret mismatch                                                                                                                                                  |
 | `DF1JSL-15`                 | `555577`             | :x:                | TOTP/Secret mismatch                                                                                                                                                  |
-| `DF1JSL-15`                 | `123456`             | :x:                | TOTP/Secret mismatch. It is not possible to access one call sign with SSID from another call sign with SSID, even if both call signs share the same base call sign.   |
+| `DF1JSL-15`                 | `123456`             | :x:                | TOTP/Secret mismatch. It is not possible to access one callsign with SSID from another callsign with SSID, even if both callsigns share the same base callsign.   |
 | `DF1JSL-15`                 | `471123`             | :white_check_mark: | `DF1JSL`                                                                                                                                                              |
 
-So instead of adding the very same configuration to each one of your multiple call signs WITH SSID, you _can_ add these to the SSID-less base sign's entry. For accessing these settings from your call sign WITH SSID, you will need to specify the TOTP token for the base call sign withOUT SSID. Note also that the base callsign withOUT SSID will NOT be able to access the configuration entries for those call signs WITH SSID.
+So instead of adding the very same configuration to each one of your multiple callsigns WITH SSID, you _can_ add these to the SSID-less base sign's entry. For accessing these settings from your callsign WITH SSID, you will need to specify the TOTP token for the base callsign withOUT SSID. Note also that the base callsign withOUT SSID will NOT be able to access the configuration entries for those callsigns WITH SSID.
 
 As indicated, `DF1JSL-15` is NOT part of the YAML configuration file. Yet, it still can access `DF1JSL`'s config entries
 because the user knows `DF1JSL`'s secret and was able to generate a valid token (`4771123`) that was based on that secret.

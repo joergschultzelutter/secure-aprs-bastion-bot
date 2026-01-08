@@ -38,26 +38,26 @@ Failed attempt, using callsign `DF1JSL-1` and TOTP token value `666666`
 ```python
 python configure.py --test-totp-code --callsign=df1jsl-1 --totp=666666 
 2025-08-03 16:56:05,828 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
-2025-08-03 16:56:05,828 configure -INFO- Unable to identify matching call sign and/or command_code in configuration file 'sabb_command_config.yaml'; exiting
+2025-08-03 16:56:05,828 configure -INFO- Unable to identify matching callsign and/or command_code in configuration file 'sabb_command_config.yaml'; exiting
 ```  
 
 Successful attempt, using callsign `DF1JSL-1` and TOTP token value `111111`. As the token belongs to `DF1JSL-1`, input and output callsign are identical. Read: we do not perform a wildcard identification. 
 ```python
 python configure.py --test-totp-code --callsign=df1jsl-1 --totp=111111 
 2025-08-03 17:13:45,797 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
-2025-08-03 17:13:45,798 configure -INFO- Token '111111' matches with target call sign 'DF1JSL-1'
+2025-08-03 17:13:45,798 configure -INFO- Token '111111' matches with target callsign 'DF1JSL-1'
 ```
 
 Successful attempt, using callsign `DF1JSL-1` and TOTP token value `000000`. As the token belongs to `DF1JSL`, input and output callsign differ and the SSID-less callsign `DF1JSL` is returned.
 ```python
 python configure.py --test-totp-code --callsign=df1jsl-1 --totp=000000 
 2025-08-03 17:16:39,736 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
-2025-08-03 17:16:39,737 configure -INFO- Token '000000' matches with target call sign 'DF1JSL'
+2025-08-03 17:16:39,737 configure -INFO- Token '000000' matches with target callsign 'DF1JSL'
 ```
 
 Successful attempt, using callsign `DF1JSL-15` and TOTP token value `000000`. As the token belongs to `DF1JSL`, input and output callsign differ and the SSID-less callsign `DF1JSL` is returned. Note that this works even though DF1JSL-15 has no entries in the program's configuration file.
 ```python
 python configure.py --test-totp-code --callsign=df1jsl-15 --totp=000000 
 2025-08-03 17:16:39,736 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
-2025-08-03 17:16:39,737 configure -INFO- Token '761814' matches with target call sign 'DF1JSL'
+2025-08-03 17:16:39,737 configure -INFO- Token '761814' matches with target callsign 'DF1JSL'
 ```
