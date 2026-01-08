@@ -1,6 +1,6 @@
 # `--test-totp-code`
 
-# Table of Contents
+## Table of Contents
 <!--ts-->
 * [Introduction](#introduction)
 * [Description](#description)

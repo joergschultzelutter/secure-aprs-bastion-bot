@@ -1,6 +1,6 @@
 # Anatomy of an APRS message to `secure-aprs-bastion-bot`
 
-# Table of Contents
+## Table of Contents
 <!--ts-->
 * [Use of external parameters](#use-of-external-parameters)
   * [Message examples](#message-examples)
@@ -9,7 +9,6 @@
 <!--te-->
 
 ## Use of external parameters
-
 
 Every message to `secure-aprs-bastion-bot` always starts with a 6-digit TOTP code. This comes either from the sending call sign with SSID or from its generic call sign without SSID, if its configuration is to be used.
 

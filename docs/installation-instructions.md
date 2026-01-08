@@ -6,7 +6,7 @@ The following installation instructions assume that the user is using the defaul
 - The name of the callsign/command-code configuration file (`sabb_command_config.yml`) is specified [in the bot's configuration file](/docs/secure-aprs-bastion-bot.md#configuration-file---excerpt). The callsign/command-code configuration file is newly created; therefore, there is no template provided
 - The name of the [Apprise](https://www.github.com/caronc/apprise) crash messaging handler file is also specified in the core configuration file of the actual bot. A valid Apprise configuration should be stored here in order to receive a notification in the event of a program crash. Alternatively, the crash handler can also be disabled - see instructions.
 
-# Table of Contents
+## Table of Contents
 <!--ts-->
 * [Initial steps](#initial-steps)
 * [Create the callsign/command-code configuration file with `configure.py`](#create-the-callsigncommand-code-configuration-file-with-configurepy)

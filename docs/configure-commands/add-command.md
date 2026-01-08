@@ -1,6 +1,6 @@
 # `--add-command`
 
-# Table of Contents
+## Table of Contents
 <!--ts-->
 * [Introduction](#introduction)
 * [Description](#description)

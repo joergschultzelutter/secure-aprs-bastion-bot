@@ -1,6 +1,6 @@
 # `--delete-command` - deletes a command code/command string from the config file
 
-# Table of Contents
+## Table of Contents
 <!--ts-->
 * [Introduction](#introduction)
 * [Description](#description)

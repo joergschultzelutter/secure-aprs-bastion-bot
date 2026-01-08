@@ -1,6 +1,6 @@
 # `secure_aprs_bastion_bot.py`
 
-# Table of Contents
+## Table of Contents
 <!--ts-->
 * [Introduction](#introduction)
 * [Running the program](#running-the-program)

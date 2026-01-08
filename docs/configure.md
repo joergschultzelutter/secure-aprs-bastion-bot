@@ -9,7 +9,7 @@ This program is used for the creation of [secure-aprs-bastion-bot](secure-aprs-b
 
 [secure-aprs-bastion-bot](secure-aprs-bastion-bot.md) will use the resulting configuration file. Note that `configure.py` acts as both configuration tool and gatekeeper / validator; `secure-aprs-bastion-bot` itself assumed that the configuration file structure is valid and hardly performs any validation checks. You can apply manual changes to most sections of the configuration file - but if it breaks, you get to keep both pieces.
 
-# Table of Contents
+## Table of Contents
 <!--ts-->
 * [Parameter Options - Overview](#parameter-options---overview)
 * [Parameters](#parameters)

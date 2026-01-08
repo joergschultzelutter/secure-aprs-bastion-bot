@@ -1,8 +1,17 @@
 # Return Codes
+
+## Table of Contents
+<!--ts-->
+* [How `secure-aprs-bastion-bot` uses return codes](#how-secure-aprs-bastion-bot-uses-return-codes)
+* [Supported return codes](#supported-return-codes)
+<!--te-->
+
+# How `secure-aprs-bastion-bot` uses return codes
 `secure-aprs-bastion-bot` was deliberately designed so that no output from the called programs is sent back to the requester. If necessary, such a return transmission can be implemented individually via the `--command-script` using either the supplied `send-aprs-message.py` script or other options such as [Apprise](https://www.github.com/caronc/apprise). The following return values are supported and will be sent as an APRS message response to the user:
 
 The return codes, such as `200 ok`, are sent as APRS responses to the original user. This procedure allows a very short APRS message to be sent as confirmation that the requested command sequence has either already been completed or will be started as a separate process immediately after the APRS response is sent.
 
+## Supported return codes
 | Return value       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 |--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `200 ok`           | The user's call sign and `--command-code` were found in the configuration file, the TOTP code was valid, the `--command-string` was executed, and the `--command-string` script was waited for until it finished executing _or_ got terminated in case the user had specified a `--watchdog-timespan` value for the command and the command ran longer than expected. This is the standard return code for a successful script execution where the [`--detached-launch`](/docs/configure.md#parameters) flas was _*not*_ set. |

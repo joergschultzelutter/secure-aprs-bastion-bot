@@ -7,7 +7,7 @@ For notification targets other than APRS (e.g. Telegram messenger), I recommend 
 >[!NOTE]
 >The message format is automatically converted to ASCII 7-bit encoding, if possible, if the message is in a different character set format. In addition, APRS-relevant control characters are removed, if present.
 
-# Table of Contents
+## Table of Contents
 <!--ts-->
 * [Usage](#usage)
 * [Description](#description)
@@ -15,7 +15,6 @@ For notification targets other than APRS (e.g. Telegram messenger), I recommend 
   * [Regular APRS messaging (67 usable characters)](#regular-aprs-messaging-67-usable-characters)
   * [APRS messaging with active `--numeric-message-pagination` (59 usable characters per message)](#aprs-messaging-with-active---numeric-message-pagination-59-usable-characters-per-message)
 <!--te-->
-
 
 ## Usage
 
