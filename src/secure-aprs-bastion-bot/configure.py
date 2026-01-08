@@ -39,6 +39,7 @@ from sabb_utils import (
     identify_target_callsign_and_command_string,
 )
 import sabb_shared
+import sabb_http_codes
 
 # Platform-specific content for 'wait_or_keypress' function
 if platform.system() == "Windows":
@@ -1289,7 +1290,7 @@ def main():
                     )
 
                 # Check if there is something that we need to replace
-                regex_string = r"\$[0-9]"
+                regex_string = r"\@[0-9]"
                 matches = re.search(pattern=regex_string, string=command_string)
                 if matches:
                     logger.info(
@@ -1311,7 +1312,7 @@ def main():
                     regex_string = r"\@[0-9]"
                     matches = re.search(pattern=regex_string, string=command_string)
                     if matches:
-                        logger.error(msg=sabb_shared.http_msg_510)
+                        logger.error(msg=sabb_http_codes.http_msg_510)
                         logger.error(
                             msg="Your final command string still contains placeholders; did you specify all necessary parameters?"
                         )

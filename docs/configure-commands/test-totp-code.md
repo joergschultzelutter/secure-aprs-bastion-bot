@@ -1,5 +1,13 @@
 # `--test-totp-code`
 
+# Table of Contents
+<!--ts-->
+* [Introduction](#introduction)
+* [Description](#description)
+* [Parameters](#parameters)
+* [Examples](#examples)
+<!--te-->
+
 ## Introduction
 
 Tests a user's TOTP code against the user's secret and returns a simple "valid" / "invalid" message to the user. 

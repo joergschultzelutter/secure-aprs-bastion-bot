@@ -37,15 +37,19 @@ def dismantle_aprs_message(aprs_message: str):
     params = None
     command_code = None
 
+    aprs_message = aprs_message.lstrip()
+
     # try to determine our target pattern. Our message has to start with
-    # a six-digit TOTP code, following 1..10 separate words (separator: space)
-    pattern = re.compile(
-        r"^"
-        r"(?P<totp>\d{6})"  # six digits at start
-        r"\s*"  # optional space(s) after digits
-        r"(?P<params>[^\s]+(?: [^\s]+){0,9})"  # 1–10 words, separated by single spaces
-        r"$"
-    )
+    # a six-digit TOTP code, following 1..10 separate words (separator: 1...n spaces)
+    # While this regex tries to be as gentle as possible to the input data (even LEADING spaces
+    # for the TOTP are possible), I still recommend sticking to the official format description:
+    #
+    # characters 1-6 = TOTP code
+    # characters 7-<first space encountered> = command_code
+    # every next word, separated by space = additional APRS command params
+    #
+    # keep in mind that you only have 67 characters in total for your message :-)
+    pattern = re.compile(r"^\s*(?P<totp>\d{6})\s*(?P<params>[^\s]+(?:\s+[^\s]+){0,9})$")
 
     # did we find anything?
     matches = pattern.match(aprs_message)

@@ -1,12 +1,25 @@
 # Anatomy of an APRS message to `secure-aprs-bastion-bot`
 
+# Table of Contents
+<!--ts-->
+* [Use of external parameters](#use-of-external-parameters)
+  * [Message examples](#message-examples)
+  * [Placeholders HOWTO](#placeholders-howto)
+* [Deep-Dive: Understand how user authorization and authentication works](#deep-dive-understand-how-user-authorization-and-authentication-works)
+<!--te-->
+
+## Use of external parameters
+
+
 Every message to `secure-aprs-bastion-bot` always starts with a 6-digit TOTP code. This comes either from the sending call sign with SSID or from its generic call sign without SSID, if its configuration is to be used.
 
 The command to be executed (`--command-code`) follows immediately after the TOTP code - read: no separator. The actual content of this command (`--command-string`) is defined as part of the configuration setup. For example, the user transmits the command `reboot` via APRS, and secure-aprs-bastion-bot then executes the command sequence `source ./scripts/server-reboot.sh` locally on the computer of the secure-aprs-bastion-bot after successful authorization and authentication.
 
-Additional (optional) user-submittable parameters are separated by spaces. The first parameter after `--command-code` corresponds to `@1`, the second parameter to `@2`, and so on (`@1` .. `@9`). Before the command stored in the `--command-string` is executed, the placeholders for these parameters are replaced by these optional parameters, which were transmitted as part of the APRS message.
+Additional (optional) user-submittable parameters are separated by 1...n spaces. The first parameter after `--command-code` corresponds to `@1`, the second parameter to `@2`, and so on (`@1` .. `@9`). Before the command stored in the `--command-string` is executed, the placeholders for these parameters are replaced by these optional parameters, which were transmitted as part of the APRS message.
 
 The additional parameter `@0`, on the other hand, _always_ contains the call sign of the user who sent the message to `secure-aprs-bastion-bot` (e.g., `DF1JSL-1`); for `configure.py`, this corresponds to the parameter `--callsign`. `@0` is therefore always present, regardless of whether the APRS user has transmitted additional parameters or not. 
+
+### Message examples
 
 Example 1 - `--command-code` without optional parameters
 
@@ -23,6 +36,8 @@ Example 1 - `command-code` with optional parameters
 
 > [!TIP]
 > tl;dr: A user always sends the `--command-code` as an APRS message to the `secure-aprs-bastion-bot`. The bot determines the `--command-code` and any optional parameters from the message, identifies the corresponding `--command-string`, replaces potential placeholders for the optional parameters, and then executes the modified `--command-string`.
+
+### Placeholders HOWTO
 
 To define placeholders for the optional parameters in the `--command-string`, the following conventions apply:
 - `@0` ALWAYS corresponds to the call sign that sent the initial message to `secure-aprs-bastion-bot`. This parameter is ALWAYS present.
@@ -57,6 +72,12 @@ The command of the edited `--command-string` is then executed by `secure-aprs-ba
 
 > [!CAUTION]
 > You should always create a dedicated script for each keyword, which serves a _single predefined purpose_. Creating a free text keyword, in which the _entire_ command line sequence to be executed is transmitted via APRS message, is technically possible, but is not recommended.
+
+As mentioned at the beginning, the additional parameters are separated from each other by 1..n spaces (and even leading spaces at the beginning of the message are possible). The following examples are therefore identical in content after their analysis by secure-aprs-bastion-bot:
+
+- `123456reboot debmu41 5`
+- `123456    reboot     debmu41 5`
+- `    123456reboot debmu41 5`
 
 ## Deep-Dive: Understand how user authorization and authentication works
 

@@ -1,5 +1,14 @@
 # `--add-user`
 
+# Table of Contents
+<!--ts-->
+* [Introduction](#introduction)
+* [Description](#description)
+* [Parameters](#parameters)
+* [Example](#example)
+* [Config file](#config-file)
+<!--te-->
+
 ## Introduction
 
 Adds or updates a user (`--callsign`) to the external YAML `--configfile`. Unlike the other commands, `--add-user` is an _interactive_ process. First, it will generate a TOTP QR code which you will scan with your mobile phone's password manager. Then, the program will ask you to verify that TOTP code by specifying the current 6-digit code.
@@ -74,7 +83,7 @@ Enter the 6-digit TOTP code or enter QUIT to exit:093351
 2026-01-03 19:04:41,375 - configure -INFO - Now use --add-command and add some command codes for that user
 ```
 
-## Config file 
+## Config file
 This example shows the config file after adding the user. As you can see, there are no commands associated with this user. We'll do this in the [next step](add-command.md).
 
 ```yaml

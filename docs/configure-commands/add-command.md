@@ -1,5 +1,22 @@
 # `--add-command`
 
+# Table of Contents
+<!--ts-->
+* [Introduction](#introduction)
+* [Description](#description)
+* [Parameters](#parameters)
+  * [`--command-code`](#--command-code)
+  * [`--command-string`](#--command-string)
+  * [Examples](#examples)
+  * [Practical example](#practical-example)
+  * [Example 1](#example-1)
+  * [Config file after Example 1](#config-file-after-example-1)
+  * [Example 2](#example-2)
+  * [Config file after Example 2](#config-file-after-example-2)
+* [`--detached-launch`](#--detached-launch)
+* [`--watchdog-timespan`](#--watchdog-timespan)
+<!--te-->
+
 ## Introduction
 
 Adds or updates a [`--command code`](add-command.md#--command-code)/[`--command string`](add-command.md#--command-string) for an existing user (`--callsign`) and writes/updates it to the config file. 
@@ -38,7 +55,9 @@ Supported placeholders:
 - `@0` - always represents the call sign from which the APRS message originated. Example: `DF1JSL-1`
 - `@1`..`@9` are optional free-text parameters which may have been passed along with the incoming APRS message
 
-### Practical example:
+## Examples
+
+### Practical example
 
 You have designed a [`--command code`](add-command.md#--command-code) keyword `reboot` whose purpose is to reboot a specific server. Instead of hardcoding the server name, you want to pass it along as part of your APRS message. Additionally, you want to send back a message to the APRS callsign once the reboot has completed. To achieve this, you will do the following:
 
@@ -65,7 +84,7 @@ Not that we have prepared `secure-aprs-bastion-bot`, let's send the message:
 - `secure-aprs-bastion-bot` will pass along these parameters to the `reboot.sh` script and replace them in the given [`--command string`](add-command.md#--command-string) value, effectively executing `source ./reboot.sh DF1JSL-9 debmu417`. 
 - `reboot.sh` is then to restart the `debmu417` server. When completed, it is supposed to send an APRS message back to `DF1JSL-9`, indicating that the reboot has completed.
 
-## Example 1
+### Example 1
 
 Create a [`--command code`](add-command.md#--command-code) named `sayhello`. When sent to `core-aprs-client` is then to execute the [`--command string`](add-command.md#--command-string) with the content `echo Hello World`. 
 
@@ -77,7 +96,7 @@ python configure.py --add-command --callsign df1jsl-1 --command-code=sayhello --
 2026-01-03 19:08:58,620 - configure -INFO - Command 'sayhello' for user 'DF1JSL-1' added to config file
 ```
 
-### Config File
+### Config File after Example 1
 ```yaml
 users:
 - callsign: DF1JSL-1
@@ -90,7 +109,7 @@ users:
   ttl: 30
 ```
 
-## Example 2
+### Example 2
 
 Add an additional [`--command code`](add-command.md#--command-code) named `greetuser`. When sent to `core-aprs-client` is then to execute the [`--command string`](add-command.md#--command-string) with the content `echo Hello`, followed by the callsign of the user that has sent the message. See the project's [README.MD](/README.md#anatomy-of-an-aprs-message-to-secure-aprs-bastion-bot) on how to use these additional parameters. For this example, we will simply use the `$0` parameter which represents the sender's callsign.
 
@@ -102,7 +121,7 @@ Add an additional [`--command code`](add-command.md#--command-code) named `greet
 2026-01-03 19:19:47,964 - configure -INFO - Command 'greetuser' for user 'DF1JSL-1' added to config file
 ```
 
-### Config File
+### Config File after Example 2
 ```yaml
 users:
 - callsign: DF1JSL-1

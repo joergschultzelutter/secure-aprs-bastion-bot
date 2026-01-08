@@ -1,0 +1,18 @@
+#
+# This is a simplified secure-aprs-bastion-bot which can be used
+# for mere illustration purposes (and yes, the TOTP secret has been
+# properly invalidated :-) ). It accepts one additional parameter
+# @1 and runs the script "helloworld.sh" which will then dump
+# the user's callsign (@0) and the additional parameter @1 to
+# an external text file.
+#
+#
+users:
+- callsign: DF1JSL
+  commands:
+    helloworld:
+      command_string: helloworld.sh @0 @1
+      detached_launch: false
+      watchdog_timespan: 0.0
+  secret: YNSKDFEGFGWWFGXK4AFM7ADGGHDXPQP3L
+  ttl: 30

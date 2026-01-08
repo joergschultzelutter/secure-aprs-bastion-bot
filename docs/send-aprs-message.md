@@ -7,6 +7,16 @@ For notification targets other than APRS (e.g. Telegram messenger), I recommend 
 >[!NOTE]
 >The message format is automatically converted to ASCII 7-bit encoding, if possible, if the message is in a different character set format. In addition, APRS-relevant control characters are removed, if present.
 
+# Table of Contents
+<!--ts-->
+* [Usage](#usage)
+* [Description](#description)
+* [Output examples](#output-examples)
+  * [Regular APRS messaging (67 usable characters)](#regular-aprs-messaging-67-usable-characters)
+  * [APRS messaging with active `--numeric-message-pagination` (59 usable characters per message)](#aprs-messaging-with-active---numeric-message-pagination-59-usable-characters-per-message)
+<!--te-->
+
+
 ## Usage
 
 ```bash
@@ -48,6 +58,7 @@ options:
 | `--numeric-message-pagination` | __Optional__. When selected, the usable length of an APRS message is reduced to from 67 to 59 characters and message is assigned its own counter in return.                          | `bool`    | `False`       |
 | `--simulate-send`              | __Optional__ test option. When activated, outgoing messages are not sent to APRS-IS, but only displayed on the console.                                                              | `bool`    | `False`       |
 
+## Output examples
 
 ### Regular APRS messaging (67 usable characters)
 ```python

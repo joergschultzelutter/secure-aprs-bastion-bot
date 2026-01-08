@@ -1,5 +1,17 @@
 # `--delete-user` - deletes a user from the config file
 
+# Table of Contents
+<!--ts-->
+* [Introduction](#introduction)
+* [Description](#description)
+* [Parameters](#parameters)
+* [Example](#example)
+  * [Config file before modification](#config-file-before-modification)
+  * [Execute user deletion](#execute-user-deletion)
+  * [Config file after modification](#config-file-after-modification)
+<!--te-->
+
+
 ## Introduction
 
 `--delete-user` deletes a user from the configuration file.
@@ -16,9 +28,7 @@ This command deletes a user (along with **all** of his settings, including [`--c
 
 ## Example
 
-Config file before modification
-
-Config file after modification
+### Config file before modification
 
 ```yaml
 users:
@@ -32,7 +42,7 @@ users:
   ttl: 30
 ```
 
-
+### Execute user deletion
 ``` python
 python configure.py --delete-user --callsign=DF1JSL-1
 2026-01-04 14:08:00,273 - configure -INFO - Deleting user account
@@ -41,7 +51,7 @@ python configure.py --delete-user --callsign=DF1JSL-1
 2026-01-04 14:08:00,274 - configure -INFO - Have successfully deleted the user account 'DF1JSL-1'
 ```
 
-Config file after modification
+### Config file after modification
 
 ```yaml
 users: []
