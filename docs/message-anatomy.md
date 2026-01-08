@@ -39,7 +39,7 @@ Example 1 - `command-code` with optional parameters
 ### Placeholders HOWTO
 
 To define placeholders for the optional parameters in the `--command-string`, the following conventions apply:
-- `@0` <u>ALWAYS</u> corresponds to the callsign that sent the initial message to `secure-aprs-bastion-bot`. This parameter is ALWAYS present.
+- `@0` <ins>ALWAYS</ins> corresponds to the callsign that sent the initial message to `secure-aprs-bastion-bot`. This parameter is <ins>ALWAYS</ins> available even though you are not required to use it in your corresponding script.
 - `@1` .. `@9` correspond to the additional parameters that (may) have been extracted from the APRS message. Since these are optional, these parameters are not necessarily filled
 
 Assuming the previous example `reboot debmu41 5` (sent by `DF1JSL-1`), the following optional parameters are available:
