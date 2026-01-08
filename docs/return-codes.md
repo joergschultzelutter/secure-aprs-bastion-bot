@@ -6,7 +6,7 @@
 * [Supported return codes](#supported-return-codes)
 <!--te-->
 
-# How `secure-aprs-bastion-bot` uses return codes
+## How `secure-aprs-bastion-bot` uses return codes
 `secure-aprs-bastion-bot` was deliberately designed so that no output from the called programs is sent back to the requester. If necessary, such a return transmission can be implemented individually via the `--command-script` using either the supplied `send-aprs-message.py` script or other options such as [Apprise](https://www.github.com/caronc/apprise). The following return values are supported and will be sent as an APRS message response to the user:
 
 The return codes, such as `200 ok`, are sent as APRS responses to the original user. This procedure allows a very short APRS message to be sent as confirmation that the requested command sequence has either already been completed or will be started as a separate process immediately after the APRS response is sent.
