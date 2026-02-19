@@ -207,10 +207,9 @@ aprsis_bulletin_interval_minutes = 1
 # - Bullets use ASCII-7 character set only
 # - Entries with no message content will be ignored and not broadcasted to APRS-IS
 #
-bln0 = Core APRS Client (Test Mode)
-bln1 = Hello World
-bln1 = See https://github.com/joergschultzelutter for
-bln2 = program source code. 73 de DF1JSL
+bln0 = Secure APRS Bastion Bot
+bln1 = See https://github.com/joergschultzelutter/secure-aprs-bastion-bot
+bln2 = for documentation and source code. 73 de DF1JSL
 bln4 =
 bln5 =
 bln6 =
