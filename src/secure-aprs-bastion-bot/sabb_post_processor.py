@@ -84,7 +84,9 @@ def post_processing(
             totp_code=postprocessor_input_object["totp_code"],
         )
 
-    return True
+    # signal success to the core-aprs-client framework; do not
+    # send a final APRS response message
+    return True, None
 
 
 if __name__ == "__main__":
