@@ -6,6 +6,7 @@
 * [Description](#description)
 * [Parameters](#parameters)
 * [Examples](#examples)
+* [Using a TTL value that differs from the default (30 seconds)](#using-a-ttl-value-that-differs-from-the-default-30-seconds)
 <!--te-->
 
 ## Introduction
@@ -61,6 +62,8 @@ python configure.py --test-totp-code --callsign=df1jsl-15 --totp=000000
 2025-08-03 17:16:39,736 configure -INFO- Configuration file 'sabb_command_config.yaml' was successfully read
 2025-08-03 17:16:39,737 configure -INFO- Token '761814' matches with target callsign 'DF1JSL'
 ```
+
+## Using a TTL value that differs from the default (30 seconds)
 
 >[!WARNING]
 > If your callsign has configured a non-default TTL value (read: anything larger than 30 seconds), you MUST use an OTP client that supports these extended settings — otherwise, your TOTP code WILL likely fail validation! See [`configure.py`'s configuration documentation](/docs/configure.md#using-a-ttl-value-that-differs-from-the-default-30-seconds) for further details.

@@ -16,6 +16,7 @@ This program is used for the creation of [secure-aprs-bastion-bot](secure-aprs-b
 * [Commands](#commands)
 * [Usage](#usage)
   * [Manual edits to the YAML configuration file](#manual-edits-to-the-yaml-configuration-file)
+* [Using a TTL value that differs from the default (30 seconds)](#using-a-ttl-value-that-differs-from-the-default-30-seconds)
 <!--te-->
 
 ## Parameter Options - Overview
