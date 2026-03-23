@@ -112,7 +112,7 @@ When in doubt, always use `configure.py` for abiding to these constraints.
 
 ## Using a TTL value that differs from the default (30 seconds)
 
-Whenever you decide to apply a TTL value that differs from the RFC 6238 TOTP default setting of 30 seconds, `configure.py` will output the following additional notification (excerpt):
+Whenever you decide to apply a TTL value that differs from the [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238) TOTP default setting of [30 seconds](https://www.rfc-editor.org/rfc/rfc6238#section-4.1), `configure.py` will output the following additional notification (excerpt):
 
 ```python
      ▄▄▄█ ▀▀ █▄ ▀█  ▀█  █▀▀▄█ ▀▀▄  ▄ █▀▄ ▀▀▀ ▄▄█▄    
@@ -141,6 +141,6 @@ or enter QUIT for exiting the program.
 ```
 
 >[!WARNING]
-> If you want to use a non-standard TTL value, you MUST use an OTP client that supports these extended settings — otherwise, your TOTP code WILL fail validation!
+> In summary: If you want to use a non-default TTL value, you MUST use an OTP client that supports TOTP settings larger than 30 seconds — otherwise, your TOTP code WILL likely fail validation!
 
 I've had a good experience with [FreeOTP](https://freeotp.github.io/) in this regard. Your miles may vary.

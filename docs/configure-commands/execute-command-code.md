@@ -56,4 +56,4 @@ python configure.py --execute-command-code --callsign=df1jsl --command-code=hell
 ```
 
 >[!WARNING]
-> If your callsign has configured a non-standard TTL value (read: anything larger than 30 seconds), you MUST use an OTP client that supports these extended settings — otherwise, your TOTP code WILL fail validation! See [`configure.py`'s configuration documentation](/docs/configure.md#using-a-ttl-value-that-differs-from-the-default-30-seconds) for further details.
+> If your callsign has configured a non-default TTL value (read: anything larger than 30 seconds), you MUST use an OTP client that supports these extended settings — otherwise, your TOTP code WILL likely fail validation! See [`configure.py`'s configuration documentation](/docs/configure.md#using-a-ttl-value-that-differs-from-the-default-30-seconds) for further details.
