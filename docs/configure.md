@@ -112,7 +112,7 @@ When in doubt, always use `configure.py` for abiding to these constraints.
 
 ## Using a TTL value that differs from the default (30 seconds)
 
-Whenever you decide to apply a TTL value that differs from the standard, `configure.py` will output the following additional notification (excerpt):
+Whenever you decide to apply a TTL value that differs from the RFC 6238 TOTP default setting of 30 seconds, `configure.py` will output the following additional notification (excerpt):
 
 ```python
      ▄▄▄█ ▀▀ █▄ ▀█  ▀█  █▀▀▄█ ▀▀▄  ▄ █▀▄ ▀▀▀ ▄▄█▄    
