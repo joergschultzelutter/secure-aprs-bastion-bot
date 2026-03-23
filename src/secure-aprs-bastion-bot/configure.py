@@ -125,7 +125,7 @@ def totp_check(totp_value):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was valid
+        True / False, depending on whether the entry was valid
     """
     if len(totp_value) != 6:
         raise argparse.ArgumentTypeError("Invalid TOTP - needs to have 6 digits")
@@ -479,7 +479,7 @@ def add_user_to_yaml_config(
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
 
     # Read the file from disk
@@ -535,7 +535,7 @@ def get_user_secret(configfile: str, callsign: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the data was retrieved
+        True / False, depending on whether the data was retrieved
     secret: str
         user's TOTP secret
     ttl_interval: int
@@ -643,7 +643,7 @@ def del_user_from_yaml_config(configfile: str, callsign: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was deleted
+        True / False, depending on whether the entry was deleted
     """
     __success, data = read_config_file_from_disk(filename=configfile)
     if not __success:
@@ -762,7 +762,7 @@ def add_cmd_to_yaml_config(
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
 
     # Read the file from disk
@@ -815,7 +815,7 @@ def del_cmd_from_yaml_config(configfile: str, callsign: str, command_code: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
 
     # Read the file from disk
@@ -904,6 +904,21 @@ def add_user(configfile: str, callsign: str, ttl_interval: int, show_secret: boo
     if show_secret:
         print(f"User's TOTP secret: {secret}\n")
 
+    # check if the user has used a ttl that differs from the standard setting
+    # of 30 secs and advise on proper usage of a supporting OTP authenticator app
+    if ttl_interval != 30:
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("! NON-STANDARD TTL SETTINGS DETECTED. READ THIS CAREFULLY BEFORE YOU CONTINUE !")
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print("You have selected a TTL setting that differs from the default setting (30 seconds). Most OTP clients,")
+        print("such as Google / Microsoft Authenticator, etc., IGNORE longer TTL settings, which means that")
+        print("a) your OTP client will only display the scanned TOTP code with a validity period of 30 seconds, and")
+        print("b) using that OTP client to validate these TOTP codes WILL fail.")
+        print("This behavior is not a problem with this software, but rather with the authentication client.")
+        print("Make sure you are using a compatible OTP client, such as FreeOTP, (https://freeotp.github.io/)")
+        print("that supports extended TTL settings.")
+        print("\n")
+
     # here comes the interactive part
     print("Scan this QR code with your authenticator app. When done,")
     print("enter CONTINUE for code verification")
@@ -912,7 +927,7 @@ def add_user(configfile: str, callsign: str, ttl_interval: int, show_secret: boo
 
     # Wait for the user to enter CONTINUE or QUIT
     while content not in ["CONTINUE", "QUIT"]:
-        content = input("Enter CONTINUE or QUIT: ")
+        content = input("Enter CONTINUE or QUIT: ").upper()
         if content == "QUIT":
             logger.debug(f"{add_user.__name__}: aborting")
             return __success
@@ -920,7 +935,7 @@ def add_user(configfile: str, callsign: str, ttl_interval: int, show_secret: boo
     # User has entered CONTINUE. Validate secret against TOTP code from user
     content = ""
     while content not in ["QUIT"] or len(content) != 6 and not content.isdigit():
-        content = input("Enter the 6-digit TOTP code or enter QUIT to exit:")
+        content = input("Enter the 6-digit TOTP code or enter QUIT to exit:").upper()
         if content == "QUIT":
             logger.debug(f"{add_user.__name__}: aborting")
             __success = False
@@ -970,7 +985,7 @@ def del_user(configfile: str, callsign: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
     __success = False
     if not does_file_exist(configfile):
@@ -1059,7 +1074,7 @@ def del_cmd(configfile: str, callsign: str, command_code: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
 
     __success = False

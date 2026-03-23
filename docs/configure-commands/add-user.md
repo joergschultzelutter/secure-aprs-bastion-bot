@@ -93,3 +93,6 @@ users:
   secret: GJYWOPM5YW22OD4REQDP75APVEGMNX4N
   ttl: 30
 ```
+
+>[!WARNING]
+> If you want to configure a non-standard TTL value (read: anything larger than 30 seconds), you MUST use an OTP client that supports these extended settings — otherwise, your TOTP code WILL fail validation! See [`configure.py`'s configuration documentation](/docs/configure.md#using-a-ttl-value-that-differs-from-the-default-30-seconds) for further details.
