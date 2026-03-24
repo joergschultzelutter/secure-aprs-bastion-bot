@@ -1,6 +1,6 @@
 # secure-aprs-bastion-bot
 
-Manage your IT infrastructure via APRS messaging (to a certain extent).
+Manage your IT infrastructure securely via APRS messaging (to a certain extent).
 
 ## Table of Contents
 <!--ts-->
