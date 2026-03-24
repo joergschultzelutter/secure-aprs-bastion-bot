@@ -32,7 +32,7 @@ The following installation instructions assume that the user is using the defaul
 - Configure the bot's core configuration file. This file contains configuration info on the bot's callsign and other config info such as beaconing and broadcasting. A template file can be found in the [configuration_file_examples](/configuration_file_examples) folder.
   - Rename the preconfigured configuration file [secure_aprs_bastion_bot.cfg.TEMPLATE](/configuration_file_examples/secure_aprs_bastion_bot.cfg.TEMPLATE) and remove the `.TEMPLATE` file extension. `secure_aprs_bastion_bot.cfg` is the default configuration filename.
   - Amend the bot's [configuration file](/docs/secure-aprs-bastion-bot.md#configuration-file). The bot is based on my `core-aprs-client` framework ([repository link](https://github.com/joergschultzelutter/core-aprs-client)) and comes preconfigured. The ABSOLUTE MINIMAL configuration changes require the following fields to get modified:
-    - `aprsis_callsign` - your bot's future callsign, e.g. DF1JSL-13
+    - `aprsis_callsign` - your bot's future callsign, e.g. `DF1JSL-13`
     - `aprsis_tocall` - for a production use, this _should_ get changed from `APRS` to your very own [TOCALL](https://github.com/aprsorg/aprs-deviceid) identifier.
     - `aprsis_passcode` - the APRS-IS passcode that matches your `aprsis_callsign`. If you don't know what this is, then this program is not for you.
     - `aprsis_server_filter` - the APRS-IS server filter. If e.g. your callsign is `DF1JSL-13`, you MUST go for the [group message filter](https://www.aprs-is.net/javAPRSFilter.aspx) that is specific to your callsign (`/g/DF1JSL-13`). Note that no additional callsign filtering is in place, meaning that `secure-aprs-bastion-bot` relies on proper filter settings!  
