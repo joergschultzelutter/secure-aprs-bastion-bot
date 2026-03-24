@@ -17,9 +17,11 @@ Manage your IT infrastructure securely via APRS messaging (to a certain extent).
 
 ## Introduction
 
-I recently went on a multi-day hiking trip and discovered that a program on one of my home servers had crashed due to an error. I had my cell phone with me and was able to access the computer via ssh and restart the program, but there are still areas in my country where there is _zero_ cell phone reception (kudos to the German government). 
+I recently went on a multi-day hiking trip and discovered that a program on one of my home servers had crashed due to an error. I had my cell phone with me and was able to access the computer via ssh and restart the program, but there are still areas in my country where there is literally _zero_ cell phone reception. Kudos to the German government. 
 
-So what to do in such a case? In most of these cases where I am stuck in the wilderness without no cell phone reception, there would still be an APRS-enabled repeater nearby, and so the idea was born to create an APRS-enabled bastion host that would give me <ins>secure</ins> access to my internal IT infrastructure in the event of cell phone network unavailability. `secure-aprs-bastion-bot` aims to support this use case.
+So what to do in such a case? In most of these situations, where I’d be stranded in the middle of nowhere in Germany with no cell service, there would still be an APRS-enabled repeater nearby that I could reach with a hand-held transceiver. This is how the idea arose to set up an APRS-capable bastion host that would provide me with secure access to my internal IT infrastructure in the event of a mobile network outage and would be capable of executing pre-written scripts and programs.
+
+`secure-aprs-bastion-bot` aims to support this use case.
 
 ## Features
 
@@ -75,7 +77,7 @@ The program return codes are sent as APRS responses to the original user. [Here 
 - A: Since `secure-aprs-bastion-bot` transmits messages to the APRS network, it cannot be used without an amateur radio license. 
 
 - Q: _When I try to run my script, I get the error message `OSError: [Errno 8] Exec format error`. How can I fix that?_
-- A: Your script is missing a corresponding [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) at the top of your shell script (e.g. `#!/bin/bash`) which is required by Python.
+- A: Your script is missing a corresponding [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) qualifier `#!/bin/bash` at the top of your shell script (e.g. `#!/bin/bash`) which is <ins>required</ins> by Python. Have a look at the provided [demo script](/configuration_file_examples/helloworld.sh) for further details.
 
 ## Technical details
 
@@ -85,3 +87,4 @@ The program return codes are sent as APRS responses to the original user. [Here 
 
 - If you intend to host an instance of this program, you must be a licensed radio amateur. BYOP: Bring your own (APRS-IS) passcode. If you don't know what this is, then this program is not for you.
 - APRS is a registered trademark of APRS Software and Bob Bruninga, WB4APR.
+- This software should work on all standard platforms (Windows, macOS, Linux). The only exception is the [`--watchdog-timespan`](/docs/configure-commands/add-command.md#--watchdog-timespan) code segment on Windows, which may or may not work depending on the program being run. Your miles may vary. Sorry - but I am not a Windows guy.
