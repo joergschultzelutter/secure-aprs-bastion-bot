@@ -53,7 +53,7 @@ options:
   --test-totp-code                Validates the provided TOTP code against the user's secret
   --dry-run                       In combination with --execute-command-code, causes the execution of the script to be simulated only
   --execute-command-code          Looks up the callsign / command code combination in the YAML file and executes it
-  --show-secret                   Shows the user's secret during the -add-user configuration process (default: disabled)
+  --show-secret                   Shows the user's secret and full URI during the -add-user configuration process (default: disabled)
   --callsign CALLSIGN             Callsign (must follow callsign format standards)
   --totp-code TOTP_CODE           6 digit TOTP code - submitted for configuration testing only
   --command-code COMMAND_CODE     Command code which will be sent to the APRS bot for future execution
@@ -104,7 +104,7 @@ All commands are described in the linked documentation files.
 
 ### Manual edits to the YAML configuration file
 
-Except for the `--add-user` functionality which generates the user's TOTP secret, you are free to apply manual changes to the external YAML configuration file. The following constraints apply:
+Except for the `--add-user` functionality which generates the user's TOTP secret, you are free to apply manual changes to the external YAML configuration file (though I do not encourage this approach). The following constraints apply:
 
 - `--callsign` information is always stored uppercase in the configuration file (e.g. `DF1JSL-1` and not `df1jsl-1`)
 - `--command-code` information is always stored lowercase in the configuration file (e.g. `sayhello` and not `SayHello`, `SAYHELLO` etc).
@@ -142,6 +142,6 @@ or enter QUIT for exiting the program.
 ```
 
 >[!WARNING]
-> In summary: If you want to use a non-default TTL value, you MUST use an OTP client that supports TOTP settings larger than 30 seconds — otherwise, your TOTP code WILL likely fail validation!
+> In summary: If you want to use a non-default TTL value, you MUST use an OTP client that supports TOTP settings larger than 30 seconds — otherwise, your TOTP code WILL fail validation!
 
 I've had a good experience with [FreeOTP](https://freeotp.github.io/) in this regard. Your miles may vary.
