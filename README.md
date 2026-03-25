@@ -19,7 +19,7 @@ Manage your IT infrastructure securely via APRS messaging (to a certain extent).
 
 I recently went on a multi-day hiking trip and discovered that a program on one of my home servers had crashed due to an error. I had my cell phone with me and was able to access the computer via ssh and restart the program, but there are still areas in my country where there is literally _zero_ cell phone reception. Kudos to the German government. 
 
-So what to do in such a case? In most of these situations, where I’d be stranded in Germany's digital deserts with no cell service, there would still be a ham radio repeater nearby that I could reach with an APRS-capable transceiver. This is how the idea arose to set up an APRS bot that would provide me with secure access to my internal IT infrastructure in the event of a mobile network outage and would be capable of executing pre-written scripts and programs.
+So what to do in such a case? In most of these situations, where I would be stuck in the digital deserts of Germany with no cell reception, there would still be a ham radio repeater nearby that I could reach with an APRS-capable transceiver. This is how the idea arose to set up an APRS bot that would provide me with secure access to my internal IT infrastructure in the event of a mobile network outage and would be capable of executing pre-written scripts and programs.
 
 `secure-aprs-bastion-bot` aims to support this use case.
 
