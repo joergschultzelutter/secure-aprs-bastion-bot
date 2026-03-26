@@ -82,7 +82,7 @@ As mentioned at the beginning, the additional parameters are separated from each
 
 A user entry in the config file can be with or without trailing SSID. Each entry has its very own secret and therefore its very own TOTP code.
 
-User accounts with_OUT_ trailing SSID can act as a 'wildcard' entry. If a user callsign WITH trailing SSID has access to the user account's secret withOUT SSID (and therefore can generate its associated TOTP code), the user account WITH trailing SSID will be granted access to the entries associated with the callsign withOUT SSID .
+User accounts withOUT trailing SSID can act as a 'wildcard' entry. If a user callsign WITH trailing SSID has access to the user account's secret withOUT SSID (and therefore can generate its associated TOTP code), the user account WITH trailing SSID will be granted access to the entries associated with the callsign withOUT SSID .
 
 > [!NOTE]
 > Instead of creating the same configuration redundantly for all SSIDs of the callsign, for example, it can be configured only once for the main callsign (_without_ SSID) and used by all associated callsigns _with_ SSID, provided that they then provide the token of the main callsign for authentication and authorization.
