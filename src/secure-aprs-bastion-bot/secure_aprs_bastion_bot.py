@@ -85,7 +85,7 @@ if __name__ == "__main__":
     #
     client = CoreAprsClient(
         config_file=configfile,
-        log_level=logging.DEBUG,
+        log_level=logging.INFO,
         input_parser=parse_input_message,
         output_generator=generate_output_message,
         post_processor=post_processing,

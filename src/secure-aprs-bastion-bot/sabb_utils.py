@@ -310,7 +310,7 @@ def execute_program(
                         start_new_session=True,
                     )
                 pid = proc.pid
-                out_info(f"Detached process started with PID={pid}")
+                out_debug(f"Detached process started with PID={pid}")
                 return pid
             except FileNotFoundError:
                 out_info(f"Command not found: '{command}'")

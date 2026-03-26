@@ -220,10 +220,10 @@ aprs_message_counter_file_name = core_aprs_client_message_counter.txt
 #
 # Configuration data that is specific to the secure-aprs/bastion-bot
 #
-# Number of maximum TOTP cache entries
+# Number of maximum callsign/TOTP dupe cache entries
 sabb_totp_cache_max_len = 100
 #
-# life span of a TOTP item in seconds
+# life span of a callsign/TOTP dupe cache in seconds
 sabb_totp_cache_max_age_seconds = 360
 #
 # The name of the program-specific config file that

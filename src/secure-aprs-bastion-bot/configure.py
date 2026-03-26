@@ -125,7 +125,7 @@ def totp_check(totp_value):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was valid
+        True / False, depending on whether the entry was valid
     """
     if len(totp_value) != 6:
         raise argparse.ArgumentTypeError("Invalid TOTP - needs to have 6 digits")
@@ -217,7 +217,7 @@ def get_command_line_params_config():
         dest="show_secret",
         action="store_true",
         default=False,
-        help="Shows the user's secret during the -add-user configuration process (default: disabled)",
+        help="Shows the user's secret and full URI during the -add-user configuration process (default: disabled)",
     )
 
     parser.add_argument(
@@ -320,16 +320,78 @@ def get_command_line_params_config():
             logger.error(msg="Callsign must match a valid callsign format")
             sys.exit(0)
 
-    if (
-        __add_user
-        or __del_user
-        or __add_command
-        or __del_command
-        or __test_totp_code
-        or __execute_command_code
-    ):
+    if __add_user:
+        if (
+            __add_command
+            or __del_command
+            or __del_user
+            or __execute_command_code
+            or __test_totp_code
+        ):
+            logger.error(
+                msg="'--add-user' cannot be run with other commands at the same time"
+            )
+            sys.exit(0)
         if len(__callsign) < 1:
-            logger.error(msg="Callsign is required")
+            logger.error(msg="'--callsign' parameter is required")
+            sys.exit(0)
+
+    if __del_user:
+        if (
+            __add_command
+            or __del_command
+            or __add_user
+            or __execute_command_code
+            or __test_totp_code
+        ):
+            logger.error(
+                msg="'--del-user' cannot be run with other commands at the same time"
+            )
+            sys.exit(0)
+        if len(__callsign) < 1:
+            logger.error(msg="'--callsign' parameter is required")
+            sys.exit(0)
+
+    if __add_command:
+        if (
+            __add_user
+            or __del_command
+            or __del_user
+            or __execute_command_code
+            or __test_totp_code
+        ):
+            logger.error(
+                msg="'--add-command' cannot be run with other commands at the same time"
+            )
+            sys.exit(0)
+
+        if len(__callsign) < 1:
+            logger.error(msg="'--callsign' parameter is required")
+            sys.exit(0)
+        if len(__command_code) < 1:
+            logger.error(msg="'--command-code' parameter is required")
+            sys.exit(0)
+        if len(__command_string) < 1:
+            logger.error(msg="'--command-string' parameter is required")
+            sys.exit(0)
+
+    if __del_command:
+        if (
+            __add_command
+            or __del_user
+            or __add_user
+            or __execute_command_code
+            or __test_totp_code
+        ):
+            logger.error(
+                msg="'--del-command' cannot be run with other commands at the same time"
+            )
+            sys.exit(0)
+        if len(__callsign) < 1:
+            logger.error(msg="'--callsign' parameter is required")
+            sys.exit(0)
+        if len(__command_code) < 1:
+            logger.error(msg="'--command-code' parameter is required")
             sys.exit(0)
 
     if __execute_command_code:
@@ -340,43 +402,37 @@ def get_command_line_params_config():
             or __del_user
             or __test_totp_code
         ):
-            logger.error(msg="Testing not possible with this combination")
+            logger.error(
+                msg="'--execute-command-code' cannot be run with other commands at the same time"
+            )
             sys.exit(0)
         if len(__callsign) < 1:
-            logger.error(msg="Command code is required")
+            logger.error(msg="'--callsign' parameter is required")
             sys.exit(0)
         if len(__totp_code) < 1:
-            logger.error(msg="TOTP code is required")
+            logger.error(msg="'--totp-code' parameter is required")
             sys.exit(0)
-
-    if __add_command or __del_command:
         if len(__command_code) < 1:
-            logger.error(msg="Command code is required")
+            logger.error(msg="'--command-code' parameter is required")
             sys.exit(0)
 
     if __test_totp_code:
-        if __add_user or __del_user or __add_command or __del_command:
+        if (
+            __add_user
+            or __del_user
+            or __add_command
+            or __del_command
+            or __execute_command_code
+        ):
             logger.error(
-                msg="--test-config and add/del commands cannot be run at the same time"
+                msg="'--test-totp-code' cannot be run with other commands at the same time"
             )
             sys.exit(0)
         if len(__totp_code) < 1:
-            logger.error(msg="TOTP code is required")
+            logger.error(msg="'--totp-code' parameter is required")
             sys.exit(0)
-        if __execute_command_code:
-            logger.error(
-                msg="--test-totp-code and --execute-command-code cannot be run at the same time"
-            )
-            sys.exit(0)
-
-    if __execute_command_code:
-        if __add_user or __del_user or __add_command or __del_command:
-            logger.error(
-                msg="--execute-config and add/del commands cannot be run at the same time"
-            )
-            sys.exit(0)
-        if len(__totp_code) < 1:
-            logger.error("TOTP code is required")
+        if len(__callsign) < 1:
+            logger.error(msg="'--callsign' parameter is required")
             sys.exit(0)
 
     if (
@@ -393,12 +449,12 @@ def get_command_line_params_config():
 
     if len(__command_code) > 1:
         if " " in __command_code:
-            logger.error(msg="Invalid command code; must not contain spaces")
+            logger.error(msg="Invalid '--command-code'; value must not contain spaces")
             sys.exit(0)
 
     if __watchdog_timespan > 0.0 and __detached_launch:
         logger.error(
-            msg="'Watchdog timespan' cannot be set for 'detached launch' configuration"
+            msg="'--watchdog-timespan' cannot be set for '--detached-launch' configuration"
         )
 
     return (
@@ -479,7 +535,7 @@ def add_user_to_yaml_config(
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
 
     # Read the file from disk
@@ -535,7 +591,7 @@ def get_user_secret(configfile: str, callsign: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the data was retrieved
+        True / False, depending on whether the data was retrieved
     secret: str
         user's TOTP secret
     ttl_interval: int
@@ -643,7 +699,7 @@ def del_user_from_yaml_config(configfile: str, callsign: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was deleted
+        True / False, depending on whether the entry was deleted
     """
     __success, data = read_config_file_from_disk(filename=configfile)
     if not __success:
@@ -762,7 +818,7 @@ def add_cmd_to_yaml_config(
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
 
     # Read the file from disk
@@ -815,7 +871,7 @@ def del_cmd_from_yaml_config(configfile: str, callsign: str, command_code: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
 
     # Read the file from disk
@@ -902,7 +958,40 @@ def add_user(configfile: str, callsign: str, ttl_interval: int, show_secret: boo
 
     # show the secret if the user has asked for it
     if show_secret:
-        print(f"User's TOTP secret: {secret}\n")
+        logger.debug(msg="User has requested to have the secret shown")
+        print(f"User's TOTP secret: {secret}")
+        print(f"Full URI: {uri}\n")
+
+    # check if the user has used a ttl that differs from the standard setting
+    # of 30 secs and advise on proper usage of a supporting OTP authenticator app
+    if ttl_interval != 30:
+        print(
+            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        )
+        print(
+            "! NON-STANDARD TTL SETTINGS DETECTED. READ THIS CAREFULLY BEFORE YOU CONTINUE !"
+        )
+        print(
+            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        )
+        print(
+            "You have selected a TTL setting that differs from the default setting (30 seconds). Most OTP clients,"
+        )
+        print(
+            "such as Google / Microsoft Authenticator, etc., IGNORE longer TTL settings, which means that"
+        )
+        print(
+            "a) your OTP client will only display the scanned TOTP code with a validity period of 30 seconds, and"
+        )
+        print("b) using that OTP client to validate these TOTP codes WILL fail.")
+        print(
+            "This behavior is not a problem with this software, but rather with the authentication client."
+        )
+        print(
+            "Make sure you are using a compatible OTP client, such as FreeOTP, (https://freeotp.github.io/)"
+        )
+        print("that supports extended TTL settings.")
+        print("\n")
 
     # here comes the interactive part
     print("Scan this QR code with your authenticator app. When done,")
@@ -912,7 +1001,7 @@ def add_user(configfile: str, callsign: str, ttl_interval: int, show_secret: boo
 
     # Wait for the user to enter CONTINUE or QUIT
     while content not in ["CONTINUE", "QUIT"]:
-        content = input("Enter CONTINUE or QUIT: ")
+        content = input("Enter CONTINUE or QUIT: ").upper()
         if content == "QUIT":
             logger.debug(f"{add_user.__name__}: aborting")
             return __success
@@ -920,7 +1009,7 @@ def add_user(configfile: str, callsign: str, ttl_interval: int, show_secret: boo
     # User has entered CONTINUE. Validate secret against TOTP code from user
     content = ""
     while content not in ["QUIT"] or len(content) != 6 and not content.isdigit():
-        content = input("Enter the 6-digit TOTP code or enter QUIT to exit:")
+        content = input("Enter the 6-digit TOTP code or enter QUIT to exit:").upper()
         if content == "QUIT":
             logger.debug(f"{add_user.__name__}: aborting")
             __success = False
@@ -970,7 +1059,7 @@ def del_user(configfile: str, callsign: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
     __success = False
     if not does_file_exist(configfile):
@@ -1059,7 +1148,7 @@ def del_cmd(configfile: str, callsign: str, command_code: str):
     Returns
     =======
     success: bool
-        True / False, depending on whether or not the entry was created/updated
+        True / False, depending on whether the entry was created/updated
     """
 
     __success = False
@@ -1316,7 +1405,9 @@ def main():
                         logger.error(
                             msg="Your final command string still contains placeholders; did you specify all necessary parameters?"
                         )
-                        logger.error(msg=f"Final (erroneous) command string: '{command_string}'")
+                        logger.error(
+                            msg=f"Final (erroneous) command string: '{command_string}'"
+                        )
                         sys.exit(0)
 
                 if not sabb_dry_run:

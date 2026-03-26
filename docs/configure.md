@@ -16,6 +16,7 @@ This program is used for the creation of [secure-aprs-bastion-bot](secure-aprs-b
 * [Commands](#commands)
 * [Usage](#usage)
   * [Manual edits to the YAML configuration file](#manual-edits-to-the-yaml-configuration-file)
+* [Using a TTL value that differs from the default (30 seconds)](#using-a-ttl-value-that-differs-from-the-default-30-seconds)
 <!--te-->
 
 ## Parameter Options - Overview
@@ -52,7 +53,7 @@ options:
   --test-totp-code                Validates the provided TOTP code against the user's secret
   --dry-run                       In combination with --execute-command-code, causes the execution of the script to be simulated only
   --execute-command-code          Looks up the callsign / command code combination in the YAML file and executes it
-  --show-secret                   Shows the user's secret during the -add-user configuration process (default: disabled)
+  --show-secret                   Shows the user's secret and full URI during the -add-user configuration process (default: disabled)
   --callsign CALLSIGN             Callsign (must follow callsign format standards)
   --totp-code TOTP_CODE           6 digit TOTP code - submitted for configuration testing only
   --command-code COMMAND_CODE     Command code which will be sent to the APRS bot for future execution
@@ -73,12 +74,12 @@ options:
 | Parameter                                            | Description                                                                                                                                                                                                                                                                                                                                                          | Type          | Default                   |
 |------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|---------------------------|
 | `--configfile`                                       | External config file. `configure.py` will create this file if it does not exist.                                                                                                                                                                                                                                                                                     | `str`         | `sabb_command_config.yml` |
-| `--callsign`                                         | User's callsign, with or without SSID                                                                                                                                                                                                                                                                                                                               | `str`         | `<none>`                  |
+| `--callsign`                                         | User's callsign, with or without SSID                                                                                                                                                                                                                                                                                                                                | `str`         | `<none>`                  |
 | `--totp-code`                                        | Six-digit TOTP code                                                                                                                                                                                                                                                                                                                                                  | `str`         | `<none>`                  |
 | [`--command-code`](configure.md#--command-code)      | Command code alias. This is the code that the user will send in his APRS message. Associated with [`--command-string`](/docs/configure-commands/add-command.md#--command-string)                                                                                                                                                                                     | `str`         | `<none>`                  |
 | [`--command-string`](configure.md#--command-string)  | Associated with [`--command-code`](/docs/configure-commands/add-command.md#--command-code). This is a representation of the actual command that is going to get executed.                                                                                                                                                                                            | `str`         | `<none>`                  |
 | `--detached-launch`                                  | When specified (read:`detached-launch`=`True`), the bot will NOT wait for the [`--command-string`](/docs/configure-commands/add-command.md#--command-string)'s program execution. In addition, the APRS confirmation will be sent to the user _prior_ to the program's execution. Default setting: `False` --> Bot _will_ wait for the end of the program execution. | `bool`        | `False`                   |
-| `--ttl`                                              | TOTP TTL value in seconds (`30`..`300`). Default: 30 (seconds)                                                                                                                                                                                                                                                                                                       | `int`         | `30`                      |
+| `--ttl`                                              | TOTP TTL value in seconds (`30`..`300`). Default: 30 (seconds). If you decide to go for a non-default value, please have a look at this [additional documentation](#using-a-ttl-value-that-differs-from-the-default-30-seconds)                                                                                                                                      | `int`         | `30`                      |
 | `--dry-run`                                          | When used in combination with `-execute-command-code`, the execution of the associated `--command-script` will only be simulated                                                                                                                                                                                                                                     | `bool`        | `False`                   |
 | `--watchdog-timespan`                                | Only applicable for `detached-launch`=`False` configurations. A value of `0.0` (default) will disable the watchdog. Any other positive value will _try_ to abort the previously started process after the given timespan has passed.                                                                                                                                 | `float`       | `0.0`                     |
 | `--aprs-test-arguments`                              | Used in combination with [`--execute-command-code`](configure.md#--execute-command-code---executes-a---callsign--commannd-code-combination). Simulates the parameter input `@1`..`@9` from an incoming APRS message. 0..9 parameters are supported. Parameter separator = space. Input Parameter `@0` _always_ contains the user's callsign.                         | list of `str` | `[]` (empty list)         |
@@ -103,9 +104,44 @@ All commands are described in the linked documentation files.
 
 ### Manual edits to the YAML configuration file
 
-Except for the `--add-user` functionality which generates the user's TOTP secret, you are free to apply manual changes to the external YAML configuration file. The following constraints apply:
+Except for the `--add-user` functionality which generates the user's TOTP secret, you are free to apply manual changes to the external YAML configuration file (though I do not encourage this approach). The following constraints apply:
 
 - `--callsign` information is always stored uppercase in the configuration file (e.g. `DF1JSL-1` and not `df1jsl-1`)
 - `--command-code` information is always stored lowercase in the configuration file (e.g. `sayhello` and not `SayHello`, `SAYHELLO` etc).
 
 When in doubt, always use `configure.py` for abiding to these constraints.
+
+## Using a TTL value that differs from the default (30 seconds)
+
+Whenever you decide to apply a TTL value that differs from the [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238) TOTP default setting of [30 seconds](https://www.rfc-editor.org/rfc/rfc6238#section-4.1), `configure.py` will output the following additional notification (excerpt):
+
+```python
+     ▄▄▄█ ▀▀ █▄ ▀█  ▀█  █▀▀▄█ ▀▀▄  ▄ █▀▄ ▀▀▀ ▄▄█▄    
+    ▀  ▀▀ ▀ ▄█ █▄▀▄▀▀▀▀▄█▀▀▀█ █▀▄ ▄█  ▀▄█▀▀▀█  ▀▄    
+    █▀▀▀▀▀█ ▀ ▀██▀██▀▀▀ █ ▀ ██▀█▄█▀▄▄█ ██ ▀ █ █▀     
+    █ ███ █ █▄▀▀▀▄▀▄▀▄ █▀█▀█▀▀    ▄▀   ▀█▀▀███▄█     
+    █ ▀▀▀ █ ██ ▀▀▀▀▄ ██▄█▄█▄▀▀▀ ▀▄▄  ▄▀ ▄  █▄██▀     
+    ▀▀▀▀▀▀▀ ▀▀ ▀ ▀  ▀▀▀▀ ▀   ▀ ▀▀ ▀▀▀▀ ▀  ▀▀▀▀ ▀     
+                                                     
+                                                     
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! NON-STANDARD TTL SETTINGS DETECTED. READ THIS CAREFULLY BEFORE YOU CONTINUE !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+You have selected a TTL setting that differs from the default setting (30 seconds). Most OTP clients,
+such as Google / Microsoft Authenticator, etc., IGNORE longer TTL settings, which means that
+a) your OTP client will only display the scanned TOTP code with a validity period of 30 seconds, and
+b) using that OTP client to validate these TOTP codes WILL fail.
+This behavior is not a problem with this software, but rather with the authentication client.
+Make sure you are using a compatible OTP client, such as FreeOTP, (https://freeotp.github.io/)
+that supports extended TTL settings.
+
+
+Scan this QR code with your authenticator app. When done,
+enter CONTINUE for code verification
+or enter QUIT for exiting the program.
+```
+
+>[!WARNING]
+> In summary: If you want to use a non-default TTL value, you MUST use an OTP client that supports TOTP settings larger than 30 seconds — otherwise, your TOTP code WILL fail validation!
+
+I've had a good experience with [FreeOTP](https://freeotp.github.io/) in this regard. Your miles may vary.
