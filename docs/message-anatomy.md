@@ -64,7 +64,7 @@ First, `secure-aprs-bastion-bot` replaces the placeholders in the string with th
 |------------------|--------------------------------------------------------|
 | `reboot`         | `source ./scripts/server-reboot.sh 5 debmu41 DF1JSL-1` |
 
-The command of the edited `--command-string` is then executed by `secure-aprs-bastion-bot`.
+This modified `--command-string` is then finally executed by `secure-aprs-bastion-bot`.
 
 > [!NOTE]
 > If the user transmits _more_ optional parameters than there are placeholders in the `--command-string` user script, the additional parameters are ignored by `core-aprs-client`. However, if _fewer_ parameters than required by the `--command-string`user script are transmitted to `core-aprs-client`, this results in a `510 not extended` error - see [this chapter](/docs/return-codes.md)
