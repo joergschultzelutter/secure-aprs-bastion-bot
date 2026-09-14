@@ -88,7 +88,7 @@ def generate_output_message(
 
         # run the user's requested command sequence
         execute_program(
-            command=input_parser_response_object["command_string"],
+            command=input_parser_response_object["args_list"],
             detached_launch=input_parser_response_object["detached_launch"],
             watchdog_timespan=input_parser_response_object["watchdog_timespan"],
         )

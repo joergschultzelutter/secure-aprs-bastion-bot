@@ -28,7 +28,6 @@ import yaml
 from datetime import datetime, timezone
 
 import os
-import shlex
 import signal
 import subprocess
 import time
@@ -154,7 +153,7 @@ def set_totp_expiringdict_key(callsign: str, totp_code: str):
 
 
 def execute_program(
-    command: str, detached_launch: bool = False, watchdog_timespan: float = 0.0
+    command: list, detached_launch: bool = False, watchdog_timespan: float = 0.0
 ) -> Optional[int]:
     """
     Runs an external program / Script
@@ -193,8 +192,8 @@ def execute_program(
 
     # Check our input
     try:
-        if not isinstance(command, str) or not command.strip():
-            out_info("execute_program: ERROR: invalid command (empty or non-string).")
+        if not isinstance(command, list):
+            out_info("execute_program: ERROR: invalid command (non-list type).")
             return None
         if not isinstance(detached_launch, bool):
             out_info("execute_program: ERROR: invalid detached_launch (must be bool).")
@@ -215,17 +214,7 @@ def execute_program(
         out_info(f"execute_program: ERROR: unexpected validation failure: {e}")
         return None
 
-    # parse our command
-    try:
-        argv = shlex.split(command, posix=(os.name != "nt"))
-        if not argv:
-            out_info("execute_program: ERROR: command parsing produced empty argv.")
-            return None
-    except Exception as e:
-        out_info(f"execute_program: ERROR: failed to parse command: '{e}'")
-        return None
-
-    out_debug(f"execute_program: starting command: {command}")
+    out_debug(f"execute_program: starting command: {" ".join(command)}")
 
     def terminate_process_tree(pid: int) -> None:
         """
@@ -293,7 +282,7 @@ def execute_program(
                         | subprocess.DETACHED_PROCESS
                     )
                     proc = subprocess.Popen(
-                        argv,
+                        command,
                         stdin=subprocess.DEVNULL,
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
@@ -302,7 +291,7 @@ def execute_program(
                     )
                 else:
                     proc = subprocess.Popen(
-                        argv,
+                        command,
                         stdin=subprocess.DEVNULL,
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
@@ -325,20 +314,20 @@ def execute_program(
         # Non-detached: with output capture and optional watchdog
         try:
             proc = subprocess.Popen(
-                argv,
+                command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
                 bufsize=1,
             )
         except FileNotFoundError:
-            out_info(f"Command not found: '{command}'")
+            out_info(f"Command not found: '{" ".join(command)}'")
             return None
         except PermissionError:
-            out_info(f"Permission denied: '{command}'")
+            out_info(f"Permission denied: '{" ".join(command)}'")
             return None
         except Exception as e:
-            out_info(f"Failed to start command '{command}': {e}")
+            out_info(f"Failed to start command '{" ".join(command)}': {e}")
             return None
 
         pid = proc.pid
