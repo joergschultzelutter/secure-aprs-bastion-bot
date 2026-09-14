@@ -39,6 +39,7 @@ from sabb_utils import (
     identify_target_callsign_and_command_string,
 )
 import sabb_shared
+import shlex
 import sabb_http_codes
 
 # Platform-specific content for 'wait_or_keypress' function
@@ -1378,6 +1379,11 @@ def main():
                         msg=f"Command '{sabb_command_code}' translates to target callsign '{target_callsign}' and command_string '{command_string}' with detached_launch='{detached_launch}' and {__wdstr}"
                     )
 
+                # Parse the trusted command template BEFORE inserting externally supplied values.
+                # This ensures that substituted parameters can never create additional argv
+                # elements, options, pipes, redirects, etc.
+                args_list = shlex.split(command_string, posix=(os.name != "nt"))
+
                 # Check if there is something that we need to replace
                 regex_string = r"\@[0-9]"
                 matches = re.search(pattern=regex_string, string=command_string)
@@ -1388,6 +1394,15 @@ def main():
 
                     # Replace the callsign. Add the callsign to the top of the list
                     sabb_aprs_test_arguments.insert(0, sabb_callsign)
+
+                    # Replace placeholders only after argv has been constructed.
+                    # Each command_param therefore remains part of exactly one argv element,
+                    # regardless of spaces or shell metacharacters contained in it.
+                    for count, item in enumerate(sabb_aprs_test_arguments, start=0):
+                        placeholder = f"@{count}"
+                        args_list = [
+                            arg.replace(placeholder, item) for arg in args_list
+                        ]
 
                     # and now start iterating through the list and replace our content
                     for count, item in enumerate(sabb_aprs_test_arguments, start=0):
@@ -1421,7 +1436,7 @@ def main():
                     else:
                         logger.info("Executing code ....")
                         execute_program(
-                            command=command_string,
+                            command=args_list,
                             detached_launch=sabb_detached_launch,
                             watchdog_timespan=sabb_watchdog_timespan,
                         )

@@ -160,8 +160,8 @@ def execute_program(
 
     Parameters:
     ===========
-    command: str
-        The command to be executed. Additional parameters are separated by spaces.
+    command: list
+        The command to be executed. Additional parameters are list items 1...n.
     detached_launch: bool
         sets the launch mode
         'False' = Starts the program and waits until it has finished running.

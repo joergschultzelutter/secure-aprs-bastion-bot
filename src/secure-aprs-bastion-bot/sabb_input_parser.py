@@ -204,7 +204,7 @@ def parse_input_message(
     # Replace placeholders only after argv has been constructed.
     # Each command_param therefore remains part of exactly one argv element,
     # regardless of spaces or shell metacharacters contained in it.
-    for count, item in enumerate(command_params):
+    for count, item in enumerate(command_params, start=0):
         placeholder = f"@{count}"
         args_list = [arg.replace(placeholder, item) for arg in args_list]
 
